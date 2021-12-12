@@ -454,6 +454,10 @@ public class Editor : InputListener, SystemEventListener {
 				case "paste":
 					onPaste();
 					break;
+				case "bmfontTool":
+					import windows.bmfonttoolkit;
+					wh.addWindow(new BMFontToolkit());
+					break;
 				default:
 					break;
 			}

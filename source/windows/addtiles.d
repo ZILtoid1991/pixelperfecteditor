@@ -166,6 +166,9 @@ public class AddTiles : Window {
 		} else {
 			textBox_palShift.setText("");
 			textBox_palShift.state = ElementState.Disabled;
+			textBox_palOffset.setText("");
+			textBox_palOffset.state = ElementState.Disabled;
+			checkBox_palImport.state = ElementState.Disabled;
 		}
 		return 0;
 	}
@@ -215,10 +218,12 @@ public class AddTiles : Window {
 			if(!name[0].length) name[0] = name0;
 			name[2] = to!string(textBox_Source.getText.text);
 			const int paletteShift = checkBox_palImport.isChecked ? to!int(textBox_palShift.getText.text) : -1;
-			const int paletteOffset = to!int(textBox_palOffset.getText.text);
-			editor.selDoc.events.addToTop(new AddTileSheetEvent(source, editor.selDoc, editor.selDoc.selectedLayer, paletteOffset, 
-					paletteShift, name, numFrom, numStyle0));
+			const int paletteOffset = checkBox_palImport.isChecked ? to!int(textBox_palOffset.getText.text) : -1;
+			
+			editor.selDoc.events.addToTop(new AddTileSheetEvent(source, editor.selDoc, editor.selDoc.selectedLayer, 
+					paletteOffset, paletteShift, name, numFrom, numStyle0));
 			editor.selDoc.updateMaterialList;
+			
 			this.close;
 		} else {
 			handler.message("Error!"d, "Numbering style must be specified in this case!");
