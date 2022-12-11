@@ -6,7 +6,7 @@ import pixelperfectengine.map.mapformat;
 import app;
 
 import std.utf : toUTF32, toUTF8;
-import pixelperfectengine.system.etc : intToHex;
+import pixelperfectengine.system.etc : intToHex, clamp;
 
 /**
  * Preliminary, future version will feature material selection with images.
@@ -83,8 +83,9 @@ public class MaterialList : Window {
 		output.reserve = list.length;+/
 		listView_materials.clear;
 		foreach (item ; list) {
-			ListViewItem f = new ListViewItem(16, [intToHex!dstring(item.id, 4) ~ "h", toUTF32(item.name)]);
-			f[1].editable = true;
+			ListViewItem f = new ListViewItem(16, [intToHex!dstring(item.id, 4) ~ "h", toUTF32(item.name)], 
+					[TextInputFieldType.None, TextInputFieldType.Text]);
+			//f[1].editable = true;
 			listView_materials ~= f;
 		}
 		listView_materials.refresh;
@@ -122,10 +123,12 @@ public class MaterialList : Window {
 		}
 	}
 	public void palUp_onClick(Event ev) {
-		palettePos.setText("0x" ~ intToHex!dstring(prg.selDoc.tileMaterial_PaletteUp, 2));
+		if (prg.selDoc)
+			palettePos.setText("0x" ~ intToHex!dstring(prg.selDoc.tileMaterial_PaletteUp, 2));
 	}
 	public void palDown_onClick(Event ev) {
-		palettePos.setText("0x" ~ intToHex!dstring(prg.selDoc.tileMaterial_PaletteDown, 2));
+		if (prg.selDoc)
+			palettePos.setText("0x" ~ intToHex!dstring(prg.selDoc.tileMaterial_PaletteDown, 2));
 	}
 
 	private void ovrwrtIns_onClick(Event ev) {
@@ -142,14 +145,18 @@ public class MaterialList : Window {
 		prg.selDoc.renameTile(tiles[listView_materials.value].id, newName);
 	}
 	public void nextTile() {
-		listView_materials.value = listView_materials.value + 1;
-		if (listView_materials.value != -1)
-			prg.selDoc.tileMaterial_Select(tiles[listView_materials.value].id);
+		if (prg.selDoc) {
+			listView_materials.value = listView_materials.value + 1;
+			if (listView_materials.value != -1)
+				prg.selDoc.tileMaterial_Select(tiles[listView_materials.value].id);
+		}
 	}
 	public void prevTile() {
-		listView_materials.value = listView_materials.value - 1;
-		if (listView_materials.value != -1)
-			prg.selDoc.tileMaterial_Select(tiles[listView_materials.value].id);
+		if (prg.selDoc) {
+			listView_materials.value = listView_materials.value - 1;
+			if (listView_materials.value != -1)
+				prg.selDoc.tileMaterial_Select(tiles[listView_materials.value].id);
+		}
 	}
 }
 /**

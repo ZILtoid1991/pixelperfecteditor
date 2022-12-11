@@ -29,11 +29,13 @@ public class RasterWindow : Window, PaletteContainer {
 	protected Color* paletteShared;
 	public Color		selColor;		///Selection invert color (red by default)
 	public Color		selArmColor;	///Selection armed color (blue by default)
+	public Color		gridColor;		///Grid color (green by default)
 	protected uint statusFlags;
 	protected static enum MOVE_ARMED = 1 << 0; 		///Redirect mouse events to document
 	protected static enum CLOSE_PROTECT = 1 << 1;
 	protected static enum SELECTION_ARMED = 1 << 2;	///Selection is armed, draw box, and redirect event to document
 	protected static enum SHOW_SELECTION = 1 << 3;	///Shows selection
+	protected static enum DISPLAY_GRID = 1 << 4;	///Displays grid for TileLayers
 	//protected int[] layerList;
 	public int rasterX, rasterY;		///Raster sizes
 	protected dstring documentName;
@@ -78,8 +80,9 @@ public class RasterWindow : Window, PaletteContainer {
 		this.document = document;
 		statusFlags |= CLOSE_PROTECT;
 		modeSel.latchPos(0);
-		selColor = Color(0xff,0x00,0x00,0x00);
-		selArmColor = Color(0x00,0x00,0xff,0x00);
+		selColor = Color(0xff, 0x00, 0x00, 0x00);
+		selArmColor = Color(0x00, 0x00, 0xff, 0x00);
+		gridColor = Color(0x00, 0xFF, 0x00, 0x00);
 	}
 	/**
 	 * Overrides the original getOutput function to return a 32 bit bitmap instead.
@@ -232,9 +235,6 @@ public class RasterWindow : Window, PaletteContainer {
 			document.mainDoc[layerList[i]].updateRaster((trueOutput.getPtr + (17 * trueOutput.width) + 1), trueOutput.width * 4,
 					paletteLocal.ptr);
 		}+/
-		for (int i = 16 ; i < trueOutput.height - 1 ; i++) {
-			helperFunc(trueOutput.getPtr + 1 + trueOutput.width * i, trueOutput.width - 2);
-		}
 		import CPUblit.composing.specblt : xorBlitter;
 		uint* p = cast(uint*)trueOutput.getPtr;
 		if (statusFlags & SELECTION_ARMED) {
@@ -245,6 +245,38 @@ public class RasterWindow : Window, PaletteContainer {
 			for (int y = selection.top + 16 ; y <= selection.bottom + 16 ; y++) {
 				xorBlitter!uint(p + 1 + trueOutput.width * y + selection.left, selection.width, selColor.base);
 			}
+		}
+		if (statusFlags & DISPLAY_GRID) {
+			const int layerSel = document.selectedLayer;
+			Layer l = document.mainDoc.layeroutput[layerSel];
+			if (is(l == ITileLayer)) {
+				ITileLayer itl = cast(ITileLayer)l;
+				//Offset values 1: we don't want to display the portion of the grid, where there's no tilelayer anymore
+				const int beginX = l.getSX < 0 ? l.getSX * -1 : 0, beginY = l.getSY < 0 ? l.getSY * -1 : 0;
+				//Offset values 2: we want our grid to roughly follow the scrolling
+				const int offsetX = beginX == 0 ? itl.getTileWidth - (l.getSX % itl.getTileWidth) : 0, 
+						offsetY = beginY == 0 ? itl.getTileHeight - (l.getSY % itl.getTileHeight) : 0;
+				//Offset values 3: look for the lower-right end of the tilelayer if we can find it on the screen
+				const long endX = itl.getTX + (l.getSX * -1) < rasterX ? itl.getTX + (l.getSX * -1) : rasterX,
+						endY = itl.getTY + (l.getSY * -1) < rasterY ? itl.getTY + (l.getSY * -1) : rasterY;
+				//Draw horizontal lines
+				for (int y = beginY + offsetY ; y < endY ; y+=itl.getTileHeight) {
+					for (int x = beginX ; x < endX ; x++) {
+						//trueOutput.writePixel(x + 1, y + 16, gridColor);
+						trueOutput.getPtr[x + 1 + (trueOutput.width * (y + 16))].base ^= gridColor.base;
+					}
+				}
+				//Draw vertical lines
+				for (int x = beginX + offsetX ; x < endX ; x+=itl.getTileWidth) {
+					for (int y = beginY ; y < endY ; y++) {
+						//trueOutput.writePixel(x + 1, y + 16, gridColor);
+						trueOutput.getPtr[x + 1 + (trueOutput.width * (y + 16))].base ^= gridColor.base;
+					}
+				}
+			}
+		}
+		for (int i = 16 ; i < trueOutput.height - 1 ; i++) {
+			helperFunc(trueOutput.getPtr + 1 + trueOutput.width * i, trueOutput.width - 2);
 		}
 	}
 	/+/**
@@ -339,6 +371,14 @@ public class RasterWindow : Window, PaletteContainer {
 	///Called when the document settings window is needed to be opened.
 	public void onDocSettings(Event ev) {
 
+	}
+	public bool displayGrid() const @nogc @safe pure nothrow {
+		return statusFlags & DISPLAY_GRID ? true : false;
+	}
+	public bool displayGrid(bool val) @nogc @safe pure nothrow {
+		if (val) statusFlags |= DISPLAY_GRID;
+		else statusFlags &= ~DISPLAY_GRID;
+		return statusFlags & DISPLAY_GRID ? true : false;
 	}
 	///Called when any of the modes are selected.
 	public void onModeToggle(Event ev) {

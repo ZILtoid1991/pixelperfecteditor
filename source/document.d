@@ -238,23 +238,28 @@ public class MapDocument : MouseEventReceptor {
 		int x = mce.x, y = mce.y;
 		final switch (mode) with (EditMode) {
 			case tilePlacement:
+				if (selectedLayer !in mainDoc.layeroutput) return;	//Safety protection
+				ITileLayer target = cast(ITileLayer)(mainDoc[selectedLayer]);
+				x = (x + mainDoc[selectedLayer].getSX) / target.getTileWidth;
+				y = (y + mainDoc[selectedLayer].getSY) / target.getTileHeight;
+				//prevMouseX = (prevMouseX + mainDoc[selectedLayer].getSX) / target.getTileWidth;
+				//prevMouseY = (prevMouseY + mainDoc[selectedLayer].getSY) / target.getTileHeight;
 				switch (mce.button) {
 					case MouseButton.Left:			//Tile placement
 						//Record the first cursor position upon mouse button press, then initialize either a single or zone write for the selected tile layer.
-						if (selectedLayer !in mainDoc.layeroutput) return;	//Safety protection
 						if (mce.state) {
 							prevMouseX = x;
 							prevMouseY = y;
 							flags |= PLACEMENT;
 						} else if (flags & PLACEMENT) {
 							flags &= ~PLACEMENT;
-							ITileLayer target = cast(ITileLayer)(mainDoc[selectedLayer]);
+							/* ITileLayer target = cast(ITileLayer)(mainDoc[selectedLayer]);
 							const int tileWidth = target.getTileWidth, tileHeight = target.getTileHeight;
 							const int hScroll = mainDoc[selectedLayer].getSX, vScroll = mainDoc[selectedLayer].getSX;
 							x = (x + hScroll) / tileWidth;
 							y = (y + vScroll) / tileHeight;
 							prevMouseX = (prevMouseX + hScroll) / tileWidth;
-							prevMouseY = (prevMouseY + vScroll) / tileHeight;
+							prevMouseY = (prevMouseY + vScroll) / tileHeight; */
 							Box c;
 							
 							if (x > prevMouseX){
@@ -298,11 +303,6 @@ public class MapDocument : MouseEventReceptor {
 							flags |= PLACEMENT;
 						} else if (flags & PLACEMENT) {
 							flags &= ~PLACEMENT;
-							ITileLayer target = cast(ITileLayer)(mainDoc[selectedLayer]);
-							x = (x + mainDoc[selectedLayer].getSX) / target.getTileWidth;
-							y = (y + mainDoc[selectedLayer].getSY) / target.getTileHeight;
-							prevMouseX = (prevMouseX + mainDoc[selectedLayer].getSX) / target.getTileWidth;
-							prevMouseY = (prevMouseY + mainDoc[selectedLayer].getSY) / target.getTileHeight;
 
 							Box c;
 

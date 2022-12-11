@@ -6,6 +6,7 @@ import std.utf : toUTF32, toUTF8;
 import std.conv : to;
 import pixelperfectengine.graphics.layers;
 import pixelperfectengine.map.mapformat : LayerInfo;
+import pixelperfectengine.system.etc : clamp;
 
 public class LayerList : Window {
 	//ListBox listBox_layers;
@@ -148,10 +149,11 @@ public class LayerList : Window {
 		listView_layers.clear();
 		foreach (i ; items) {
 			//list ~= new ListViewItem(16, [to!dstring(i.pri), to!dstring(i.type), toUTF32(i.name)]);
-			ListViewItem lvi = new ListViewItem(16, [to!dstring(i.pri), to!dstring(i.type), toUTF32(i.name)]);
-			lvi[0].editable = true;
+			ListViewItem lvi = new ListViewItem(16, [to!dstring(i.pri), to!dstring(i.type), toUTF32(i.name)], 
+					[TextInputFieldType.Integer, TextInputFieldType.None, TextInputFieldType.Text]);
+			/* lvi[0].editable = true;
 			lvi[0].integer = true;
-			lvi[2].editable = true;
+			lvi[2].editable = true; */
 			listView_layers ~= lvi;
 		}
 		listView_layers.refresh;
@@ -176,7 +178,9 @@ public class LayerList : Window {
 	}
 	public void nextLayer() {
 		if (prg.selDoc !is null) {
-			listView_layers.value = listView_layers.value + 1;
+			int val = listView_layers.value + 1;
+			clamp(val, 0, cast(int)prg.selDoc.layerList.length);
+			listView_layers.value = val;
 			const int selectedLayer = to!int(listView_layers[listView_layers.value][0].text.text);
 			prg.selDoc.selectedLayer = selectedLayer;
 			prg.selDoc.updateMaterialList();
@@ -192,7 +196,9 @@ public class LayerList : Window {
 	}
 	public void prevLayer() {
 		if (prg.selDoc !is null) {
-			listView_layers.value = listView_layers.value - 1;
+			int val = listView_layers.value - 1;
+			clamp(val, 0, cast(int)prg.selDoc.layerList.length);
+			listView_layers.value = val;
 			const int selectedLayer = to!int(listView_layers[listView_layers.value][0].text.text);
 			prg.selDoc.selectedLayer = selectedLayer;
 			prg.selDoc.updateMaterialList();

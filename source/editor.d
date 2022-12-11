@@ -9,12 +9,9 @@ module editor;
 import pixelperfectengine.graphics.outputscreen;
 import pixelperfectengine.graphics.raster;
 import pixelperfectengine.graphics.layers;
-import pixelperfectengine.graphics.paletteman;
-//import pixelperfectengine.extbmp.extbmp;
 
 import pixelperfectengine.graphics.bitmap;
 import pixelperfectengine.graphics.draw;
-//import collision;
 import pixelperfectengine.system.input;
 import pixelperfectengine.system.file;
 import pixelperfectengine.system.etc;
@@ -23,14 +20,12 @@ import pixelperfectengine.system.systemutility;
 import std.stdio;
 import std.conv;
 import core.stdc.string : memcpy;
-//import derelict.sdl2.sdl;
 import bindbc.sdl;
 import pixelperfectengine.concrete.window;
 import pixelperfectengine.concrete.eventchainsystem;
 import pixelperfectengine.map.mapformat;
 import pixelperfectengine.system.timer;
 
-//import converterdialog;
 import windows.resizemap;
 import windows.about;
 import editorevents;
