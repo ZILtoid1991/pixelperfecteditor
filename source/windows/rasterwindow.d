@@ -12,6 +12,7 @@ import CPUblit.composing;
 static import CPUblit.draw;
 import CPUblit.colorlookup;
 import pixelperfectengine.system.input.types : MouseButton, ButtonState;
+import pixelperfectengine.system.etc : isInterface;
 import collections.sortedlist;
 
 import document;
@@ -249,31 +250,31 @@ public class RasterWindow : Window, PaletteContainer {
 		if (statusFlags & DISPLAY_GRID) {
 			const int layerSel = document.selectedLayer;
 			Layer l = document.mainDoc.layeroutput[layerSel];
-			if (is(l == ITileLayer)) {
-				ITileLayer itl = cast(ITileLayer)l;
-				//Offset values 1: we don't want to display the portion of the grid, where there's no tilelayer anymore
-				const int beginX = l.getSX < 0 ? l.getSX * -1 : 0, beginY = l.getSY < 0 ? l.getSY * -1 : 0;
-				//Offset values 2: we want our grid to roughly follow the scrolling
-				const int offsetX = beginX == 0 ? itl.getTileWidth - (l.getSX % itl.getTileWidth) : 0, 
-						offsetY = beginY == 0 ? itl.getTileHeight - (l.getSY % itl.getTileHeight) : 0;
-				//Offset values 3: look for the lower-right end of the tilelayer if we can find it on the screen
-				const long endX = itl.getTX + (l.getSX * -1) < rasterX ? itl.getTX + (l.getSX * -1) : rasterX,
-						endY = itl.getTY + (l.getSY * -1) < rasterY ? itl.getTY + (l.getSY * -1) : rasterY;
-				//Draw horizontal lines
-				for (int y = beginY + offsetY ; y < endY ; y+=itl.getTileHeight) {
-					for (int x = beginX ; x < endX ; x++) {
-						//trueOutput.writePixel(x + 1, y + 16, gridColor);
-						trueOutput.getPtr[x + 1 + (trueOutput.width * (y + 16))].base ^= gridColor.base;
-					}
-				}
-				//Draw vertical lines
-				for (int x = beginX + offsetX ; x < endX ; x+=itl.getTileWidth) {
-					for (int y = beginY ; y < endY ; y++) {
-						//trueOutput.writePixel(x + 1, y + 16, gridColor);
-						trueOutput.getPtr[x + 1 + (trueOutput.width * (y + 16))].base ^= gridColor.base;
-					}
+			//if (is(l : ITileLayer)) {
+			ITileLayer itl = cast(ITileLayer)l;
+			//Offset values 1: we don't want to display the portion of the grid, where there's no tilelayer anymore
+			const int beginX = l.getSX < 0 ? l.getSX * -1 : 0, beginY = l.getSY < 0 ? l.getSY * -1 : 0;
+			//Offset values 2: we want our grid to roughly follow the scrolling
+			const int offsetX = beginX == 0 ? itl.getTileWidth - (l.getSX % itl.getTileWidth) : 0, 
+					offsetY = beginY == 0 ? itl.getTileHeight - (l.getSY % itl.getTileHeight) : 0;
+			//Offset values 3: look for the lower-right end of the tilelayer if we can find it on the screen
+			const long endX = itl.getTX + (l.getSX * -1) < rasterX ? itl.getTX + (l.getSX * -1) : rasterX,
+					endY = itl.getTY + (l.getSY * -1) < rasterY ? itl.getTY + (l.getSY * -1) : rasterY;
+			//Draw horizontal lines
+			for (int y = beginY + offsetY ; y < endY ; y+=itl.getTileHeight) {
+				for (int x = beginX ; x < endX ; x++) {
+					//trueOutput.writePixel(x + 1, y + 16, gridColor);
+					trueOutput.getPtr[x + 1 + (trueOutput.width * (y + 16))].base ^= gridColor.base;
 				}
 			}
+			//Draw vertical lines
+			for (int x = beginX + offsetX ; x < endX ; x+=itl.getTileWidth) {
+				for (int y = beginY ; y < endY ; y++) {
+					//trueOutput.writePixel(x + 1, y + 16, gridColor);
+					trueOutput.getPtr[x + 1 + (trueOutput.width * (y + 16))].base ^= gridColor.base;
+				}
+			}
+			//}
 		}
 		for (int i = 16 ; i < trueOutput.height - 1 ; i++) {
 			helperFunc(trueOutput.getPtr + 1 + trueOutput.width * i, trueOutput.width - 2);

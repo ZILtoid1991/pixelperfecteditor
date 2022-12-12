@@ -64,6 +64,7 @@ input {
         "selFlipVert" name="k" keyModIgnore="NumLock;CapsLock"
         "selMirrorHoriz" name="j" keyMod="Shift" keyModIgnore="NumLock;CapsLock"
         "selMirrorVert" name="k" keyMod="Shift" keyModIgnore="NumLock;CapsLock"
+        "displayGrid" name="g" keyMod="Shift" keyModIgnore="NumLock;CapsLock"
         "insert" name="insert" keyModIgnore="NumLock;CapsLock"
         "delArea" name="delete" keyModIgnore="NumLock;CapsLock"
         "palUp" name="npPlus" keyModIgnore="NumLock;CapsLock"

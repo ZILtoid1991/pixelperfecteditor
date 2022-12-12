@@ -453,6 +453,9 @@ public class Editor : InputListener, SystemEventListener {
 					import windows.bmfonttoolkit;
 					wh.addWindow(new BMFontToolkit());
 					break;
+				case "viewgrid":
+					onGridToggle();
+					break;
 				default:
 					break;
 			}
@@ -723,6 +726,10 @@ public class Editor : InputListener, SystemEventListener {
 						layerList.checkBox_Solo.toggle();
 				}
 				break;
+			case hashCalc("displayGrid"):
+				if (!isPressed)
+					onGridToggle();
+				break;
 			default:
 				break;
 		}
@@ -829,7 +836,11 @@ public class Editor : InputListener, SystemEventListener {
 			selDoc.paste();
 		}
 	}
-	
+	public void onGridToggle() {
+		if (selDoc !is null) {
+			selDoc.outputWindow.displayGrid = !selDoc.outputWindow.displayGrid;
+		}
+	}
 	public void onQuit(){onExit();}
 	public void controllerRemoved(uint ID){}
 	public void controllerAdded(uint ID){}
