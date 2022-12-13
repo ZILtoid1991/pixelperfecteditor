@@ -28,7 +28,7 @@ public class MaterialList : Window {
 	protected ListViewHeader tileListHeader;
 	protected ListViewHeader spriteListHeader;
 	public this(int x, int y, void delegate() onClose) @trusted {
-		super(Coordinate(x, y, x + 129, y + 249), "Materials"d);
+		super(Box(x, y, x + 129, y + 249), "Materials"d);
 		this.onClose = onClose;
 		StyleSheet ss = getStyleSheet();
 		/+listBox_materials = new ListBox("listBox0", Coordinate(1, 17, 129, 218), [], new ListBoxHeader(tileListHeaderS.dup,
