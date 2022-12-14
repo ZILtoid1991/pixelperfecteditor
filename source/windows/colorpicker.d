@@ -1,6 +1,8 @@
 module windows.colorpicker;
 
 import pixelperfectengine.concrete.popup.base;
+import inteli.emmintrin;
+import std.math;
 
 /** 
  * Draws a line using a fixed point method. Is capable of drawing lines diagonally.
@@ -54,9 +56,20 @@ public void drawLine(T)(int x0, int y0, int x1, int y1, T color, T[] dest, size_
 	}
 }
 
+public __m128d interpolateCircle(__m128d sizes, __m128d center, double t) @nogc @safe pure nothrow {
+	__m128d result;
+	result[0] = sin(2*PI*t);
+	result[1] = cos(2*PI*t);
+	result *= sizes;
+	result += center;
+	return result;
+}
+
 public class ColorPicker : PopUpElement {
     Bitmap32Bit trueOutput;
     override public void draw() {
-        
+        for (double d = 0 ; d <= 1 ; d+=1/(64*64*PI)) {
+			//Color c = Color();
+		}
     }
 }

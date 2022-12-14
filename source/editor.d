@@ -31,6 +31,7 @@ import windows.about;
 import editorevents;
 public import windows.layerlist;
 public import windows.materiallist;
+public import windows.objectlist;
 import document;
 import windows.rasterwindow;
 import windows.newtilelayer;
@@ -114,7 +115,7 @@ public class TopLevelWindow : Window {
 			menuElements[2] ~= new PopUpMenuElement("layerList", "Layers");
 			menuElements[2] ~= new PopUpMenuElement("materialList", "Materials");
 			menuElements[2] ~= new PopUpMenuElement("viewgrid", "Grid");
-			menuElements[2] ~= new PopUpMenuElement("viewobj", "Objects");
+			menuElements[2] ~= new PopUpMenuElement("objlist", "Objects");
 			menuElements[2] ~= new PopUpMenuElement("resetLayers", "Reset layer display");
 			//menuElements[2][2] = new PopUpMenuElement("layerTools", "Layer tools", "Alt + T");
 
@@ -217,16 +218,11 @@ public class Editor : InputListener, SystemEventListener {
 	public bool onexit, exitDialog, newLayerDialog, mouseState, rasterRefresh;
 	public Window test;
 	public WindowHandler wh;
-	//public EffectLayer selectionLayer;
-	//public ForceFeedbackHandler ffb;
-	//private uint[5] framecounter;
-	public char[40] windowTitle;
+	
 	public ConfigurationProfile configFile;
 	private int mouseX, mouseY;
 	private Coordinate selection, selectedTiles;
-	//public PlacementMode pm;
-	//public UndoableStack undoStack;
-	//public PaletteManager palman;
+	
 	public MapDocument[dstring] documents;
 	public MapDocument selDoc;
 	public LayerList layerList;
@@ -394,6 +390,9 @@ public class Editor : InputListener, SystemEventListener {
 					break;
 				case "materialList":
 					openMaterialList();
+					break;
+				case "objList":
+					openObjectList();
 					break;
 				case "tiledcsvi":
 					if (selDoc) {
@@ -945,5 +944,11 @@ public class Editor : InputListener, SystemEventListener {
 	}
 	private void onMaterialListClosed() {
 		materialList = null;
+	}
+	public void openObjectList() {
+		
+	}
+	private void onObjectListClosed() {
+
 	}
 }
