@@ -67,9 +67,36 @@ public __m128d interpolateCircle(__m128d sizes, __m128d center, double t) @nogc 
 
 public class ColorPicker : PopUpElement {
     Bitmap32Bit trueOutput;
+	double hue;
     override public void draw() {
         for (double d = 0 ; d <= 1 ; d+=1/(64*64*PI)) {
-			//Color c = Color();
+			Color col = Color(0, 0, 0, 1.0);
+			const double h = d * 6;
+			immutable double c = 1.0;
+			const double x = c * (c - abs(fmod(h, 2) - c));
+			if (h >= 0 && h < 1) {
+				col.fR = c;
+				col.fG = x;
+			} else if (h >= 1 && h < 2) {
+				col.fR = x;
+				col.fG = c;
+			} else if (h >= 2 && h < 3) {
+				col.fG = c;
+				col.fB = x;
+			} else if (h >= 3 && h < 4) {
+				col.fG = x;
+				col.fB = c;
+			} else if (h >= 4 && h < 5) {
+				col.fB = c;
+				col.fR = x;
+			} else if (h >= 5 && h < 6) {
+				col.fB = x;
+				col.fR = c;
+			}
+			__m128d inner = interpolateCircle(__m128d(96.0), __m128d(64.5), d),
+					outer = interpolateCircle(__m128d(128.0), __m128d(64.5), d);
+			drawLine(cast(int)outer[0], cast(int)outer[1], cast(int)inner[0], cast(int)inner[1], col, trueOutput.pixels, 
+					trueOutput.width);
 		}
     }
 }
