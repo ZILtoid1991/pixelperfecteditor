@@ -227,6 +227,7 @@ public class Editor : InputListener, SystemEventListener {
 	public MapDocument selDoc;
 	public LayerList layerList;
 	public MaterialList materialList;
+	public ObjectList objectList;
 	public MapClipboard mapClipboard;
 	
 	public this(string[] args){
@@ -324,7 +325,25 @@ public class Editor : InputListener, SystemEventListener {
 			globalDefaultStyle.setImage(customGUIElems[14], "soloButtonA");
 			globalDefaultStyle.setImage(customGUIElems[15], "soloButtonB");
 		}
-
+		{
+			Bitmap8Bit[] customGUIElems = loadBitmapSheetFromFile!Bitmap8Bit("../system/concreteGUIE6.tga", 16, 16);
+			globalDefaultStyle.setImage(customGUIElems[0], "colorPickerA");
+			globalDefaultStyle.setImage(customGUIElems[1], "colorPickerB");
+			globalDefaultStyle.setImage(customGUIElems[2], "addBoxObjectA");
+			globalDefaultStyle.setImage(customGUIElems[3], "addBoxObjectB");
+			globalDefaultStyle.setImage(customGUIElems[4], "addPolylineObjectA");
+			globalDefaultStyle.setImage(customGUIElems[5], "addPolylineObjectB");
+			globalDefaultStyle.setImage(customGUIElems[6], "addCompositeTileObjectA");
+			globalDefaultStyle.setImage(customGUIElems[7], "addCompositeTileObjectB");
+			globalDefaultStyle.setImage(customGUIElems[8], "addSpriteObjectA");
+			globalDefaultStyle.setImage(customGUIElems[9], "addSpriteObjectB");
+			globalDefaultStyle.setImage(customGUIElems[10], "drawCompositeTileObjectA");
+			globalDefaultStyle.setImage(customGUIElems[11], "drawCompositeTileObjectB");
+			//globalDefaultStyle.setImage(customGUIElems[12], "importMaterialDataButtonA");
+			//globalDefaultStyle.setImage(customGUIElems[13], "importMaterialDataButtonB");
+			//globalDefaultStyle.setImage(customGUIElems[14], "paletteButtonA");
+			//globalDefaultStyle.setImage(customGUIElems[15], "paletteButtonB");
+		}
 		//wh.initGUI();
 
 		input = new InputHandler();
@@ -351,6 +370,7 @@ public class Editor : InputListener, SystemEventListener {
 		mapClipboard = new MapClipboard(10);
 		openMaterialList();
 		openLayerList();
+		openObjectList();
 	}
 	public void menuEvent(Event ev) {
 		if (ev.type == EventType.Menu){
@@ -946,9 +966,12 @@ public class Editor : InputListener, SystemEventListener {
 		materialList = null;
 	}
 	public void openObjectList() {
-		
+		if (!objectList) {
+			objectList = new ObjectList(130, 16, &onObjectListClosed);
+			wh.addWindow(objectList);
+		}
 	}
 	private void onObjectListClosed() {
-
+		objectList = null;
 	}
 }

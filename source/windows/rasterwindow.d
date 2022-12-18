@@ -25,6 +25,7 @@ public class RasterWindow : Window, PaletteContainer {
 	alias DisplayList = SortedList!(int, "a < b", false);
 	public DisplayList	hiddenLayers;	///List of hidden layers
 	public DisplayList	soloedLayers;	///List of soloed layers
+	public Text			statusBar;
 	protected Bitmap32Bit trueOutput, rasterOutput;
 	protected Color[] paletteLocal;
 	protected Color* paletteShared;
@@ -50,8 +51,8 @@ public class RasterWindow : Window, PaletteContainer {
 	public this(int x, int y, Color* paletteShared, dstring documentName, MapDocument document){
 		rasterX = x;
 		rasterY = y;
-		trueOutput = new Bitmap32Bit(x + 2,y + 18);
-		rasterOutput = new Bitmap32Bit(x + 2, y + 18);
+		trueOutput = new Bitmap32Bit(x + 2,y + 18 + 16);
+		rasterOutput = new Bitmap32Bit(x + 2, y + 18 + 16);
 		ISmallButton[] smallButtons;
 		const int windowHeaderHeight = getStyleSheet.drawParameters["WindowHeaderHeight"] - 1;
 		modeSel = new RadioButtonGroup();
@@ -66,12 +67,12 @@ public class RasterWindow : Window, PaletteContainer {
 				Box(0, 0, windowHeaderHeight, windowHeaderHeight), modeSel);
 		smallButtons ~= new RadioButton("objPlacementButtonB", "objPlacementButtonA", "obj", 
 				Box(0, 0, windowHeaderHeight, windowHeaderHeight), modeSel);
-		smallButtons ~= new RadioButton("sprtPlacementButtonB", "sprtPlacementButtonA", "sprt", 
-				Box(0, 0, windowHeaderHeight, windowHeaderHeight), modeSel);
+		/+smallButtons ~= new RadioButton("sprtPlacementButtonB", "sprtPlacementButtonA", "sprt", 
+				Box(0, 0, windowHeaderHeight, windowHeaderHeight), modeSel);+/
 		modeSel.onToggle = &onModeToggle;
 
 		//smallButtons ~= new SmallButton("settingsButtonB", "settingsButtonA", "settings", Box(0, 0, 16, 16));
-		super(Box(0, 0, x + 1, y + 17), documentName, smallButtons);
+		super(Box(0, 0, x + 1, y + 17 + 16), documentName, smallButtons);
 		foreach (ISmallButton key; smallButtons) {
 			WindowElement we = cast(WindowElement)key;
 			we.onDraw = &clrLookup;
@@ -188,7 +189,10 @@ public class RasterWindow : Window, PaletteContainer {
 			trueOutput = new Bitmap32Bit(position.width(), position.height());
 			rasterOutput = new Bitmap32Bit(position.width() - 2, position.height() - 18);
 		}
-
+		//draw status bar
+		if (statusBar) {
+			output.drawSingleLineText(Box.bySize(1, 16 + rasterY, rasterX, 16), statusBar);
+		}
 		drawHeader();
 		clrLookup();
 		updateRaster();
@@ -388,7 +392,7 @@ public class RasterWindow : Window, PaletteContainer {
 				document.mode = MapDocument.EditMode.tilePlacement;
 				break;
 			case "obj":
-				document.mode = MapDocument.EditMode.boxPlacement;
+				document.mode = MapDocument.EditMode.objectPlacement;
 				break;
 			case "sprt":
 				document.mode = MapDocument.EditMode.spritePlacement;

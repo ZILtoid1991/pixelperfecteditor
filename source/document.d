@@ -25,7 +25,9 @@ public class MapDocument : MouseEventReceptor {
 	public enum EditMode {
 		selectDragScroll,
 		tilePlacement,
-		boxPlacement,
+		objectPlacement,
+		boxObjectPlacement,
+		polylineObjectPlacement,
 		spritePlacement,
 	}
 	UndoableStack		events;		///Per document event stack
@@ -414,10 +416,23 @@ public class MapDocument : MouseEventReceptor {
 						break;
 				}
 				break;
-			case boxPlacement:
+			case boxObjectPlacement:
+				switch (mce.button) {
+					case MouseButton.Left:
+
+						break;
+					default:
+						break;
+				}
+				break;
+			case polylineObjectPlacement:
 				break;
 			case spritePlacement:
 				break;
+			case objectPlacement:
+				break;
+			/*case spritePlacement:
+				break; */
 		}
 	}
 	
@@ -456,9 +471,13 @@ public class MapDocument : MouseEventReceptor {
 				break;
 			case tilePlacement:
 				break;
-			case boxPlacement:
+			case boxObjectPlacement:
+				break;
+			case polylineObjectPlacement:
 				break;
 			case spritePlacement:
+				break;
+			case objectPlacement:
 				break;
 		}
 	}
@@ -715,8 +734,8 @@ public class MapDocument : MouseEventReceptor {
 	public void assignImportedTilemap(MappingElement[] map, int w, int h) {
 		if (getLayerInfo(selectedLayer).type == LayerType.Tile || 
 				getLayerInfo(selectedLayer).type == LayerType.TransformableTile) {
-			events.addToTop(new ImportLayerData(cast(ITileLayer)mainDoc.layeroutput[selectedLayer], mainDoc.layerData[selectedLayer], map, w, 
-					h));
+			events.addToTop(new ImportLayerData(cast(ITileLayer)mainDoc.layeroutput[selectedLayer], 
+					mainDoc.layerData[selectedLayer], map, w, h));
 		}
 	}
 }
