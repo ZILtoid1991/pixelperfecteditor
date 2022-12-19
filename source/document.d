@@ -15,6 +15,7 @@ import pixelperfectengine.graphics.layers;
 import pixelperfectengine.system.input : MouseButton, ButtonState, MouseClickEvent, MouseMotionEvent, MouseWheelEvent, 
 		MouseEventCommons, MouseButtonFlags;
 import std.stdio;
+static import mapobject;
 
 import app;
 ///Individual document for parallel editing
@@ -25,16 +26,15 @@ public class MapDocument : MouseEventReceptor {
 	public enum EditMode {
 		selectDragScroll,
 		tilePlacement,
-		objectPlacement,
-		boxObjectPlacement,
-		polylineObjectPlacement,
-		spritePlacement,
+		objectMode,
 	}
 	UndoableStack		events;		///Per document event stack
 	MapFormat			mainDoc;	///Used to reduce duplicate data as much as possible
 	//ABitmap[] delegate() imageReturnFunc;
 	Color[] delegate(MapDocument sender) paletteReturnFunc;	///Used for adding the palette for the document
 	int					selectedLayer;	///Indicates the currently selected layer
+	mapobject.MapObject[]	selLayerObjects;///Contains the display data of the currently selected layer's objects (if any)
+	int					selObject;		///Selected object number
 	Box					mapSelection;	///Contains the selected map area parameters
 	Box					areaSelection;	///Contains the selected layer area parameters in pixels
 	RasterWindow		outputWindow;	///Window used to output the screen data
@@ -51,6 +51,7 @@ public class MapDocument : MouseEventReceptor {
 	protected static enum	LAYER_SCROLL = 1<<1;///If set, then layer is being scrolled.
 	protected static enum	PLACEMENT = 1<<2;	///To solve some "debounce" issues around mouse click releases
 	protected static enum	DISPL_SELECTION = 1<<3;	///If set, then selection is shown
+	protected static enum	BOXOBJECT_ARMED = 1<<4;	///If set, BoxObject placement is armed.
 	protected MappingElement	selectedMappingElement;	///Currently selected mapping element to write, including mirroring properties, palette selection, and priority attributes
 	//public bool			voidfill;		///If true, tilePlacement overrides only transparent (0xFFFF) tiles.
 	/**
@@ -193,9 +194,36 @@ public class MapDocument : MouseEventReceptor {
 			//prg.wh.layerlist
 		}
 	}
+	public void updateObjectList() {
+		import sdlang;
+		Tag t00 = mainDoc.layerData[selectedLayer];
+		if (t00 !is null) {
+			try {
+				foreach (Tag t0 ; t00.namespaces["Object"].tags) {
+					switch (t0.name) {	//No sprites, since that is being taken care by the layer
+						case "Box":
+							BoxObject bo = new BoxObject(t0, selectedLayer);
+							Tag t1 = t0.expectTag("color");
+							bo.color = Color(t1.values[0].coerce!float(), t1.values[1].coerce!float(), t1.values[2].coerce!float(), 1.0);
+							mapobject.BoxObjectDrawer bod = new mapobject.BoxObjectDrawer(bo);
+							selLayerObjects ~= bod;
+							break;
+						default:
+							break;
+					}
+				}
+			} catch (Exception e) {
+
+			}
+		}
+	}
 	public void onSelection () {
 		updateLayerList;
 		updateMaterialList;
+		updateObjectList;
+	}
+	public void armBoxPlacement() {
+		flags |= BOXOBJECT_ARMED;
 	}
 	public void tileMaterial_FlipHorizontal(bool pos) {
 		selectedMappingElement.attributes.horizMirror = pos;
@@ -242,6 +270,7 @@ public class MapDocument : MouseEventReceptor {
 			case tilePlacement:
 				if (selectedLayer !in mainDoc.layeroutput) return;	//Safety protection
 				ITileLayer target = cast(ITileLayer)(mainDoc[selectedLayer]);
+				if (target is null) return;
 				x = (x + mainDoc[selectedLayer].getSX) / target.getTileWidth;
 				y = (y + mainDoc[selectedLayer].getSY) / target.getTileHeight;
 				//prevMouseX = (prevMouseX + mainDoc[selectedLayer].getSX) / target.getTileWidth;
@@ -416,21 +445,31 @@ public class MapDocument : MouseEventReceptor {
 						break;
 				}
 				break;
-			case boxObjectPlacement:
-				switch (mce.button) {
-					case MouseButton.Left:
+			case objectMode:
+				if (flags & BOXOBJECT_ARMED) {
+					switch (mce.button) {
+						case MouseButton.Left:	//object placement
+							if (selectedLayer !in mainDoc.layeroutput) return;
+							Layer target = mainDoc.layeroutput[selectedLayer];
+							int scrollX = target.getSX(), scrollY = target.getSY();
+							if (mce.state) {
+								prevMouseX = scrollX + mce.x;
+								prevMouseY = scrollY + mce.y;
+							} else {
 
-						break;
-					default:
-						break;
+							}
+							break;
+						default:
+							break;
+					}
+				} else {
+					//object selection/etc.
+					switch (mce.button) {
+						default:
+							break;
+					}
 				}
-				break;
-			case polylineObjectPlacement:
-				break;
-			case spritePlacement:
-				break;
-			case objectPlacement:
-				break;
+				//navigation (shared with most submodes)
 			/*case spritePlacement:
 				break; */
 		}
@@ -471,13 +510,7 @@ public class MapDocument : MouseEventReceptor {
 				break;
 			case tilePlacement:
 				break;
-			case boxObjectPlacement:
-				break;
-			case polylineObjectPlacement:
-				break;
-			case spritePlacement:
-				break;
-			case objectPlacement:
+			case objectMode:
 				break;
 		}
 	}

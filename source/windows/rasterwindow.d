@@ -14,6 +14,7 @@ import CPUblit.colorlookup;
 import pixelperfectengine.system.input.types : MouseButton, ButtonState;
 import pixelperfectengine.system.etc : isInterface;
 import collections.sortedlist;
+static import mapobject;
 
 import document;
 debug import std.stdio;
@@ -232,8 +233,12 @@ public class RasterWindow : Window, PaletteContainer {
 		}
 		//update each layer individually
 		foreach (int i, Layer l ; document.mainDoc.layeroutput) {
-			if ((i !in hiddenLayers && !soloedLayers.length) || (i in soloedLayers && soloedLayers.length))
+			if ((i !in hiddenLayers && !soloedLayers.length) || (i in soloedLayers && soloedLayers.length)) {
 				l.updateRaster((trueOutput.getPtr + (17 * trueOutput.width) + 1), trueOutput.width * 4, paletteLocal.ptr);
+				if (document.selectedLayer == i) {
+					//document.selLaye
+				}
+			}
 		}
 		/+for(int i ; i < layerList.length ; i++){
 			//document.mainDoc[layerList[i]].updateRaster(rasterOutput.getPtr, rasterX * 4, paletteLocal.ptr);
@@ -392,11 +397,11 @@ public class RasterWindow : Window, PaletteContainer {
 				document.mode = MapDocument.EditMode.tilePlacement;
 				break;
 			case "obj":
-				document.mode = MapDocument.EditMode.objectPlacement;
+				document.mode = MapDocument.EditMode.objectMode;
 				break;
-			case "sprt":
+			/* case "sprt":
 				document.mode = MapDocument.EditMode.spritePlacement;
-				break;
+				break; */
 			default:
 				document.mode = MapDocument.EditMode.selectDragScroll;
 				break;

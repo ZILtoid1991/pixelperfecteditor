@@ -889,3 +889,58 @@ public class ImportLayerData : UndoableEvent {
 		target.loadMapping(buw, buh, backup);
 	}
 }
+public class BoxObjectPlacementEvent : UndoableEvent {
+
+
+	public void redo() {
+		
+	}
+
+	public void undo() {
+		
+	}
+}
+public class BoxObjectRemovalEvent : UndoableEvent {
+
+
+	public void redo() {
+		
+	}
+
+	public void undo() {
+		
+	}
+}
+public class ObjectPropertyAddEvent : UndoableEvent {
+
+
+	public void redo() {
+		
+	}
+
+	public void undo() {
+		
+	}
+}
+public class ObjectPropertyEditEvent : UndoableEvent {
+
+
+	public void redo() {
+		
+	}
+
+	public void undo() {
+		
+	}
+}
+public class ObjectPropertyRemoveEvent : UndoableEvent {
+
+
+	public void redo() {
+		
+	}
+
+	public void undo() {
+		
+	}
+}

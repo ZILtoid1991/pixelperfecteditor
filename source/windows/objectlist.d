@@ -81,6 +81,9 @@ public class ObjectList : Window {
 		Box b = getAbsolutePosition(cast(WindowElement)ev.sender);
 		handler.addPopUpElement(new ColorPicker(&colorPicker_onSelect, Color.init), b.left - 129, b.top - 129);
 	}
+	protected void button_addBoxObject(Event ev) {
+		
+	}
 	protected void colorPicker_onSelect(Color c) {
 
 	}
