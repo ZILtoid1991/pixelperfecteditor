@@ -1,4 +1,4 @@
-module boxobject;
+module mapobject;
 
 import pixelperfectengine.graphics.common;
 import pixelperfectengine.graphics.text;
@@ -10,10 +10,15 @@ import pixelperfectengine.system.etc : min, max, clamp;
 import CPUblit.composing.copy;
 import CPUblit.colorlookup;
 
+
+public interface MapObject {
+	public void draw(Color[] dest, int sX, int sY, int rW, int rH, const int offsetX, const int pitch);
+	public bool isOnDisplay(int sX, int sY, int rW, int rH);
+}
 /** 
  * Implements box object display data.
  */
-public class BoxObjectDrawer {
+public class BoxObjectDrawer : MapObject {
 	BoxObject	base;
 	/// Contains the generated text from the name of the object.
 	Bitmap32Bit	text;
