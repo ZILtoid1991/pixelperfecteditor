@@ -221,7 +221,7 @@ public class Editor : InputListener, SystemEventListener {
 	
 	public ConfigurationProfile configFile;
 	private int mouseX, mouseY;
-	private Coordinate selection, selectedTiles;
+	//private Coordinate selection, selectedTiles;
 	
 	public MapDocument[dstring] documents;
 	public MapDocument selDoc;
@@ -344,6 +344,8 @@ public class Editor : InputListener, SystemEventListener {
 			//globalDefaultStyle.setImage(customGUIElems[14], "paletteButtonA");
 			//globalDefaultStyle.setImage(customGUIElems[15], "paletteButtonB");
 		}
+		globalDefaultStyle.addChrFormatting(
+				new CharacterFormattingInfo!Bitmap8Bit(globalDefaultStyle.getFontset("fixedWidth"), 0x1f, 0, 0, 16, 2), "statusbar");
 		//wh.initGUI();
 
 		input = new InputHandler();

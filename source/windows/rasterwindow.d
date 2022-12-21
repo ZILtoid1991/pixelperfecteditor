@@ -183,6 +183,10 @@ public class RasterWindow : Window, PaletteContainer {
 			colorLookup(output.output.getPtr + (y * position.width), trueOutput.getPtr + (y * position.width), paletteShared,
 					position.width);
 		}
+		for(int y = trueOutput.height - 17 ; y < trueOutput.height ; y++) {
+			colorLookup(output.output.getPtr + (y * position.width), trueOutput.getPtr + (y * position.width), paletteShared,
+					position.width);
+		}
 	}
 	public override void draw(bool drawHeaderOnly = false){
 		if(output.output.width != position.width || output.output.height != position.height){

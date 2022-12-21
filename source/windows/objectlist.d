@@ -3,6 +3,7 @@ module windows.objectlist;
 import pixelperfectengine.concrete.window;
 
 import app;
+import document;
 
 import windows.colorpicker;
 
@@ -10,6 +11,7 @@ public class ObjectList : Window {
     ListView		listView_objects;
     SmallButton[]   buttons;
     CheckBox        checkBox_Solo;
+	Color			selectedColor;
     public this(int x, int y, void delegate() onClose) @trusted {
         super(Box(x, y, x + 129, y + 249), "Objects"d);
         this.onClose = onClose;
@@ -82,9 +84,12 @@ public class ObjectList : Window {
 		handler.addPopUpElement(new ColorPicker(&colorPicker_onSelect, Color.init), b.left - 129, b.top - 129);
 	}
 	protected void button_addBoxObject(Event ev) {
-		
+		if (editor.selectedDocument !is null) {
+			MapDocument md = editor.selectedDocument;
+			md.armBoxPlacement();
+		}
 	}
 	protected void colorPicker_onSelect(Color c) {
-
+		selectedColor = c;
 	}
 }

@@ -43,6 +43,7 @@ public class MapDocument : MouseEventReceptor {
 	string				filename;		///Null if not yet saved, otherwise name of the target file
 	protected int		prevMouseX;		///Previous mouse X position
 	protected int		prevMouseY;		///Previous mouse Y position
+	Color				objColor;		///Color of object to be drawn
 
 	public int			sXAmount;		///Continuous X scroll amount
 	public int			sYAmount;		///Continuous Y scroll amount
@@ -222,8 +223,17 @@ public class MapDocument : MouseEventReceptor {
 		updateMaterialList;
 		updateObjectList;
 	}
-	public void armBoxPlacement() {
-		flags |= BOXOBJECT_ARMED;
+	public void onSysEsc() {
+
+	}
+	public void armBoxPlacement(Color c) {
+		import pixelperfectengine.graphics.text;
+		if (mode == EditMode.objectMode) {
+			objColor = c;
+			flags |= BOXOBJECT_ARMED;
+			outputWindow.statusBar = new Text("Box placement armed!", globalDefaultStyle.getChrFormatting("statusbar"));
+			outputWindow.draw();
+		}
 	}
 	public void tileMaterial_FlipHorizontal(bool pos) {
 		selectedMappingElement.attributes.horizMirror = pos;
