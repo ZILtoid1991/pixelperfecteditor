@@ -890,57 +890,119 @@ public class ImportLayerData : UndoableEvent {
 	}
 }
 public class BoxObjectPlacementEvent : UndoableEvent {
-
-
+	Tag target;
+	BoxObject obj;
+	public this (Tag target, BoxObject obj) {
+		this.target = target;
+		this.obj = obj;
+	}
 	public void redo() {
-		
+		target.add(obj.serialize());
 	}
 
 	public void undo() {
-		
+		try {
+			foreach (Tag key; target.namespaces["Object"].tags) {
+				if (key.values[1].get!int == obj.pID) {
+					key.remove;
+				}
+			}
+		} catch (Exception e) {}
 	}
 }
-public class BoxObjectRemovalEvent : UndoableEvent {
-
-
+public class ObjectRemovalEvent : UndoableEvent {
+	Tag target;
+	MapObject obj;
+	public this (Tag target, MapObject obj) {
+		this.target = target;
+		this.obj = obj;
+	}
 	public void redo() {
-		
+		try {
+			foreach (Tag key; target.namespaces["Object"].tags) {
+				if (key.values[1].get!int == obj.pID) {
+					key.remove;
+				}
+			}
+		} catch (Exception e) {}
 	}
 
 	public void undo() {
-		
+		target.add(obj.serialize);
 	}
 }
 public class ObjectPropertyAddEvent : UndoableEvent {
-
-
+	MapObject obj;
+	Tag property;
+	public this (string name, string val, MapObject obj) {
+		import std.string;
+		this.obj = obj;
+		if (isNumeric(val)) {
+			property = new Tag(null, name, [Value(to!double(val))]);
+		} else {
+			property = new Tag(null, name, [Value(val)]);
+		}
+	}
 	public void redo() {
-		
+		obj.ancillaryTags ~= property;
 	}
 
 	public void undo() {
-		
+		foreach (size_t i, Tag t ; obj.ancillaryTags) {
+			if (t.name == property.name) {
+				obj.ancillaryTags = obj.ancillaryTags[0..i] ~ obj.ancillaryTags[i+1..$];
+			}
+		}
 	}
 }
 public class ObjectPropertyEditEvent : UndoableEvent {
-
-
+	MapObject obj;
+	Tag oldVal, newVal;
+	public this (string name, string val, MapObject obj) {
+		import std.string;
+		this.obj = obj;
+		if (isNumeric(val)) {
+			newVal = new Tag(null, name, [Value(to!double(val))]);
+		} else {
+			newVal = new Tag(null, name, [Value(val)]);
+		}
+	}
 	public void redo() {
-		
+		foreach (size_t i, Tag t ; obj.ancillaryTags) {
+			if (t.name == newVal.name) {
+				oldVal = t;
+				obj.ancillaryTags = obj.ancillaryTags[0..i] ~ newVal ~ obj.ancillaryTags[i+1..$];
+			}
+		}
 	}
 
 	public void undo() {
-		
+		foreach (size_t i, Tag t ; obj.ancillaryTags) {
+			if (t.name == newVal.name) {
+				obj.ancillaryTags = obj.ancillaryTags[0..i] ~ oldVal ~ obj.ancillaryTags[i+1..$];
+			}
+		}
 	}
 }
 public class ObjectPropertyRemoveEvent : UndoableEvent {
-
-
-	public void redo() {
+	string propertyName;
+	Tag backup;
+	MapObject obj;
+	public this (string name, MapObject obj) {
 		
+		this.obj = obj;
+		propertyName = name;
+	}
+	public void redo() {
+		foreach (size_t i, Tag t ; obj.ancillaryTags) {
+			if (t.name == propertyName) {
+				backup = t;
+				obj.ancillaryTags = obj.ancillaryTags[0..i] ~ obj.ancillaryTags[i+1..$];
+			}
+		}
 	}
 
 	public void undo() {
-		
+		obj.ancillaryTags ~= backup;
 	}
 }

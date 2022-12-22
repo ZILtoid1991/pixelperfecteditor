@@ -84,9 +84,9 @@ public class ObjectList : Window {
 		handler.addPopUpElement(new ColorPicker(&colorPicker_onSelect, Color.init), b.left - 129, b.top - 129);
 	}
 	protected void button_addBoxObject(Event ev) {
-		if (editor.selectedDocument !is null) {
-			MapDocument md = editor.selectedDocument;
-			md.armBoxPlacement();
+		if (prg.selDoc !is null) {
+			MapDocument md = prg.selDoc;
+			md.armBoxPlacement(selectedColor);
 		}
 	}
 	protected void colorPicker_onSelect(Color c) {
