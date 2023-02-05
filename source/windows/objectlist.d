@@ -1,9 +1,12 @@
 module windows.objectlist;
 
 import pixelperfectengine.concrete.window;
+import pixelperfectengine.map.mapformat;
 
 import app;
 import document;
+import std.conv : to;
+import std.utf : toUTF32, toUTF8;
 
 import windows.colorpicker;
 
@@ -34,7 +37,7 @@ public class ObjectList : Window {
         {//2
 			SmallButton sb = new SmallButton("addBoxObjectB", "addBoxObjectA", "addBoxObject",
 					Box(1, 217, 16, 232));
-			//sb.onMouseLClick = &button_newTileLayer_onClick;
+			sb.onMouseLClick = &button_addBoxObject;
 			buttons ~= sb;
 		}
         {//3
@@ -46,6 +49,7 @@ public class ObjectList : Window {
         {//4
 			SmallButton sb = new SmallButton("addCompositeTileObjectB", "addCompositeTileObjectA", "addCompositeTileObject",
 					Box(33, 217, 48, 232));
+			//sb.state = ElementState.Disabled;
 			//sb.onMouseLClick = &button_newTileLayer_onClick;
 			buttons ~= sb;
 		}
@@ -58,6 +62,7 @@ public class ObjectList : Window {
         {//6
 			SmallButton sb = new SmallButton("drawCompositeTileObjectB", "drawCompositeTileObjectA", "drawCompositeTileObject",
 					Box(65, 217, 80, 232));
+			//sb.state = ElementState.Disabled;
 			//sb.onMouseLClick = &button_newTileLayer_onClick;
 			buttons ~= sb;
 		}
@@ -69,6 +74,9 @@ public class ObjectList : Window {
 		foreach (SmallButton key; buttons) {
 			addElement(key);
 		}
+		buttons[3].state = ElementState.Disabled;
+		buttons[4].state = ElementState.Disabled;
+		buttons[6].state = ElementState.Disabled;
     }
     protected void onItemSelect(Event ev) {
 
@@ -89,7 +97,23 @@ public class ObjectList : Window {
 			md.armBoxPlacement(selectedColor);
 		}
 	}
+	protected void button_addPolylineObject(Event ev) {
+		if (prg.selDoc !is null) {
+
+		}
+	}
+	protected void button_addSpriteObject(Event ev) {
+		if (prg.selDoc !is null) {
+
+		}
+	}
 	protected void colorPicker_onSelect(Color c) {
 		selectedColor = c;
+	}
+	public void updateObjectList(MapObject[] objects) {
+		listView_objects.clear();
+		foreach (MapObject key; objects) {
+			listView_objects ~= new ListViewItem(16, [to!dstring(key.pID), toUTF32(key.name)]);
+		}
 	}
 }

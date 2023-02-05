@@ -14,8 +14,12 @@ import pixelperfectengine.graphics.bitmap;
 import pixelperfectengine.graphics.layers;
 import pixelperfectengine.system.input : MouseButton, ButtonState, MouseClickEvent, MouseMotionEvent, MouseWheelEvent, 
 		MouseEventCommons, MouseButtonFlags;
+import pixelperfectengine.graphics.text;
+import sortedlistwoarrayof;
+//import collections.sortedlist;
 import std.stdio;
-static import mapobject;
+import std.format;
+import mapobject;
 
 import app;
 ///Individual document for parallel editing
@@ -28,12 +32,17 @@ public class MapDocument : MouseEventReceptor {
 		tilePlacement,
 		objectMode,
 	}
+
 	UndoableStack		events;		///Per document event stack
 	MapFormat			mainDoc;	///Used to reduce duplicate data as much as possible
 	//ABitmap[] delegate() imageReturnFunc;
 	Color[] delegate(MapDocument sender) paletteReturnFunc;	///Used for adding the palette for the document
 	int					selectedLayer;	///Indicates the currently selected layer
-	mapobject.MapObject[]	selLayerObjects;///Contains the display data of the currently selected layer's objects (if any)
+	alias ObjectList = SortedList!(MapObject, "a.pID < b.pID", false, "a.pID == b.pID");
+	alias DrawableObjectList = SortedList!(DrawableObject, "a.pID < b.pID", false, "a.pID == b.pID");
+	ObjectList			mapObjList;		///List of map objects from the selected layer
+	DrawableObjectList	drawableObjList;///Contains the display data of the currently selected layer's objects (if any)
+	
 	int					selObject;		///Selected object number
 	Box					mapSelection;	///Contains the selected map area parameters
 	Box					areaSelection;	///Contains the selected layer area parameters in pixels
@@ -53,6 +62,8 @@ public class MapDocument : MouseEventReceptor {
 	protected static enum	PLACEMENT = 1<<2;	///To solve some "debounce" issues around mouse click releases
 	protected static enum	DISPL_SELECTION = 1<<3;	///If set, then selection is shown
 	protected static enum	BOXOBJECT_ARMED = 1<<4;	///If set, BoxObject placement is armed.
+	protected static enum	POLYLINE_ARMED = 1<<5; ///If set, PolylineObject placement is armed.
+	protected static enum	SPRITE_ARMED = 1<<6; ///If set, SpriteObject placement is armed.
 	protected MappingElement	selectedMappingElement;	///Currently selected mapping element to write, including mirroring properties, palette selection, and priority attributes
 	//public bool			voidfill;		///If true, tilePlacement overrides only transparent (0xFFFF) tiles.
 	/**
@@ -196,27 +207,29 @@ public class MapDocument : MouseEventReceptor {
 		}
 	}
 	public void updateObjectList() {
-		import sdlang;
-		Tag t00 = mainDoc.layerData[selectedLayer];
-		if (t00 !is null) {
-			try {
-				foreach (Tag t0 ; t00.namespaces["Object"].tags) {
-					switch (t0.name) {	//No sprites, since that is being taken care by the layer
-						case "Box":
-							BoxObject bo = new BoxObject(t0, selectedLayer);
-							Tag t1 = t0.expectTag("color");
-							bo.color = Color(t1.values[0].coerce!float(), t1.values[1].coerce!float(), t1.values[2].coerce!float(), 1.0);
-							mapobject.BoxObjectDrawer bod = new mapobject.BoxObjectDrawer(bo);
-							selLayerObjects ~= bod;
-							break;
-						default:
-							break;
-					}
-				}
-			} catch (Exception e) {
-
+		mapObjList = ObjectList(mainDoc.getLayerObjects(selectedLayer));
+		drawableObjList = DrawableObjectList.init;
+		foreach (MapObject mo ; mapObjList) {
+			switch (mo.type) {
+				case MapObject.MapObjectType.box:
+					BoxObject obj = cast(BoxObject)mo;
+					drawableObjList.put(new BoxObjectDrawer(obj));
+					break;
+				default:
+					break;
 			}
 		}
+	}
+	protected int getLowestObjID() {
+		int result;
+		foreach (MapObject mo ; mapObjList) {
+			if (mo.pID == result) {
+				result++;
+			} else {
+				return result;
+			}
+		}
+		return result;
 	}
 	public void onSelection () {
 		updateLayerList;
@@ -235,34 +248,62 @@ public class MapDocument : MouseEventReceptor {
 			outputWindow.draw();
 		}
 	}
+	public void armPolylinePlacement(Color c) {
+		if (mode == EditMode.objectMode) {
+			objColor = c;
+			flags |= POLYLINE_ARMED;
+			outputWindow.statusBar = new Text("Polyline placement armed!", globalDefaultStyle.getChrFormatting("statusbar"));
+			outputWindow.draw();
+		}
+	}
+	public void armPolylinePlacement() {
+		if (mode == EditMode.objectMode) {
+			flags |= SPRITE_ARMED;
+			outputWindow.statusBar = new Text("Sprite placement armed!", globalDefaultStyle.getChrFormatting("statusbar"));
+			outputWindow.draw();
+		}
+	}
+	protected final void statusBar_UpdateTile() {
+		outputWindow.statusBar = new Text(format("tileID: %4X ; h: %1i ; v: %1i, a: %2X, pal: %2X"d, 
+				selectedMappingElement.tileID, selectedMappingElement.attributes.horizMirror, 
+				selectedMappingElement.attributes.vertMirror, selectedMappingElement.attributes.priority, 
+				selectedMappingElement.paletteSel), globalDefaultStyle.getChrFormatting("statusbar"));
+	}
 	public void tileMaterial_FlipHorizontal(bool pos) {
 		selectedMappingElement.attributes.horizMirror = pos;
+		statusBar_UpdateTile();
 	}
 	public void tileMaterial_FlipHorizontal() {
 		selectedMappingElement.attributes.horizMirror = !selectedMappingElement.attributes.horizMirror;
 	}
 	public void tileMaterial_FlipVertical(bool pos) {
 		selectedMappingElement.attributes.vertMirror = pos;
+		statusBar_UpdateTile();
 	}
 	public void tileMaterial_FlipVertical() {
 		selectedMappingElement.attributes.vertMirror = !selectedMappingElement.attributes.vertMirror;
 	}
 	public void tileMaterial_Select(wchar id) {
 		selectedMappingElement.tileID = id;
+		statusBar_UpdateTile();
 		//mode = EditMode.tilePlacement;
 	}
 	public void tileMaterial_Up() {
 		selectedMappingElement.tileID++;
+		statusBar_UpdateTile();
 	}
 	public void tileMaterial_Down() {
 		selectedMappingElement.tileID--;
+		statusBar_UpdateTile();
 	}
 	public ushort tileMaterial_PaletteUp() {
 		selectedMappingElement.paletteSel++;
+		statusBar_UpdateTile();
 		return selectedMappingElement.paletteSel;
 	}
 	public ushort tileMaterial_PaletteDown() {
 		selectedMappingElement.paletteSel--;
+		statusBar_UpdateTile();
 		return selectedMappingElement.paletteSel;
 	}
 	public @property bool voidfill() @nogc @safe pure nothrow {
@@ -465,9 +506,47 @@ public class MapDocument : MouseEventReceptor {
 							if (mce.state) {
 								prevMouseX = scrollX + mce.x;
 								prevMouseY = scrollY + mce.y;
-							} else {
-
+							} else {	//Generate box object
+								import sdlang;
+								//get layer tag
+								Tag layerTag = mainDoc.layerData[selectedLayer];
+								//get smallest available pID
+								const int smallestpID = getLowestObjID();
+								//calculate area
+								const int currX = scrollX + mce.x, currY = scrollY + mce.y;
+								Box position;
+								if (currX > prevMouseX) {
+									position.left = prevMouseX;
+									position.right = currX;
+								} else {
+									position.left = currX;
+									position.right = prevMouseX;
+								}
+								if (currY > prevMouseY) {
+									position.top = prevMouseY;
+									position.bottom = currY;
+								} else {
+									position.top = currY;
+									position.bottom = prevMouseY;
+								}
+								events.addToTop(new MapObjectPlacementEvent(layerTag, new BoxObject(smallestpID, selectedLayer, 
+										"boxObject" ~ format("%i", smallestpID), position), this));
+								
 							}
+							break;
+						case MouseButton.Mid:
+							if (mce.state) {
+								outputWindow.requestCursor(CursorType.Hand);
+								prevMouseX = x;
+								prevMouseY = y;
+								outputWindow.moveEn = true;
+							} else {
+								outputWindow.requestCursor(CursorType.Arrow);
+								outputWindow.moveEn = false;
+							}
+							//scrollSelectedLayer(prevMouseX - x, prevMouseY - y);
+							prevMouseX = x;
+							prevMouseY = y;
 							break;
 						default:
 							break;
@@ -519,6 +598,10 @@ public class MapDocument : MouseEventReceptor {
 				}
 				break;
 			case tilePlacement:
+				if (mme.buttonState & (MouseButtonFlags.Left | MouseButtonFlags.Mid)) {
+					outputWindow.statusBar = new Text(format("x0: %i ; y0: %i ; x1: %i ; y1: %i"d, prevMouseX, prevMouseY, mme.x,mme.y),
+							globalDefaultStyle.getChrFormatting("statusbar"));
+				}
 				break;
 			case objectMode:
 				break;

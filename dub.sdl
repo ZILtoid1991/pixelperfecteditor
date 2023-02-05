@@ -3,7 +3,7 @@ description "Tilemap editor mainly intended for PixelPerfectEngine's own format,
 authors "laszl"
 copyright "Copyright © 2021, laszl"
 license "BSL-1.0"
-dependency "pixelperfectengine" version="==0.10.0-beta.7"
+dependency "pixelperfectengine" version="==0.10.0-beta.8"
 targetType "executable"
 targetPath "./bin-$ARCH-$PLATFORM/"
 lflags "/PDB:.\\bin-$ARCH-$PLATFORM\\pixelperfecteditor.pdb" platform="windows"

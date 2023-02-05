@@ -889,15 +889,18 @@ public class ImportLayerData : UndoableEvent {
 		target.loadMapping(buw, buh, backup);
 	}
 }
-public class BoxObjectPlacementEvent : UndoableEvent {
+public class MapObjectPlacementEvent : UndoableEvent {
 	Tag target;
-	BoxObject obj;
-	public this (Tag target, BoxObject obj) {
+	MapObject obj;
+	MapDocument doc;
+	public this (Tag target, MapObject obj, MapDocument doc) {
 		this.target = target;
 		this.obj = obj;
+		this.doc = doc;
 	}
 	public void redo() {
 		target.add(obj.serialize());
+		doc.updateObjectList();
 	}
 
 	public void undo() {
@@ -908,12 +911,14 @@ public class BoxObjectPlacementEvent : UndoableEvent {
 				}
 			}
 		} catch (Exception e) {}
+		doc.updateObjectList();
 	}
 }
 public class ObjectRemovalEvent : UndoableEvent {
 	Tag target;
 	MapObject obj;
-	public this (Tag target, MapObject obj) {
+	MapDocument doc;
+	public this (Tag target, MapObject obj, MapDocument doc) {
 		this.target = target;
 		this.obj = obj;
 	}
@@ -924,17 +929,20 @@ public class ObjectRemovalEvent : UndoableEvent {
 					key.remove;
 				}
 			}
+			doc.updateObjectList();
 		} catch (Exception e) {}
 	}
 
 	public void undo() {
 		target.add(obj.serialize);
+		doc.updateObjectList();
 	}
 }
 public class ObjectPropertyAddEvent : UndoableEvent {
 	MapObject obj;
 	Tag property;
-	public this (string name, string val, MapObject obj) {
+	MapDocument doc;
+	public this (string name, string val, MapObject obj, MapDocument doc) {
 		import std.string;
 		this.obj = obj;
 		if (isNumeric(val)) {
@@ -944,21 +952,18 @@ public class ObjectPropertyAddEvent : UndoableEvent {
 		}
 	}
 	public void redo() {
-		obj.ancillaryTags ~= property;
+		obj.mainTag.add(property);
 	}
 
 	public void undo() {
-		foreach (size_t i, Tag t ; obj.ancillaryTags) {
-			if (t.name == property.name) {
-				obj.ancillaryTags = obj.ancillaryTags[0..i] ~ obj.ancillaryTags[i+1..$];
-			}
-		}
+		property.remove();
 	}
 }
 public class ObjectPropertyEditEvent : UndoableEvent {
 	MapObject obj;
 	Tag oldVal, newVal;
-	public this (string name, string val, MapObject obj) {
+	MapDocument doc;
+	public this (string name, string val, MapObject obj, MapDocument doc) {
 		import std.string;
 		this.obj = obj;
 		if (isNumeric(val)) {
@@ -966,43 +971,33 @@ public class ObjectPropertyEditEvent : UndoableEvent {
 		} else {
 			newVal = new Tag(null, name, [Value(val)]);
 		}
+		oldVal = obj.mainTag.getTag(name);
 	}
 	public void redo() {
-		foreach (size_t i, Tag t ; obj.ancillaryTags) {
-			if (t.name == newVal.name) {
-				oldVal = t;
-				obj.ancillaryTags = obj.ancillaryTags[0..i] ~ newVal ~ obj.ancillaryTags[i+1..$];
-			}
-		}
+		oldVal.remove;
+		obj.mainTag.add(newVal);
 	}
 
 	public void undo() {
-		foreach (size_t i, Tag t ; obj.ancillaryTags) {
-			if (t.name == newVal.name) {
-				obj.ancillaryTags = obj.ancillaryTags[0..i] ~ oldVal ~ obj.ancillaryTags[i+1..$];
-			}
-		}
+		newVal.remove;
+		obj.mainTag.add(oldVal);
 	}
 }
 public class ObjectPropertyRemoveEvent : UndoableEvent {
 	string propertyName;
 	Tag backup;
 	MapObject obj;
-	public this (string name, MapObject obj) {
-		
+	MapDocument doc;
+	public this (string name, MapObject obj, MapDocument doc) {
 		this.obj = obj;
 		propertyName = name;
+		backup = this.obj.mainTag.getTag(name);
 	}
 	public void redo() {
-		foreach (size_t i, Tag t ; obj.ancillaryTags) {
-			if (t.name == propertyName) {
-				backup = t;
-				obj.ancillaryTags = obj.ancillaryTags[0..i] ~ obj.ancillaryTags[i+1..$];
-			}
-		}
+		backup.remove();
 	}
 
 	public void undo() {
-		obj.ancillaryTags ~= backup;
+		obj.mainTag.add(backup);
 	}
 }
