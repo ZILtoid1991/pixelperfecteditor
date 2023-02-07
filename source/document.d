@@ -264,10 +264,11 @@ public class MapDocument : MouseEventReceptor {
 		}
 	}
 	protected final void statusBar_UpdateTile() {
-		outputWindow.statusBar = new Text(format("tileID: %4X ; h: %1i ; v: %1i, a: %2X, pal: %2X"d, 
+		outputWindow.statusBar = new Text(format("tileID: %4X ; h: %1d ; v: %1d, a: %2X, pal: %2X"d, 
 				selectedMappingElement.tileID, selectedMappingElement.attributes.horizMirror, 
 				selectedMappingElement.attributes.vertMirror, selectedMappingElement.attributes.priority, 
 				selectedMappingElement.paletteSel), globalDefaultStyle.getChrFormatting("statusbar"));
+		outputWindow.draw();
 	}
 	public void tileMaterial_FlipHorizontal(bool pos) {
 		selectedMappingElement.attributes.horizMirror = pos;
@@ -530,7 +531,7 @@ public class MapDocument : MouseEventReceptor {
 									position.bottom = prevMouseY;
 								}
 								events.addToTop(new MapObjectPlacementEvent(layerTag, new BoxObject(smallestpID, selectedLayer, 
-										"boxObject" ~ format("%i", smallestpID), position), this));
+										"boxObject" ~ format("%d", smallestpID), position), this));
 								
 							}
 							break;
@@ -598,10 +599,10 @@ public class MapDocument : MouseEventReceptor {
 				}
 				break;
 			case tilePlacement:
-				if (mme.buttonState & (MouseButtonFlags.Left | MouseButtonFlags.Mid)) {
-					outputWindow.statusBar = new Text(format("x0: %i ; y0: %i ; x1: %i ; y1: %i"d, prevMouseX, prevMouseY, mme.x,mme.y),
+				/* if (mme.buttonState & (MouseButtonFlags.Left | MouseButtonFlags.Mid)) {
+					outputWindow.statusBar = new Text(format("x0: %d ; y0: %d ; x1: %d ; y1: %d"d, prevMouseX, prevMouseY, mme.x,mme.y),
 							globalDefaultStyle.getChrFormatting("statusbar"));
-				}
+				} */
 				break;
 			case objectMode:
 				break;

@@ -195,8 +195,9 @@ public class RasterWindow : Window, PaletteContainer {
 			rasterOutput = new Bitmap32Bit(position.width() - 2, position.height() - 18);
 		}
 		//draw status bar
+		output.drawFilledBox(Box.bySize(1, 16 + rasterY, rasterX , 16), 15);
 		if (statusBar) {
-			output.drawSingleLineText(Box.bySize(1, 16 + rasterY, rasterX, 16), statusBar);
+			output.drawSingleLineText(Box.bySize(1, 16 + rasterY - 1, rasterX - 1, 16), statusBar);
 		}
 		drawHeader();
 		clrLookup();
