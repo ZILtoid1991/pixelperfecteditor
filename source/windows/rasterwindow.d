@@ -9,8 +9,8 @@ import pixelperfectengine.concrete.window;
 import pixelperfectengine.graphics.layers;
 import pixelperfectengine.graphics.raster : PaletteContainer;
 import CPUblit.composing;
-static import CPUblit.draw;
-import CPUblit.colorlookup;
+static import CPUblit.drawing.line;
+//import CPUblit.colorlookup;
 import pixelperfectengine.system.input.types : MouseButton, ButtonState;
 import pixelperfectengine.system.etc : isInterface;
 import collections.sortedlist;
@@ -27,7 +27,7 @@ public class RasterWindow : Window, PaletteContainer {
 	public DisplayList	hiddenLayers;	///List of hidden layers
 	public DisplayList	soloedLayers;	///List of soloed layers
 	public Text			statusBar;
-	protected Bitmap32Bit trueOutput, rasterOutput;
+	protected Bitmap32Bit trueOutput;
 	protected Color[] paletteLocal;
 	protected Color* paletteShared;
 	public Color		selColor;		///Selection invert color (red by default)
@@ -52,8 +52,8 @@ public class RasterWindow : Window, PaletteContainer {
 	public this(int x, int y, Color* paletteShared, dstring documentName, MapDocument document){
 		rasterX = x;
 		rasterY = y;
-		trueOutput = new Bitmap32Bit(x + 2,y + 18 + 16);
-		rasterOutput = new Bitmap32Bit(x + 2, y + 18 + 16);
+		trueOutput = new Bitmap32Bit(x + 2,y + 20 + 16);
+		//rasterOutput = new Bitmap32Bit(x + 2, y + 20 + 16);
 		ISmallButton[] smallButtons;
 		const int windowHeaderHeight = getStyleSheet.drawParameters["WindowHeaderHeight"] - 1;
 		modeSel = new RadioButtonGroup();
@@ -73,10 +73,10 @@ public class RasterWindow : Window, PaletteContainer {
 		modeSel.onToggle = &onModeToggle;
 
 		//smallButtons ~= new SmallButton("settingsButtonB", "settingsButtonA", "settings", Box(0, 0, 16, 16));
-		super(Box(0, 0, x + 1, y + 17 + 16), documentName, smallButtons);
+		super(Box(0, 0, x + 1, y + 20 + 16), documentName, smallButtons);
 		foreach (ISmallButton key; smallButtons) {
 			WindowElement we = cast(WindowElement)key;
-			we.onDraw = &clrLookup;
+			//we.onDraw = &clrLookup;
 		}
 		this.paletteShared = paletteShared;
 		this.documentName = documentName;
@@ -159,6 +159,7 @@ public class RasterWindow : Window, PaletteContainer {
 			document.passMCE(mec, mce);
 		} else {
 			super.passMCE(mec, mce);
+			draw;
 		}
 	}
 	///Passes mouse move event
@@ -179,25 +180,38 @@ public class RasterWindow : Window, PaletteContainer {
 	 * Copy 8 bit bitmap with color lookup.
 	 */
 	protected void clrLookup() {
-		for(int y ; y < 16 ; y++){	//
+		void byLine(ubyte* src, Color* dest, Color* pal, size_t len) {
+			for (int x ; x < len ; x++) {
+				if (src[x] != 0)
+					dest[x] = pal[src[x]];
+			}
+		}
+		for(int y ; y < trueOutput.height ; y++){	//
 			colorLookup(output.output.getPtr + (y * position.width), trueOutput.getPtr + (y * position.width), paletteShared,
 					position.width);
 		}
-		for(int y = trueOutput.height - 17 ; y < trueOutput.height ; y++) {
+		/* for(int y = trueOutput.height - 17 ; y < trueOutput.height ; y++) {
 			colorLookup(output.output.getPtr + (y * position.width), trueOutput.getPtr + (y * position.width), paletteShared,
 					position.width);
-		}
+		} */
 	}
 	public override void draw(bool drawHeaderOnly = false){
 		if(output.output.width != position.width || output.output.height != position.height){
 			output = new BitmapDrawer(position.width(), position.height());
 			trueOutput = new Bitmap32Bit(position.width(), position.height());
-			rasterOutput = new Bitmap32Bit(position.width() - 2, position.height() - 18);
+			//rasterOutput = new Bitmap32Bit(position.width() - 2, position.height() - 18);
 		}
 		//draw status bar
-		output.drawFilledBox(Box.bySize(1, 16 + rasterY, rasterX , 16), 15);
+		StyleSheet ss = getStyleSheet;
+		output.drawFilledBox(Box.bySize(1, 16 + rasterY, rasterX , 20), ss.getColor("window"));
+		output.drawLine(Point(0, 16), Point(0, position.height - 1), ss.getColor("windowascent"));
+		output.drawLine(Point(0, 16), Point(position.width - 1, 16), ss.getColor("windowascent"));
+		output.drawLine(Point(position.width - 1, 16), Point(position.width - 1, position.height - 1), 
+				ss.getColor("windowdescent"));
+		output.drawLine(Point(0, position.height - 1), Point(position.width - 1, position.height - 1), 
+				ss.getColor("windowdescent"));
 		if (statusBar) {
-			output.drawSingleLineText(Box.bySize(1, 16 + rasterY - 1, rasterX - 1, 16), statusBar);
+			output.drawSingleLineText(Box.bySize(1, 18 + rasterY, rasterX - 1, 20), statusBar);
 		}
 		drawHeader();
 		clrLookup();
@@ -208,16 +222,24 @@ public class RasterWindow : Window, PaletteContainer {
 		/*if(drawHeaderOnly)
 			return;*/
 		//draw the borders. we do not need fills or drawing elements
-		uint* ptr = cast(uint*)trueOutput.getPtr;
-		StyleSheet ss = getStyleSheet;
-		CPUblit.draw.drawLine!uint(0, 16, 0, position.height - 1, paletteShared[ss.getColor("windowascent")].base, ptr, 
-				trueOutput.width);
-		CPUblit.draw.drawLine!uint(0, 16, position.width - 1, 16, paletteShared[ss.getColor("windowascent")].base, ptr, 
-				trueOutput.width);
-		CPUblit.draw.drawLine!uint(position.width - 1, 16, position.width - 1, position.height - 1,
-				paletteShared[ss.getColor("windowdescent")].base, ptr, trueOutput.width);
-		CPUblit.draw.drawLine!uint(0, position.height - 1, position.width - 1, position.height - 1,
-				paletteShared[ss.getColor("windowdescent")].base, ptr, trueOutput.width);
+		uint[] dest = cast(uint[])trueOutput.pixels;
+		
+		/* CPUblit.drawing.line.drawFilledRectangle!(uint)(0,position.height - 17, position.width - 1, position.height - 1,
+				paletteShared[ss.getColor("window")].base, dest, trueOutput.width); */
+		/* for (int y = position.height - 20 ; y <= position.height - 1 ; y++) {
+			CPUblit.drawing.line.drawLine!uint(0, y, 0, y, paletteShared[ss.getColor("window")].base, 
+					dest, trueOutput.width);
+		} */
+		/* CPUblit.drawing.line.drawLine!uint(0, 16, 0, position.height - 1, paletteShared[ss.getColor("windowascent")].base, 
+				dest, trueOutput.width);
+		CPUblit.drawing.line.drawLine!uint(0, 16, position.width - 1, 16, paletteShared[ss.getColor("windowascent")].base, 
+				dest, trueOutput.width);
+		CPUblit.drawing.line.drawLine!uint(position.width - 1, 16, position.width - 1, position.height - 1,
+				paletteShared[ss.getColor("windowdescent")].base, dest, trueOutput.width);
+		CPUblit.drawing.line.drawLine!uint(0, position.height - 1, position.width - 1, position.height - 1,
+				paletteShared[ss.getColor("windowdescent")].base, dest, trueOutput.width);
+		CPUblit.drawing.line.drawLine!uint(0, position.height - 20, position.width - 1, position.height - 20,
+				paletteShared[ss.getColor("windowdescent")].base, dest, trueOutput.width); */
 	}
 	/**
 	 * Clears both displaylists.
@@ -231,7 +253,7 @@ public class RasterWindow : Window, PaletteContainer {
 	 */
 	public void updateRaster() {
 		//clear raster screen
-		for (int y = 16 ; y < trueOutput.height - 1 ; y++) {
+		for (int y = 16 ; y < trueOutput.height - 17 ; y++) {
 			for (int x = 1 ; x < trueOutput.width - 1 ; x++) {
 				trueOutput.writePixel (x, y, Color(0,0,0,0));
 			}
@@ -245,11 +267,16 @@ public class RasterWindow : Window, PaletteContainer {
 				}
 			}
 		}
-		/+for(int i ; i < layerList.length ; i++){
-			//document.mainDoc[layerList[i]].updateRaster(rasterOutput.getPtr, rasterX * 4, paletteLocal.ptr);
-			document.mainDoc[layerList[i]].updateRaster((trueOutput.getPtr + (17 * trueOutput.width) + 1), trueOutput.width * 4,
-					paletteLocal.ptr);
-		}+/
+		//draw each object individually
+		{
+			import mapobject : DrawableObject;
+			const int sX = document.mainDoc.layeroutput[document.selectedLayer].getSX, 
+					sY = document.mainDoc.layeroutput[document.selectedLayer].getSY, pitch = trueOutput.width;
+			foreach (DrawableObject d ; document.drawableObjList) {
+				if (d.isOnDisplay(sX, sY, pitch - 2, trueOutput.height - 32))
+					d.draw(trueOutput.pixels[(pitch*16)..$], sX, sY, pitch - 2, trueOutput.height - 32, 1, pitch);
+			}
+		}
 		import CPUblit.composing.specblt : xorBlitter;
 		uint* p = cast(uint*)trueOutput.getPtr;
 		if (statusFlags & SELECTION_ARMED) {

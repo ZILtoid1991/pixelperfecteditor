@@ -7,7 +7,7 @@ import pixelperfectengine.graphics.bitmap;
 import pixelperfectengine.graphics.draw;
 import pixelperfectengine.map.mapformat;
 import pixelperfectengine.system.etc : min, max, clamp;
-import CPUblit.composing.copy;
+import CPUblit.composing.blitter;
 import CPUblit.colorlookup;
 
 /** 
@@ -62,15 +62,19 @@ public class BoxObjectDrawer : DrawableObject {
 	}
 	public void draw(Color[] dest, int sX, int sY, int rW, int rH, const int offsetX, const int pitch) {
 		//Use this until CPUblit is updated on the engine side
-		import windows.colorpicker : drawLine;
+		import CPUblit.drawing.line : drawLine;
 		Box screenPos = base.position;
 		Color displayColor = base.color;
 		screenPos.relMove(sX * -1, sY * -1);
 		int x0 = screenPos.left, y0 = screenPos.top, x1 = screenPos.right, y1 = screenPos.bottom;
-		clamp(x0, 0, rW);
-		clamp(y0, 0, rH);
-		clamp(x1, 0, rW);
-		clamp(y1, 0, rH);
+		x0 = max(0, x0);
+		x0 = min(rW - 1, x0);
+		x1 = max(0, x1);
+		x1 = min(rW - 1, x1);
+		y0 = max(0, y0);
+		y0 = min(rH - 2, y0);
+		y1 = max(0, y1);
+		y1 = min(rH - 2, y1);
 		if (screenPos.left >= 0) {
 			drawLine(x0 + offsetX, y0, x0 + offsetX, y1, displayColor, dest, pitch);
 		}
@@ -83,10 +87,12 @@ public class BoxObjectDrawer : DrawableObject {
 		if (screenPos.bottom < rH) {
 			drawLine(x0 + offsetX, y1, x1 + offsetX, y1, displayColor, dest, pitch);
 		}
-		const int textWidth = x0 + text.width < rW ? text.width : text.width - (rW - (x0 + text.width));
-		const int textHeight = y0 + text.height >= rH ? text.height : text.height - (rH - (y0 + text.height));
+		const int textWidth = x0 + 1 + text.width < rW ? text.width : rW - x0 - 1;
+		assert(textWidth <= text.width);
+		const int textHeight = y0 + text.height < rH ? text.height : rH - y0 - 2;
+		assert(textHeight <= text.height);
 		for (int y ; y < textHeight ; y++) {
-			copy(cast(uint*)text.getPtr + (y * textWidth), cast(uint*)dest.ptr + ((y + y0) * pitch) + x0, textWidth);
+			blitter(cast(uint*)text.getPtr + (y * text.width), cast(uint*)dest.ptr + ((y + y0 + 1) * pitch) + x0 + 2, textWidth);
 		}
 	}
 	public bool isOnDisplay(int sX, int sY, int rW, int rH) {

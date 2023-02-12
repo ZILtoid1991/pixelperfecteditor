@@ -219,6 +219,8 @@ public class MapDocument : MouseEventReceptor {
 					break;
 			}
 		}
+		prg.objectList.updateObjectList(mapObjList);
+		prg.objectList.draw();
 	}
 	protected int getLowestObjID() {
 		int result;
@@ -507,8 +509,10 @@ public class MapDocument : MouseEventReceptor {
 							if (mce.state) {
 								prevMouseX = scrollX + mce.x;
 								prevMouseY = scrollY + mce.y;
+								outputWindow.armSelection();
 							} else {	//Generate box object
 								import sdlang;
+								outputWindow.disarmSelection();
 								//get layer tag
 								Tag layerTag = mainDoc.layerData[selectedLayer];
 								//get smallest available pID
@@ -530,9 +534,12 @@ public class MapDocument : MouseEventReceptor {
 									position.top = currY;
 									position.bottom = prevMouseY;
 								}
-								events.addToTop(new MapObjectPlacementEvent(layerTag, new BoxObject(smallestpID, selectedLayer, 
-										"boxObject" ~ format("%d", smallestpID), position), this));
-								
+								BoxObject bo = new BoxObject(smallestpID, selectedLayer, "boxObject" ~ format("%d", smallestpID), position);
+								bo.color = prg.objectList.selectedColor;
+								events.addToTop(new MapObjectPlacementEvent(layerTag, bo, this));
+								outputWindow.statusBar = new Text(format("New box object placed at: %d ; %d ; %d ; %d"d, position.left, 
+										position.top, position.right, position.bottom), globalDefaultStyle.getChrFormatting("statusbar"));
+								outputWindow.draw();
 							}
 							break;
 						case MouseButton.Mid:
@@ -586,7 +593,9 @@ public class MapDocument : MouseEventReceptor {
 							s.bottom = prevMouseY;
 						}
 						outputWindow.selection = s;
-						outputWindow.updateRaster();
+						outputWindow.statusBar = new Text(format("x0: %d ; y0: %d ; x1: %d ; y1: %d"d, s.left, s.top, s.right, s.bottom),
+								globalDefaultStyle.getChrFormatting("statusbar"));
+						outputWindow.draw();
 						break;
 					case MouseButtonFlags.Mid:
 						scrollSelectedLayer(prevMouseX - mme.x, prevMouseY - mme.y);
@@ -599,12 +608,48 @@ public class MapDocument : MouseEventReceptor {
 				}
 				break;
 			case tilePlacement:
-				/* if (mme.buttonState & (MouseButtonFlags.Left | MouseButtonFlags.Mid)) {
-					outputWindow.statusBar = new Text(format("x0: %d ; y0: %d ; x1: %d ; y1: %d"d, prevMouseX, prevMouseY, mme.x,mme.y),
+				if (mme.buttonState & (MouseButtonFlags.Left | MouseButtonFlags.Mid)) {
+					Box s;
+					if (prevMouseX < mme.x) {
+						s.left = prevMouseX;
+						s.right = mme.x;
+					} else {
+						s.left = mme.x;
+						s.right = prevMouseX;
+					}
+					if (prevMouseY < mme.y) {
+						s.top = prevMouseY;
+						s.bottom = mme.y;
+					} else {
+						s.top = mme.y;
+						s.bottom = prevMouseY;
+					}
+					outputWindow.statusBar = new Text(format("x0: %d ; y0: %d ; x1: %d ; y1: %d"d,s.left, s.top, s.right, s.bottom),
 							globalDefaultStyle.getChrFormatting("statusbar"));
-				} */
+					outputWindow.draw;
+				}
 				break;
 			case objectMode:
+				if ((flags & (BOXOBJECT_ARMED | SPRITE_ARMED)) && (mme.buttonState & MouseButtonFlags.Left)) {
+					Box s;
+					if (prevMouseX < mme.x) {
+						s.left = prevMouseX;
+						s.right = mme.x;
+					} else {
+						s.left = mme.x;
+						s.right = prevMouseX;
+					}
+					if (prevMouseY < mme.y) {
+						s.top = prevMouseY;
+						s.bottom = mme.y;
+					} else {
+						s.top = mme.y;
+						s.bottom = prevMouseY;
+					}
+					outputWindow.selection = s;
+					outputWindow.updateRaster();
+					
+				}
 				break;
 		}
 	}

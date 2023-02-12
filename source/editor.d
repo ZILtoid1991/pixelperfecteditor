@@ -346,6 +346,12 @@ public class Editor : InputListener, SystemEventListener {
 		}
 		globalDefaultStyle.addChrFormatting(
 				new CharacterFormattingInfo!Bitmap8Bit(globalDefaultStyle.getFontset("fixedWidth"), 0x1f, 0, 0, 16, 2), "statusbar");
+		{
+			import mapobject;
+			BoxObjectDrawer.defChrFormat = new CharacterFormattingInfo!Bitmap8Bit(globalDefaultStyle.getFontset("fixedWidth"), 
+					0x01, 0, 0, 16, 2);
+			PolylineObjectDrawer.defChrFormat = BoxObjectDrawer.defChrFormat;
+		}
 		//wh.initGUI();
 
 		input = new InputHandler();
@@ -800,6 +806,7 @@ public class Editor : InputListener, SystemEventListener {
 			documents[name] = selDoc;
 			selDoc.updateLayerList();
 			selDoc.updateMaterialList();
+			selDoc.updateObjectList();
 			selDoc.mainDoc.loadTiles(w);
 			selDoc.mainDoc.loadMappingData();
 			w.loadLayers();

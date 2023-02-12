@@ -89,7 +89,7 @@ public class ObjectList : Window {
     }
 	protected void button_colorPicker(Event ev) {
 		Box b = getAbsolutePosition(cast(WindowElement)ev.sender);
-		handler.addPopUpElement(new ColorPicker(&colorPicker_onSelect, Color.init), b.left - 129, b.top - 129);
+		handler.addPopUpElement(new ColorPicker(&colorPicker_onSelect, selectedColor), b.left - 129, b.top - 129);
 	}
 	protected void button_addBoxObject(Event ev) {
 		if (prg.selDoc !is null) {
@@ -110,7 +110,7 @@ public class ObjectList : Window {
 	protected void colorPicker_onSelect(Color c) {
 		selectedColor = c;
 	}
-	public void updateObjectList(MapObject[] objects) {
+	public void updateObjectList(MapObjectRange)(MapObjectRange objects) {
 		listView_objects.clear();
 		foreach (MapObject key; objects) {
 			listView_objects ~= new ListViewItem(16, [to!dstring(key.pID), toUTF32(key.name)]);
