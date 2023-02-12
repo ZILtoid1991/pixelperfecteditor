@@ -21,7 +21,7 @@ public struct SortedList(E, alias cmp = "a < b", bool allowDuplicates = true, al
         foreach (E key; _array) {
             put(key);
         }
-        assert(this._array.length == _array.length);
+        
         assert(this._array.length == end);
 	}
 	/**
