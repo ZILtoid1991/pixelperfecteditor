@@ -6,57 +6,7 @@ import std.math;
 import pixelperfectengine.graphics.draw;
 import pixelperfectengine.system.etc : max, min;
 
-/** 
- * Draws a line using a fixed point method. Is capable of drawing lines diagonally.
- * Params:
- *   x0 = The X coordinate of the first point.
- *   y0 = The Y coordinate of the first point.
- *   x1 = The X coordinate of the second point.
- *   y1 = The Y coordinate of the second point.
- *   color = The color of the line.
- *   dest = Where the line should be drawn.
- *   destWidth = The width of the destination buffer, ideally divisible without remainder by dest.length.
- */
-public void drawLine(T)(int x0, int y0, int x1, int y1, T color, T[] dest, size_t destWidth) @safe @nogc nothrow pure {
-	if (x0 < 0 || x0 >= destWidth) return;
-	if (x1 < 0 || x1 >= destWidth) return;
-	if (y0 < 0 || y0 >= (dest.length / destWidth)) return;
-	if (y1 < 0 || y1 >= (dest.length / destWidth)) return;
-	const int dirX = x1 < x0 ? -1 : 1, dirY = y1 < y0 ? -1 : 1;
-	const int dx = abs(x1 - x0);
-	const int dy = abs(y1 - y0);
-	if (!dx || !dy) {
-		if (!dy) {
-			const sizediff_t offset = (destWidth * y0) + x0;
-			for (int x ; x <= dx ; x++) {
-				dest[offset + (x * dirX)] = color;
-			}
-		} else {
-			sizediff_t offset = destWidth * y0 + x0;
-			for (int y ; y <= dy ; y++) {
-				dest[offset] = color;
-				offset += destWidth * dirY;
-			}
-		}
-	} else if(dx>=dy) {
-		const double yS = cast(double)dy / dx * dirY;
-		double y = 0;
-		const sizediff_t offset = destWidth * y0 + x0;
-		for (int x ; x <= dx ; x++) {
-			dest[offset + (x * dirX) + (cast(int)nearbyint(y) * destWidth)] = color;
-			y += yS;
-		}
-	} else {
-		const double xS = cast(double)dx / dy * dirX;
-		double x = 0;
-		sizediff_t offset = destWidth * y0 + x0;
-		for (int y ; y <= dy ; y++) {
-			dest[offset + cast(int)nearbyint(x)] = color;
-			offset += destWidth * dirY;
-			x += xS;
-		}
-	}
-}
+import CPUblit.drawing.line;
 
 public __m128d interpolateCircle(__m128d sizes, __m128d center, double t) @nogc @safe pure nothrow {
 	__m128d result;
@@ -64,6 +14,36 @@ public __m128d interpolateCircle(__m128d sizes, __m128d center, double t) @nogc 
 	result[1] = cos(2*PI*t);
 	result *= sizes;
 	result += center;
+	return result;
+}
+
+double[3] rgb2hsl(Color rgb) @nogc @safe pure nothrow {
+	double[3] result;
+	double xmax = max(rgb.fR, max(rgb.fG, rgb.fB));
+	double xmin = min(rgb.fR, min(rgb.fG, rgb.fB));
+	const double d = xmax - xmin;
+	result[1] = d;
+	result[2] = xmin;
+	//result[1] = xmax;
+	/* if (result[2] != 0)
+		result[1] = d / xmax;
+	else
+		result[1] = 0; */
+	/* if (result[2] < 0.5)
+		result[1] = (xmax - xmin) / (xmax + xmin);
+	else
+		result[1] = (xmax - xmin) / (2.0 - xmax - xmin); */
+	if (xmax == rgb.fR)
+		result[0] = (rgb.fG - rgb.fB)/d;
+	else if (xmax == rgb.fG)
+		result[0] = 2.0 + (rgb.fB - rgb.fR)/d;
+	else
+		result[0] = 4.0 + (rgb.fR - rgb.fG)/d;
+	result[0] /= 6;
+	if (isNaN(result[0]))
+		result[0] = 0;
+	if (isNaN(result[1]))
+		result[1] = 0;
 	return result;
 }
 
@@ -77,55 +57,13 @@ public class ColorPicker : PopUpElement {
 		output = new BitmapDrawer(259, 259);
 		trueOutput = new Bitmap32Bit(259, 259);
 		position = Box.bySize(0, 0, 259, 259);
-		double xmax = max(initColor.fR, max(initColor.fG, initColor.fB));
-		double xmin = min(initColor.fR, min(initColor.fG, initColor.fB));
-		level = (xmax + xmin) / 2;
-		if (level == 0.0) {
-			hue = 0;
-			sat = 0;
-		} else {
-			double c = xmax - xmin;
-			sat = c / xmax;
-			if (xmax == initColor.fR) {
-				hue = ((initColor.fG - initColor.fB) / c) / 6;
-			} else if (xmax == initColor.fG) {
-				hue = (2 + (initColor.fB - initColor.fR) / c) / 6;
-			} else {
-				hue = (4 + (initColor.fR - initColor.fG) / c) / 6;
-			}
-			if (hue < 0) {
-				hue += 1.0;
-			}
-			if (level == 0.0 || level == 1.0) {
-				sat = 0;
-			} else {
-				sat = (xmax - level) / (min(level, 1.0 - level));
-			}
-			
-		}
-		real i = 2;
-		const double h = hue * 6;
-		immutable double c = 1.0;
-		const double x = c * (c - abs(modf(h, i) - c));
-		if (h >= 0 && h < 1) {
-			selHue.fR = c;
-			selHue.fG = x;
-		} else if (h >= 1 && h < 2) {
-			selHue.fR = 1 - x;
-			selHue.fG = c;
-		} else if (h >= 2 && h < 3) {
-			selHue.fG = c;
-			selHue.fB = x;
-		} else if (h >= 3 && h < 4) {
-			selHue.fG = 1 - x;
-			selHue.fB = c;
-		} else if (h >= 4 && h < 5) {
-			selHue.fB = c;
-			selHue.fR = x;
-		} else if (h >= 5 && h < 6) {
-			selHue.fB = 1 - x;
-			selHue.fR = c;
-		}
+		double[3] hsl = rgb2hsl(initColor);
+		hue = hsl[0];
+		sat = hsl[1];
+		level = hsl[2];
+		//selHue = hsl2rgb([hue, 0.0, 1.0]);
+		calculateColorOutput;
+		this.onColorPick = onColorPick;
 	}
     override public void draw() {
 		import CPUblit.colorlookup;
@@ -187,26 +125,6 @@ public class ColorPicker : PopUpElement {
 				trueOutput.writePixel(62 + x, 62 + y, cl);
 			}
 		}
-		/* for (double d = 0 ; d <= 1 ; d += 1 / (triP[1][1] - triP[0][1])) {
-			//lerp the points of the triangle line-by-line
-			__m128d c = triP[0] * __m128d(1 - d);
-			__m128d from = c + triP[1] * __m128d(d);
-			__m128d to = c + triP[2] * __m128d(d);
-			for (double e = 0 ; e <= 1 ; e += 1 / (to[0] - from[0])) {
-				//Calculate the color to draw
-				Color cl;
-				cl.a = 0xFF;
-				cl.fR = selHue.fR() * d;
-				cl.fG = selHue.fG() * d;
-				cl.fB = selHue.fB() * d;
-				cl.fR = cl.fR * (1.0 - e) + e;
-				cl.fG = cl.fG * (1.0 - e) + e;
-				cl.fB = cl.fB * (1.0 - e) + e;
-				//get the current pixel to use
-				double x = from[0] * (1.0 - e) + to[0] * e;
-				trueOutput.writePixel(cast(int)nearbyint(x), cast(int)nearbyint(from[1]), cl);
-			}
-		} */
 		//Draw hue selector line
 		{
 			__m128d inner = interpolateCircle(__m128d(96.0), __m128d(129), hue),
@@ -308,6 +226,8 @@ public class ColorPicker : PopUpElement {
 		selection.fR = selection.fR * (1.0 - level) + level;
 		selection.fG = selection.fG * (1.0 - level) + level;
 		selection.fB = selection.fB * (1.0 - level) + level;
+		/* selHue = hsl2rgb([hue, 1.0, 1.0]);
+		selection = hsl2rgb([hue, sat, level]); */
 		if (onColorPick !is null)
 			onColorPick(selection);
 	}
