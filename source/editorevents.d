@@ -1001,3 +1001,88 @@ public class ObjectPropertyRemoveEvent : UndoableEvent {
 		obj.mainTag.add(backup);
 	}
 }
+public class CreateSpriteLayerEvent : UndoableEvent {
+	SpriteLayer creation;
+	MapDocument target;
+	int pri;
+	string name;
+	Tag backup;
+
+	this(SpriteLayer creation, MapDocument target, int pri, string name, Tag backup) {
+		this.creation = creation;
+		this.target = target;
+		this.pri = pri;
+		this.name = name;
+		this.backup = backup;
+	}
+
+	public void redo() {
+		if (backup) {
+			target.mainDoc.addNewLayer(pri, backup, creation);
+		} else {
+			target.mainDoc.addNewLayer(pri, new Tag("Layer", "Sprite", [Value(name), Value(pri)]), creation);
+		}
+	}
+
+	public void undo() {
+		backup = target.mainDoc.removeLayer(pri);
+	}
+}
+public class SpriteObjectPlacementEvent : UndoableEvent {
+	MapDocument doc;
+	int layer;
+	int pri;
+	int matID;
+	string path;
+	int x;
+	int y;
+	int horizScale;
+	int vertScale;
+	int palSel;
+	RenderingMode rendMode;
+
+	this(MapDocument doc, int layer, int pri, int matID, string path, int x, int y, int horizScale, int vertScale, 
+			int palSel, RenderingMode rendMode) {
+		this.doc = doc;
+		this.layer = layer;
+		this.pri = pri;
+		this.matID = matID;
+		this.path = path;
+		this.x = x;
+		this.y = y;
+		this.horizScale = horizScale;
+		this.vertScale = vertScale;
+		this.palSel = palSel;
+		this.rendMode = rendMode;
+	}
+
+	public void redo() {
+		
+	}
+
+	public void undo() {
+		
+	}
+}
+public class RemoveSpriteEvent : UndoableEvent {
+
+
+	public void redo() {
+		
+	}
+
+	public void undo() {
+		
+	}
+}
+public class AddSpriteSheetEvent : UndoableEvent {
+
+
+	public void redo() {
+		
+	}
+
+	public void undo() {
+		
+	}
+}
