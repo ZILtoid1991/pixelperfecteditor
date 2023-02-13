@@ -17,18 +17,16 @@ public __m128d interpolateCircle(__m128d sizes, __m128d center, double t) @nogc 
 	return result;
 }
 
-double[3] rgb2hsl(Color rgb) @nogc @safe pure nothrow {
+double[3] rgb2hsv(Color rgb) @nogc @safe pure nothrow {
 	double[3] result;
 	double xmax = max(rgb.fR, max(rgb.fG, rgb.fB));
 	double xmin = min(rgb.fR, min(rgb.fG, rgb.fB));
 	const double d = xmax - xmin;
-	result[1] = d;
-	result[2] = xmin;
-	//result[1] = xmax;
-	/* if (result[2] != 0)
+	result[2] = xmax;
+	if (result[2] != 0)
 		result[1] = d / xmax;
 	else
-		result[1] = 0; */
+		result[1] = 0;
 	/* if (result[2] < 0.5)
 		result[1] = (xmax - xmin) / (xmax + xmin);
 	else
@@ -49,7 +47,7 @@ double[3] rgb2hsl(Color rgb) @nogc @safe pure nothrow {
 
 public class ColorPicker : PopUpElement {
     Bitmap32Bit trueOutput;
-	double hue, sat, level;
+	double hue, sat, value;
 	Color selHue;
 	Color selection;
 	public void delegate(Color c) onColorPick;
@@ -57,10 +55,10 @@ public class ColorPicker : PopUpElement {
 		output = new BitmapDrawer(259, 259);
 		trueOutput = new Bitmap32Bit(259, 259);
 		position = Box.bySize(0, 0, 259, 259);
-		double[3] hsl = rgb2hsl(initColor);
-		hue = hsl[0];
-		sat = hsl[1];
-		level = hsl[2];
+		double[3] hsv = rgb2hsv(initColor);
+		hue = hsv[0];
+		sat = hsv[1];
+		value = hsv[2];
 		//selHue = hsl2rgb([hue, 0.0, 1.0]);
 		calculateColorOutput;
 		this.onColorPick = onColorPick;
@@ -109,19 +107,20 @@ public class ColorPicker : PopUpElement {
 					cast(int)nearbyint(inner[1]), col, trueOutput.pixels, trueOutput.width); */
 		}
 		//draw the square
-		//x axis is saturation, y axis is level
+		//x axis is saturation, y axis is value
 		for (int y ; y <= 133 ; y++) {
-			const double l = (1.0 / 133) * y;
+			const double v = (1.0 / 133) * y;
 			for (int x ; x <= 133 ; x++) {
 				const double s = (1.0 / 133) * x;
+				const double c_s = v * (1.0 - s);
 				Color cl;
 				cl.a = 0xFF;
-				cl.fR = selHue.fR() * s;
-				cl.fG = selHue.fG() * s;
-				cl.fB = selHue.fB() * s;
-				cl.fR = cl.fR * (1.0 - l) + l;
-				cl.fG = cl.fG * (1.0 - l) + l;
-				cl.fB = cl.fB * (1.0 - l) + l;
+				cl.fR = selHue.fR() * v;
+				cl.fG = selHue.fG() * v;
+				cl.fB = selHue.fB() * v;
+				cl.fR = (cl.fR * s) + c_s;
+				cl.fG = (cl.fG * s) + c_s;
+				cl.fB = (cl.fB * s) + c_s;
 				trueOutput.writePixel(62 + x, 62 + y, cl);
 			}
 		}
@@ -136,7 +135,7 @@ public class ColorPicker : PopUpElement {
 		{
 			__m128d circleMidpoint;
 			circleMidpoint[0] = sat * 133 + 62;
-			circleMidpoint[1] = level * 133 + 62;
+			circleMidpoint[1] = value * 133 + 62;
 			for (double d = 0.0 ; d <= 1.0 ; d += 1.0 / 32) {
 				const __m128d p = interpolateCircle(__m128d(7.0), circleMidpoint, d);
 				trueOutput.writePixel(cast(int)p[0], cast(int)p[1], Color(0xFF, 0xFF, 0xFF, 0xFF));
@@ -154,7 +153,7 @@ public class ColorPicker : PopUpElement {
 			calculateColorOutput();
 			draw();
 		} else if (x >= 62 && y >= 62 && x <= 62 + 133 && y <= 62 + 133) {
-			level = (1.0 / 133) * (y - 62);
+			value = (1.0 / 133) * (y - 62);
 			sat = (1.0 / 133) * (x - 62);
 			calculateColorOutput();
 			draw();
@@ -220,14 +219,13 @@ public class ColorPicker : PopUpElement {
 			selHue.fB = 1 - x;
 			selHue.fR = c;
 		}
-		selection.fR = selHue.fR * sat;
-		selection.fG = selHue.fG * sat;
-		selection.fB = selHue.fB * sat;
-		selection.fR = selection.fR * (1.0 - level) + level;
-		selection.fG = selection.fG * (1.0 - level) + level;
-		selection.fB = selection.fB * (1.0 - level) + level;
-		/* selHue = hsl2rgb([hue, 1.0, 1.0]);
-		selection = hsl2rgb([hue, sat, level]); */
+		selection.fR = selHue.fR * value;
+		selection.fG = selHue.fG * value;
+		selection.fB = selHue.fB * value;
+		const double c_s = value * (1.0 - sat);
+		selection.fR = (selection.fR * sat) + c_s;
+		selection.fG = (selection.fG * sat) + c_s;
+		selection.fB = (selection.fB * sat) + c_s;
 		if (onColorPick !is null)
 			onColorPick(selection);
 	}
