@@ -1008,12 +1008,11 @@ public class CreateSpriteLayerEvent : UndoableEvent {
 	string name;
 	Tag backup;
 
-	this(SpriteLayer creation, MapDocument target, int pri, string name, Tag backup) {
+	this(SpriteLayer creation, MapDocument target, int pri, string name) {
 		this.creation = creation;
 		this.target = target;
 		this.pri = pri;
 		this.name = name;
-		this.backup = backup;
 	}
 
 	public void redo() {

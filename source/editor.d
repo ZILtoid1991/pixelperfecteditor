@@ -906,10 +906,12 @@ public class Editor : InputListener, SystemEventListener {
 	 *
 	 * file: Optional field. If given, it specifies the external file for binary map data. If it specifies an already
 	 * existing file, then that file will be loaded. If null, then the map data will be embedded as a BASE64 chunk.
-	 * tmplt: Optional field. Specifies the initial tile source data from a map file alongside with the name of the layer
 	 */
 	public void newTileLayer(int tX, int tY, int mX, int mY, dstring name, string file, bool embed) {
 		selDoc.events.addToTop(new CreateTileLayerEvent(selDoc, tX, tY, mX, mY, name, file, embed));
+	}
+	public void newSpriteLayer(string name) {
+		selDoc.events.addToTop(new CreateSpriteLayerEvent(new SpriteLayer(), selDoc, selDoc.nextLayerNumber, name));
 	}
 	public void setRasterRefresh(){
 		rasterRefresh = true;

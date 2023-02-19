@@ -51,6 +51,7 @@ public class ColorPicker : PopUpElement {
 	Color selHue;
 	Color selection;
 	public void delegate(Color c) onColorPick;
+	protected static immutable __m128 o = __m128([0, -1.0/3.0, 1.0/3.0, 0]);
 	public this (void delegate(Color c) onColorPick, Color initColor) {
 		output = new BitmapDrawer(259, 259);
 		trueOutput = new Bitmap32Bit(259, 259);
@@ -97,6 +98,19 @@ public class ColorPicker : PopUpElement {
 				col.fB = 1 - x;
 				col.fR = c;
 			}
+			/* __m128 h = __m128(d) + o;
+			for (int j ; j < 3 ; j++) {
+				real i = 1;
+				h[j] = modf(h[j], i);
+			}
+			h = __m128(1) - (2 * h);
+			for (int j ; j < 3 ; j++) {
+				h[j] = abs(h[j]);
+			}
+			__m128 fullsat = _mm_min_ps(_mm_max_ps(__m128(3) * h - __m128(1),__m128(0)), __m128(1));
+			col.fR = fullsat[0];
+			col.fG = fullsat[1];
+			col.fB = fullsat[2]; */
 			__m128d inner = interpolateCircle(__m128d(96.0), __m128d(129), d),
 					outer = interpolateCircle(__m128d(128.0), __m128d(129), d);
 			for (double e = 0 ; e <= 1 ; e+=0.02) {
