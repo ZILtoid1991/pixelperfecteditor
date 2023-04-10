@@ -878,14 +878,23 @@ public class Editor : InputListener, SystemEventListener {
 			wh.addWindow(new ResizeMap(selDoc));
 		}
 	}
-	
-	
 	/**
 	 * Opens a window to ask the user for the data on the new tile layer
 	 */
 	public void initNewTileLayer(){
 		if (selDoc !is null)
 			wh.addWindow(new NewTileLayerDialog(this));
+	}
+	public void initNewSpriteLayer() {
+		import windows.textinputdialog;
+		if (selDoc !is null) {
+			wh.addWindow(new TextInputDialog(Box.bySize(16, 16, 256, 256), &initNewSpriteLayer_onTextInput, "newSprtLayerName", 
+					"Create new sprite layer", "Layer name:"));
+		}
+	}
+	protected void initNewSpriteLayer_onTextInput(Text text) {
+		import std.utf : toUTF8;
+		newSpriteLayer(toUTF8(text.toDString));
 	}
 	/**
 	 * Opens a window to ask the user for input on materials to be added
@@ -898,6 +907,8 @@ public class Editor : InputListener, SystemEventListener {
 				ITileLayer itl = cast(ITileLayer)selDoc.mainDoc.layeroutput[selDoc.selectedLayer];
 				const int tileX = itl.getTileWidth, tileY = itl.getTileHeight;
 				wh.addWindow(new AddTiles(this, tileX, tileY));
+			} else if (selDoc.mainDoc.getLayerInfo(selDoc.selectedLayer).type == LayerType.Sprite) {
+				
 			}
 		}
 	}

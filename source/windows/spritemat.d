@@ -43,6 +43,7 @@ public class SprMatCreate : Window {
 		textBox_palOffset = new TextBox("0"d, "textBox_palOffset", Box(150, 285, 200, 305));
 
 		spriteAm = new RadioButtonGroup([radioButton_single, radioButton_multi]);
+		spriteAm.onToggle = &radioButtonGroup_onToggle;
 
 		addElement(label_path);
 		addElement(textBox_path);
@@ -59,8 +60,17 @@ public class SprMatCreate : Window {
 		addElement(smallButton_add);
 		addElement(smallButton_remove);
 	}
-	protected void radioButton_single_onToggle(Event ev) {
-		multi = false;
-
+	protected void radioButtonGroup_onToggle(Event ev) {
+		if (ev.aux is radioButton_single) {
+			multi = false;
+			listView_sprSheet.state = ElementState.Disabled;
+			smallButton_add.state = ElementState.Disabled;
+			smallButton_remove.state = ElementState.Disabled;
+		} else if (ev.aux is radioButton_multi) {
+			multi = true;
+			listView_sprSheet.state = ElementState.Enabled;
+			smallButton_add.state = ElementState.Enabled;
+			smallButton_remove.state = ElementState.Enabled;
+		}
 	}
 }

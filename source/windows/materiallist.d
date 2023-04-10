@@ -80,32 +80,35 @@ public class MaterialList : Window {
 	public void updateMaterialList(TileInfo[] list) @trusted {
 		import pixelperfectengine.system.etc : intToHex;
 		tiles = list;
-		/+ListViewItem[] output;
-		output.reserve = list.length;+/
+		ListViewItem[] output;
+		output.reserve = list.length;
 		listView_materials.clear;
-		listView_materials.header = tileListHeader;
+		
 		foreach (item ; list) {
 			ListViewItem f = new ListViewItem(16, [intToHex!dstring(item.id, 4) ~ "h", toUTF32(item.name)], 
 					[TextInputFieldType.None, TextInputFieldType.Text]);
-			//f[1].editable = true;
-			listView_materials ~= f;
+			output ~= f;
 		}
-		listView_materials.refresh;
+		listView_materials.setHeader(tileListHeader, output);
+		//listView_materials.refresh;
 		/+listBox_materials.updateColumns(output, new ListBoxHeader(tileListHeaderS.dup, tileListHeaderW.dup));+/
 	}
 	public void updateMaterialList(int[] id, string[] name, int[2][] size) @trusted {
 		assert(id.length == name.length);
 		assert(id.length == size.length);
+		ListViewItem[] output;
+		output.reserve = id.length;
 		listView_materials.clear;
-		listView_materials.header = spriteListHeader;
+		
 		for (int i; i < id.length ; i++) {
-			ListViewItem f = new ListViewItem(16, [intToHex!dstring(id[i]) ~ "h", toUTF32(name[i], 
-					format("%d \u00d7 %d"d, size[i][0], size[i][1]))], 
+			ListViewItem f = new ListViewItem(16, [intToHex!dstring(id[i]) ~ "h", toUTF32(name[i]), 
+					format("%d \u00d7 %d"d, size[i][0], size[i][1])], 
 					[TextInputFieldType.None, TextInputFieldType.Text, TextInputFieldType.None]);
 			//f[1].editable = true;
-			listView_materials ~= f;
+			output ~= f;
 		}
-		listView_materials.refresh;
+		listView_materials.setHeader(spriteListHeader, output);
+		//listView_materials.refresh;
 	}
 	private void vertMirror_onClick(Event ev) {
 		CheckBox sender = cast(CheckBox)ev.sender;

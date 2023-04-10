@@ -15,12 +15,9 @@ public class LayerList : Window {
 	CheckBox checkBox_Hide;
 	CheckBox checkBox_Solo;
 	public this(int x, int y, void delegate() onClose){
-		//super(Coordinate(0 + x, 16 + y, 98 + x, 213 + y), "Layers"d);
-		super(Coordinate(0 + x, 0 + y, 129 + x, 213 + y), "Layers"d);
+		super(Box(0 + x, 0 + y, 129 + x, 213 + y), "Layers"d);
 		this.onClose = onClose;
-		//StyleSheet ss = getStyleSheet();
-		/+listBox_layers = new ListBox("listBox0", Coordinate(1, 17, 129, 180), [], new ListBoxHeader(["Pri"d ,"Type"d, "Name"d],
-				[24, 24, 96]));+/
+		
 		listView_layers = new ListView(
 			new ListViewHeader(16, [24, 24, 96], ["Pri"d ,"Type"d, "Name"d]), null, "listView_layers", Box(1, 17, 128, 179)
 		);
@@ -115,7 +112,7 @@ public class LayerList : Window {
 		prg.initNewTileLayer;
 	}
 	private void button_newSpriteLayer_onClick(Event ev){
-
+		prg.initNewSpriteLayer;
 	}
 	private void button_newTransformableTileLayer_onClick(Event ev){
 

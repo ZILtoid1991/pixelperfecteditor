@@ -42,6 +42,7 @@ public class MapDocument : MouseEventReceptor {
 	alias DrawableObjectList = SortedList!(DrawableObject, "a.pID < b.pID", false, "a.pID == b.pID");
 	ObjectList			mapObjList;		///List of map objects from the selected layer
 	DrawableObjectList	drawableObjList;///Contains the display data of the currently selected layer's objects (if any)
+	ABitmap[int][int]	sprtResMan;		///Sprite resource manager
 	
 	int					selObject;		///Selected object number
 	Box					mapSelection;	///Contains the selected map area parameters

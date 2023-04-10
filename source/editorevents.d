@@ -915,26 +915,36 @@ public class MapObjectPlacementEvent : UndoableEvent {
 	}
 }
 public class ObjectRemovalEvent : UndoableEvent {
-	Tag target;
-	MapObject obj;
 	MapDocument doc;
-	public this (Tag target, MapObject obj, MapDocument doc) {
-		this.target = target;
-		this.obj = obj;
+	int layerID;
+	int objID;
+	Tag backup;
+	public this (MapDocument doc, int layerID, int objID) {
+		this.doc = doc;
+		this.layerID = layerID;
+		this.objID = objID;
 	}
 	public void redo() {
-		try {
-			foreach (Tag key; target.namespaces["Object"].tags) {
-				if (key.values[1].get!int == obj.pID) {
-					key.remove;
-				}
+		backup = doc.mainDoc.removeObjectFromLayer(layerID, objID);
+		if (backup.name == "Sprite") {
+			SpriteLayer sl = cast(SpriteLayer)doc.mainDoc.layeroutput[layerID];
+			if (sl !is null) {
+				sl.removeSprite(objID);
 			}
-			doc.updateObjectList();
-		} catch (Exception e) {}
+		}
+		doc.updateObjectList();
 	}
 
 	public void undo() {
-		target.add(obj.serialize);
+		doc.mainDoc.addObjectToLayer(layerID, backup);
+		if (backup.name == "Sprite") {
+			SpriteLayer sl = cast(SpriteLayer)doc.mainDoc.layeroutput[layerID];
+			if (sl !is null) {
+				SpriteObject so = new SpriteObject(backup, layerID);
+				sl.addSprite(doc.sprtResMan[layerID][so.ssID], so.pID, so.x, so.y, so.palSel, so.palShift, so.masterAlpha, 
+						so.scaleHoriz, so.scaleVert, so.rendMode);
+			}
+		}
 		doc.updateObjectList();
 	}
 }
@@ -1032,56 +1042,159 @@ public class SpriteObjectPlacementEvent : UndoableEvent {
 	int layer;
 	int pri;
 	int matID;
-	string path;
+	string name;
 	int x;
 	int y;
 	int horizScale;
 	int vertScale;
 	int palSel;
+	int alpha;
 	RenderingMode rendMode;
+	Tag backup;
 
-	this(MapDocument doc, int layer, int pri, int matID, string path, int x, int y, int horizScale, int vertScale, 
-			int palSel, RenderingMode rendMode) {
+	this(MapDocument doc, int layer, int pri, int matID, string name, int x, int y, int horizScale, int vertScale, 
+			int palSel, int alpha, RenderingMode rendMode) {
 		this.doc = doc;
 		this.layer = layer;
 		this.pri = pri;
 		this.matID = matID;
-		this.path = path;
+		this.name = name;
 		this.x = x;
 		this.y = y;
 		this.horizScale = horizScale;
 		this.vertScale = vertScale;
 		this.palSel = palSel;
+		this.alpha = alpha;
 		this.rendMode = rendMode;
 	}
 
 	public void redo() {
-		
+		SpriteLayer sl = cast(SpriteLayer)doc.mainDoc.layeroutput[layer];
+		if (sl !is null) {
+			Tag layerInfo = doc.mainDoc.layerData[layer];
+			ubyte palShift;
+			MapObject mo;
+			if (backup is null) {
+				try {
+					string filename;
+					foreach (Tag t0 ; layerInfo.namespaces["File"].tags) {
+						if (t0.name == "SpriteSource") {
+							if (t0.getValue!int() == matID) {
+								filename = t0.getValue!string();
+								goto filenameFound;
+							}
+						} else if (t0.name == "SpriteSheet") {
+							Tag t1 = t0.getTag("SheetData");
+							if (t1 !is null) {
+								foreach (Tag t2 ; t1.tags) {
+									if (t2.values[0].get!int == matID) {
+										filename = t0.getValue!string();
+										goto filenameFound;
+									}
+								}
+							}
+						}
+					}
+					filenameFound:
+				} catch (Exception e) {
+
+				}
+				mo = new SpriteObject(pri, layer, name, matID, x, y, horizScale, vertScale, rendMode, cast(ushort)palSel, palShift, 
+						cast(ubyte)alpha);
+			} else {
+				mo = new SpriteObject(backup, layer);
+				palShift = cast(ubyte)backup.getAttribute!int("palShift");
+			}
+			sl.addSprite(doc.sprtResMan[layer][matID], pri, x, y, cast(ushort)palSel, palShift, cast(ubyte)alpha, horizScale, 
+					vertScale, rendMode);
+			doc.mainDoc.addObjectToLayer(layer, mo.serialize);
+		}
 	}
 
 	public void undo() {
-		
+		SpriteLayer sl = cast(SpriteLayer)doc.mainDoc.layeroutput[layer];
+		if (sl !is null) {
+			sl.removeSprite(pri);
+			backup = doc.mainDoc.removeObjectFromLayer(layer, pri);
+		}
 	}
 }
-public class RemoveSpriteEvent : UndoableEvent {
 
-
-	public void redo() {
-		
-	}
-
-	public void undo() {
-		
-	}
-}
 public class AddSpriteSheetEvent : UndoableEvent {
-
+	MapDocument doc;
+	int layer;
+	int palOffset;
+	int palShift;
+	string fileSource;
+	Box[] spriteCoords;
+	int[] id;
+	string[] name;
+	public this(MapDocument doc, int layer, int palOffset, int palShift, string fileSource, Box[] spriteCoords, int[] id, 
+			string[] name) {
+		this.doc = doc;
+		this.layer = layer;
+		this.palOffset = palOffset;
+		this.palShift = palShift;
+		this.fileSource = fileSource;
+		this.spriteCoords = spriteCoords;
+		this.id = id;
+		this.name = name;
+		assert(spriteCoords.length == id.length);
+		assert(name.length == id.length);
+	}
 
 	public void redo() {
-		
+		Tag t = new Tag("File", "SpriteSheet", [Value(fileSource)]);
+		Tag t0 = new Tag(t, null, "SheetData");
+		Image imgSrc = loadImage(File(fileSource));
+		for (int i ; i < id.length ; i++) {
+			Attribute[] attr;
+			if (name[i].length) {
+				attr ~= new Attribute("name", Value(name[i]));
+			}
+			new Tag(t0, null, null, [Value(id[i]), Value(spriteCoords[i].left), Value(spriteCoords[i].top), 
+					Value(spriteCoords[i].width), Value(spriteCoords[i].height)]);
+			switch (imgSrc.getBitdepth) {
+				case 2:
+					doc.sprtResMan[layer][id[i]] = loadBitmapSliceFromImage!Bitmap2Bit(imgSrc, spriteCoords[i].left, 
+							spriteCoords[i].top, spriteCoords[i].width, spriteCoords[i].height);
+					break;
+				case 4:
+					doc.sprtResMan[layer][id[i]] = loadBitmapSliceFromImage!Bitmap4Bit(imgSrc, spriteCoords[i].left, 
+							spriteCoords[i].top, spriteCoords[i].width, spriteCoords[i].height);
+					break;
+				case 8:
+					doc.sprtResMan[layer][id[i]] = loadBitmapSliceFromImage!Bitmap8Bit(imgSrc, spriteCoords[i].left, 
+							spriteCoords[i].top, spriteCoords[i].width, spriteCoords[i].height);
+					break;
+				case 16:
+					doc.sprtResMan[layer][id[i]] = loadBitmapSliceFromImage!Bitmap16Bit(imgSrc, spriteCoords[i].left, 
+							spriteCoords[i].top, spriteCoords[i].width, spriteCoords[i].height);
+					break;
+				default:
+					doc.sprtResMan[layer][id[i]] = loadBitmapSliceFromImage!Bitmap32Bit(imgSrc, spriteCoords[i].left, 
+							spriteCoords[i].top, spriteCoords[i].width, spriteCoords[i].height);
+					break;
+			}
+		}
+		if (imgSrc.palette !is null) {
+			doc.outputWindow.loadPaletteChunk(loadPaletteFromImage(imgSrc), cast(ushort)palOffset);
+			Attribute[] attr;
+			if (palOffset) {
+				attr ~= new Attribute("offset", Value(palOffset));
+			}
+			if (palShift > 0) {
+				attr ~= new Attribute("palShift", Value(palShift));
+			}
+			doc.mainDoc.layerData[layer].add(new Tag("File", "Palette", [Value(fileSource)], attr));
+		}
+		doc.mainDoc.layerData[layer].add(t);
 	}
 
 	public void undo() {
-		
+		foreach (int i; id) {
+			doc.sprtResMan[layer].remove(i);
+
+		}
 	}
 }
