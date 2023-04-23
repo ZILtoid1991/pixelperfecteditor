@@ -14,8 +14,8 @@ public class TextInputDialog : Window {
 	/**
 	 * Creates a TextInputDialog. Auto-sizing version is not implemented yet.
 	 */
-	public this(Box size, void delegate(Text text) textOutput, string source, Text title, Text message, Text text = null, 
-            Text okBtnText = null, StyleSheet customStyle = null) {
+	public this(Box size, void delegate(Text text) textOutput, string source, Text title, Text message, Text text, 
+            Text okBtnText, StyleSheet customStyle = null) {
 		super(size, title, null, customStyle);
         this.textOutput = textOutput;
 		Label msg = new Label(message, "null", Box(8, 20, size.width()-8, 39));
@@ -36,9 +36,8 @@ public class TextInputDialog : Window {
 		this.customStyle = customStyle;
 		this(size, textOutput, source, new Text(title, getStyleSheet().getChrFormatting("windowHeader")), 
 				new Text(message, getStyleSheet().getChrFormatting("windowHeader")), 
-				text.length ? new Text(text, getStyleSheet().getChrFormatting("label")) : null,
-				okBtnText.length ? new Text(okBtnText, getStyleSheet().getChrFormatting("button")) : null,
-				customStyle);
+				new Text(text, getStyleSheet().getChrFormatting("label")),
+				new Text(okBtnText.length ? okBtnText : "OK", getStyleSheet().getChrFormatting("button")), customStyle);
 	}
 	///Called when the "ok" button is pressed
 	protected void button_onClick(Event ev) {

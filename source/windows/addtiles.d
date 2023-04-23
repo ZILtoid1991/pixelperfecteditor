@@ -58,10 +58,12 @@ public class AddTiles : Window {
 		addElement(textBox_Source);
 		textBox_Source.onTextInput = &textBox_Source_onTextInput;
 		addElement(label1);
+		textBox_palShift.setFilter(TextInputFieldType.IntegerP);
 		addElement(textBox_palShift);
 		addElement(checkBox_palImport);
 		addElement(checkBox_embDat);
 		addElement(label2);
+		textBox_palOffset.setFilter(TextInputFieldType.IntegerP);
 		addElement(textBox_palOffset);
 		addElement(button_Ok);
 		button_Ok.onMouseLClick = &button_Ok_onClick;
@@ -82,7 +84,7 @@ public class AddTiles : Window {
 	}
 	private void textBox_palShift_onTextInput(Event e) {
 		//validate input type
-		import pixelperfectengine.system.etc : isInteger;
+		//import pixelperfectengine.system.etc : isInteger;
 		const int value = to!int(textBox_palShift.getText.text);
 		if (value < 1 || value > 8) {
 			handler.message("Bad value!"d, "Value must be between 1 and 8!"d);

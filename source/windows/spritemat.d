@@ -1,6 +1,8 @@
 import pixelperfectengine.concrete.window;
 import document;
 import editorevents;
+import std.conv : to;
+import std.utf;
 
 public class SprMatCreate : Window {
 	Label label_path;
@@ -71,6 +73,55 @@ public class SprMatCreate : Window {
 			listView_sprSheet.state = ElementState.Enabled;
 			smallButton_add.state = ElementState.Enabled;
 			smallButton_remove.state = ElementState.Enabled;
+		}
+	}
+	protected void button_browse_onClick(Event ev) {
+		import pixelperfectengine.concrete.dialogs.filedialog;
+		handler.addWindow(new FileDialog("Select sprite sheet source", "fileLoad", &onFileSelect, 
+				[FileDialog.FileAssociationDescriptor("All supported files", [".png",".tga",".bmp"]),
+				FileDialog.FileAssociationDescriptor("Portable network graphics file", [".png"]),
+				FileDialog.FileAssociationDescriptor("Truevision TARGA", [".tga"]),
+				FileDialog.FileAssociationDescriptor("Windows bitmap", [".bmp"])], "./"));
+	}
+	protected void onFileSelect(Event ev) {
+		FileEvent fev = cast(FileEvent)ev;
+		textBox_path.setText(toUTF32(fev.getFullPath));
+	}
+	protected void button_create_onClick(Event ev) {
+		import collections.treemap;
+		int[] id;
+		string[] name;
+		Box[] spriteCoords;
+		if (multi) {
+			TreeMap!(uint, void) idChecker;
+			for (int i ; i < listView_sprSheet.numEntries ; i++) {
+				idChecker.put(to!uint(listView_sprSheet[i][0].text.toDString));
+				id ~= to!uint(listView_sprSheet[i][0].text.toDString);
+				spriteCoords ~= Box.bySize(to!uint(listView_sprSheet[i][1].text.toDString), 
+						to!uint(listView_sprSheet[i][2].text.toDString), to!uint(listView_sprSheet[i][3].text.toDString), 
+						to!uint(listView_sprSheet[i][4].text.toDString));
+				name ~= toUTF8(listView_sprSheet[i][5].text.toDString);
+			}
+			if (idChecker.length != listView_sprSheet.numEntries) {
+				handler.message("ID error!", "ID duplicates found!");
+				return;
+			}
+		} else {
+
+		}
+		md.events.addToTop(new AddSpriteSheetEvent(md, layerID, to!int(textBox_palOffset.getText.toDString), 
+				to!int(textBox_palShift.getText.toDString), toUTF8(textBox_path.getText.toDString), spriteCoords, id, name));
+		close();
+	}
+	protected void smallButton_add_onClick(Event ev) {
+		listView_sprSheet ~= new ListViewItem(16, ["0","0","0","0","0",""], 
+				[TextInputFieldType.DecimalP, TextInputFieldType.DecimalP, TextInputFieldType.DecimalP, TextInputFieldType.DecimalP, 
+				TextInputFieldType.DecimalP, TextInputFieldType.Text]);
+	}
+	protected void smallButton_remove_onClick(Event ev) {
+		if (listView_sprSheet.value >= 0){
+			listView_sprSheet.removeEntry(listView_sprSheet.value);
+			listView_sprSheet.refresh();
 		}
 	}
 }

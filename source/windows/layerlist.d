@@ -157,12 +157,12 @@ public class LayerList : Window {
 		//listView_layers.(list);
 	}
 	private void layerList_TextEdit(Event ev) {
-		import pixelperfectengine.system.etc : isInteger;
+//		import pixelperfectengine.system.etc : isInteger;
 		CellEditEvent cee = cast(CellEditEvent)ev;
 		if (prg.selDoc !is null) {
 			if (cee.column == 2) {	//Rename
 				prg.selDoc.renameLayer(toUTF8(cee.text.text));
-			} else if (isInteger(cee.text.text)) {				//Set new priority
+			} else if (cee.column == 0) {				//Set new priority
 				prg.selDoc.changeLayerPriority(to!int(cee.text.text));
 			}
 		}
