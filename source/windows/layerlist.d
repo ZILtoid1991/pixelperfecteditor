@@ -19,7 +19,7 @@ public class LayerList : Window {
 		this.onClose = onClose;
 		
 		listView_layers = new ListView(
-			new ListViewHeader(16, [24, 24, 96], ["Pri"d ,"Type"d, "Name"d]), null, "listView_layers", Box(1, 17, 128, 179)
+			new ListViewHeader(16, [24, 40, 96], ["Pri"d ,"Type"d, "Name"d]), null, "listView_layers", Box(1, 17, 128, 179)
 		);
 		listView_layers.editEnable = true;
 		listView_layers.multicellEditEnable = true;

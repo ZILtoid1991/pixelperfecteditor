@@ -35,6 +35,7 @@ public import windows.objectlist;
 import document;
 import windows.rasterwindow;
 import windows.newtilelayer;
+import windows.spritemat;
 import clipboard;
 
 
@@ -908,7 +909,7 @@ public class Editor : InputListener, SystemEventListener {
 				const int tileX = itl.getTileWidth, tileY = itl.getTileHeight;
 				wh.addWindow(new AddTiles(this, tileX, tileY));
 			} else if (selDoc.mainDoc.getLayerInfo(selDoc.selectedLayer).type == LayerType.Sprite) {
-				
+				wh.addWindow(new SprMatCreate(selDoc, selDoc.selectedLayer));
 			}
 		}
 	}
