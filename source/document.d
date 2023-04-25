@@ -797,6 +797,10 @@ public class MapDocument : MouseEventReceptor {
 		if (mainDoc.layeroutput[selectedLayer])
 			events.addToTop(new RemoveTile(id, this, selectedLayer));
 	}
+	public void removeSprite(int id) {
+		/+if (mainDoc.layeroutput[selectedLayer])
+			events.addToTop(new Remo)+/
+	}
 	/**
 	 * Renames a tile on the material list.
 	 */

@@ -1216,3 +1216,17 @@ public class AddSpriteSheetEvent : UndoableEvent {
 		}
 	}
 }
+public class RemoveSpriteEvent : UndoableEvent {
+	Tag backup;
+	MapDocument target;
+	Layer l;
+	int spriteID;
+
+	public void redo() {
+		
+	}
+
+	public void undo() {
+		
+	}
+}

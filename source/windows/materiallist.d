@@ -26,6 +26,8 @@ public class MaterialList : Window {
 	SmallButton		settings;
 
 	protected TileInfo[] tiles;
+	protected int[] spriteIDs;
+	//protected SpriteInfo[] sprites;
 	protected ListViewHeader tileListHeader;
 	protected ListViewHeader spriteListHeader;
 	public this(int x, int y, void delegate() onClose) @trusted {
@@ -79,18 +81,19 @@ public class MaterialList : Window {
 	}
 	public void updateMaterialList(TileInfo[] list) @trusted {
 		import pixelperfectengine.system.etc : intToHex;
+		spriteIDs.length = 0;
 		tiles = list;
 		ListViewItem[] output;
 		output.reserve = list.length;
 		listView_materials.clear;
 		
 		foreach (item ; list) {
-			ListViewItem f = new ListViewItem(16, [intToHex!dstring(item.id, 4) ~ "h", toUTF32(item.name)], 
+			ListViewItem f = new ListViewItem(16, [format("%04Xh"d,item.id), toUTF32(item.name)], 
 					[TextInputFieldType.None, TextInputFieldType.Text]);
 			output ~= f;
 		}
 		listView_materials.setHeader(tileListHeader, output);
-		//listView_materials.refresh;
+		listView_materials.refresh;
 		/+listBox_materials.updateColumns(output, new ListBoxHeader(tileListHeaderS.dup, tileListHeaderW.dup));+/
 	}
 	public void updateMaterialList(int[] id, string[] name, int[2][] size) @trusted {
@@ -99,16 +102,18 @@ public class MaterialList : Window {
 		ListViewItem[] output;
 		output.reserve = id.length;
 		listView_materials.clear;
-		
+		tiles.length = 0;
+
 		for (int i; i < id.length ; i++) {
-			ListViewItem f = new ListViewItem(16, [intToHex!dstring(id[i]) ~ "h", toUTF32(name[i]), 
+			ListViewItem f = new ListViewItem(16, [format("%04Xh"d,id[i]) ~ "h", toUTF32(name[i]), 
 					format("%d \u00d7 %d"d, size[i][0], size[i][1])], 
 					[TextInputFieldType.None, TextInputFieldType.Text, TextInputFieldType.None]);
 			//f[1].editable = true;
 			output ~= f;
 		}
 		listView_materials.setHeader(spriteListHeader, output);
-		//listView_materials.refresh;
+		listView_materials.refresh;
+		spriteIDs = id;
 	}
 	private void vertMirror_onClick(Event ev) {
 		CheckBox sender = cast(CheckBox)ev.sender;
@@ -138,7 +143,10 @@ public class MaterialList : Window {
 	}
 	private void button_trash_onClick(Event ev) {
 		if (listView_materials.value != -1) {
-			prg.selDoc.removeTile(tiles[listView_materials.value].id);
+			if (tiles.length)
+				prg.selDoc.removeTile(tiles[listView_materials.value].id);
+			else if (spriteIDs.length)
+				prg.selDoc.removeSprite(spriteIDs[listView_materials.value]);
 		}
 	}
 	public void palUp_onClick(Event ev) {
@@ -179,9 +187,9 @@ public class MaterialList : Window {
 	}
 }
 /**
- * Defines a single material.
+ * Defines a single sprite.
  */
-public struct Material {
+public struct SpriteInfo {
 	dstring	id;		///Hexanumeric value of the ID
 	dstring	name;	///Name of the object or tile
 	dstring dim;	///Dimensions of the object, null on tiles since they share the same size on one layer
