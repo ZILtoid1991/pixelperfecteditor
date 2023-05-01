@@ -803,6 +803,7 @@ public class Editor : InputListener, SystemEventListener {
 			RasterWindow w = new RasterWindow(selDoc.mainDoc.getHorizontalResolution, selDoc.mainDoc.getVerticalResolution, 
 					rasters.palette.ptr, name, selDoc);
 			selDoc.outputWindow = w;
+			selDoc.initSpriteLayers();
 			wh.addWindow(w);
 			documents[name] = selDoc;
 			selDoc.updateLayerList();

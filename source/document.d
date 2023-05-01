@@ -74,12 +74,31 @@ public class MapDocument : MouseEventReceptor {
 		mainDoc = new MapFormat(File(filename));
 		events = new UndoableStack(20);
 		mode = EditMode.selectDragScroll;
+		
 	}
 	///New from scratch
 	public this(string docName, int resX, int resY) @trusted {
 		events = new UndoableStack(20);
 		mainDoc = new MapFormat(docName, resX, resY);
 		mode = EditMode.selectDragScroll;
+	}
+	///Initializes all sprite layers.
+	///Loads sprite material using a universal resource manager.
+	public void initSpriteLayers() {
+		foreach (int key, Layer elem ; mainDoc.layeroutput) {
+			if (elem.getLayerType == LayerType.Sprite) {
+				sprtResMan[key] = mainDoc.loadSprites(key, outputWindow);
+				MapObject[] objectlist = mainDoc.getLayerObjects(key);
+				SpriteLayer sl = cast(SpriteLayer)elem;
+				foreach (MapObject mo ; objectlist) {
+					if (mo.type == MapObject.MapObjectType.sprite) {
+						SpriteObject sprt = cast(SpriteObject)mo;
+						sl.addSprite(sprtResMan[key][sprt.ssID], sprt.pID, sprt.x, sprt.y, sprt.palSel, sprt.palShift, sprt.masterAlpha, 
+								sprt.scaleHoriz, sprt.scaleVert, sprt.rendMode);
+					}
+				}
+			}
+		}
 	}
 	///Returns the next available layer number.
 	public int nextLayerNumber() @safe {
@@ -798,8 +817,8 @@ public class MapDocument : MouseEventReceptor {
 			events.addToTop(new RemoveTile(id, this, selectedLayer));
 	}
 	public void removeSprite(int id) {
-		/+if (mainDoc.layeroutput[selectedLayer])
-			events.addToTop(new Remo)+/
+		if (mainDoc.layeroutput[selectedLayer])
+			events.addToTop(new RemoveSpriteMaterialEvent(this, selectedLayer, id));
 	}
 	/**
 	 * Renames a tile on the material list.

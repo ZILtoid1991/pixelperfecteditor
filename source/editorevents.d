@@ -1154,45 +1154,56 @@ public class AddSpriteSheetEvent : UndoableEvent {
 	}
 
 	public void redo() {
-		t = new Tag("File", "SpriteSheet", [Value(fileSource)]);
-		Tag t0 = new Tag(t, null, "SheetData");
 		Image imgSrc = loadImage(File(fileSource));
-		if (!spriteCoords.length) {
-			spriteCoords ~= Box.bySize(0, 0, imgSrc.width, imgSrc.height);
-		}
-		for (int i ; i < spriteCoords.length ; i++) {
+		if (!spriteCoords.length || spriteCoords.length == 1) {
 			Attribute[] attr;
-			if (name[i].length) {
-				attr ~= new Attribute("name", Value(name[i]));
+			if (name[0].length)
+				attr ~= new Attribute("name", Value(name[0]));
+			if (spriteCoords.length == 1) {
+				attr ~= new Attribute("horizOffset", Value(spriteCoords[0].left));
+				attr ~= new Attribute("vertOffset", Value(spriteCoords[0].top));
+				attr ~= new Attribute("width", Value(spriteCoords[0].width));
+				attr ~= new Attribute("height", Value(spriteCoords[0].height));
 			}
-			new Tag(t0, null, null, [Value(id[i]), Value(spriteCoords[i].left), Value(spriteCoords[i].top), 
-					Value(spriteCoords[i].width), Value(spriteCoords[i].height)]);
-			switch (imgSrc.getBitdepth) {
-				case 2:
-					doc.sprtResMan[layer][id[i]] = loadBitmapSliceFromImage!Bitmap2Bit(imgSrc, spriteCoords[i].left, 
-							spriteCoords[i].top, clamp(spriteCoords[i].width, 0, imgSrc.width), 
-							clamp(spriteCoords[i].height, 0, imgSrc.height));
-					break;
-				case 4:
-					doc.sprtResMan[layer][id[i]] = loadBitmapSliceFromImage!Bitmap4Bit(imgSrc, spriteCoords[i].left, 
-							spriteCoords[i].top, clamp(spriteCoords[i].width, 0, imgSrc.width), 
-							clamp(spriteCoords[i].height, 0, imgSrc.height));
-					break;
-				case 8:
-					doc.sprtResMan[layer][id[i]] = loadBitmapSliceFromImage!Bitmap8Bit(imgSrc, spriteCoords[i].left, 
-							spriteCoords[i].top, clamp(spriteCoords[i].width, 0, imgSrc.width), 
-							clamp(spriteCoords[i].height, 0, imgSrc.height));
-					break;
-				case 16:
-					doc.sprtResMan[layer][id[i]] = loadBitmapSliceFromImage!Bitmap16Bit(imgSrc, spriteCoords[i].left, 
-							spriteCoords[i].top, clamp(spriteCoords[i].width, 0, imgSrc.width), 
-							clamp(spriteCoords[i].height, 0, imgSrc.height));
-					break;
-				default:
-					doc.sprtResMan[layer][id[i]] = loadBitmapSliceFromImage!Bitmap32Bit(imgSrc, spriteCoords[i].left, 
-							spriteCoords[i].top, clamp(spriteCoords[i].width, 0, imgSrc.width), 
-							clamp(spriteCoords[i].height, 0, imgSrc.height));
-					break;
+			t = new Tag("File", "SpriteSource", [Value(id[0]), Value(fileSource)], attr);
+		} else {
+			t = new Tag("File", "SpriteSheet", [Value(fileSource)]);
+			Tag t0 = new Tag(t, null, "SheetData");
+
+			for (int i ; i < spriteCoords.length ; i++) {
+				Attribute[] attr;
+				if (name[i].length) {
+					attr ~= new Attribute("name", Value(name[i]));
+				}
+				new Tag(t0, null, null, [Value(id[i]), Value(spriteCoords[i].left), Value(spriteCoords[i].top), 
+						Value(spriteCoords[i].width), Value(spriteCoords[i].height)]);
+				switch (imgSrc.getBitdepth) {
+					case 2:
+						doc.sprtResMan[layer][id[i]] = loadBitmapSliceFromImage!Bitmap2Bit(imgSrc, spriteCoords[i].left, 
+								spriteCoords[i].top, clamp(spriteCoords[i].width, 0, imgSrc.width), 
+								clamp(spriteCoords[i].height, 0, imgSrc.height));
+						break;
+					case 4:
+						doc.sprtResMan[layer][id[i]] = loadBitmapSliceFromImage!Bitmap4Bit(imgSrc, spriteCoords[i].left, 
+								spriteCoords[i].top, clamp(spriteCoords[i].width, 0, imgSrc.width), 
+								clamp(spriteCoords[i].height, 0, imgSrc.height));
+						break;
+					case 8:
+						doc.sprtResMan[layer][id[i]] = loadBitmapSliceFromImage!Bitmap8Bit(imgSrc, spriteCoords[i].left, 
+								spriteCoords[i].top, clamp(spriteCoords[i].width, 0, imgSrc.width), 
+								clamp(spriteCoords[i].height, 0, imgSrc.height));
+						break;
+					case 16:
+						doc.sprtResMan[layer][id[i]] = loadBitmapSliceFromImage!Bitmap16Bit(imgSrc, spriteCoords[i].left, 
+								spriteCoords[i].top, clamp(spriteCoords[i].width, 0, imgSrc.width), 
+								clamp(spriteCoords[i].height, 0, imgSrc.height));
+						break;
+					default:
+						doc.sprtResMan[layer][id[i]] = loadBitmapSliceFromImage!Bitmap32Bit(imgSrc, spriteCoords[i].left, 
+								spriteCoords[i].top, clamp(spriteCoords[i].width, 0, imgSrc.width), 
+								clamp(spriteCoords[i].height, 0, imgSrc.height));
+						break;
+				}
 			}
 		}
 		if (imgSrc.palette !is null) {
@@ -1216,17 +1227,59 @@ public class AddSpriteSheetEvent : UndoableEvent {
 		}
 	}
 }
-public class RemoveSpriteEvent : UndoableEvent {
+public class RemoveSpriteMaterialEvent : UndoableEvent {
 	Tag backup;
+	Tag parent;
+	ABitmap bitmapBackup;
 	MapDocument target;
-	Layer l;
-	int spriteID;
+	int layerID;
+	int materialID;
+
+	this (MapDocument target, int layerID, int materialID) {
+		this.target = target;
+		this.layerID = layerID;
+		this.materialID = materialID;
+	}
 
 	public void redo() {
-		
+		Tag t = target.mainDoc.layerData[layerID];
+		try {
+			foreach (Tag t0 ; t.namespaces["File"].tags) {
+				switch (t0.name) {
+					case "SpriteSource":
+						if (t0.values[0].get!int == layerID) {
+							backup = t0.remove();
+							bitmapBackup = target.sprtResMan[layerID][materialID];
+							target.sprtResMan[layerID].remove(materialID);
+							return;
+						}
+						break;
+					case "SpriteSheet":
+						foreach (Tag t1 ; t0.tags) {
+							if (t1.values[0].get!int == layerID) {
+								parent = t0;
+								backup = t1.remove();
+								bitmapBackup = target.sprtResMan[layerID][materialID];
+								target.sprtResMan[layerID].remove(materialID);
+								return;
+							}
+						}
+						break;
+					default:
+						
+						break;
+				}
+			}
+		} catch (Exception e) {
+		}
 	}
 
 	public void undo() {
-		
+		if (parent is null) {
+			target.mainDoc.layerData[layerID].add(backup);
+		} else {
+			parent.add(backup);
+		}
+		target.sprtResMan[layerID][materialID] = bitmapBackup;
 	}
 }
