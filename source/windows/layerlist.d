@@ -93,6 +93,7 @@ public class LayerList : Window {
 			const int selectedLayer = to!int(lbi.fields[0].text.text);
 			prg.selDoc.selectedLayer = selectedLayer;
 			prg.selDoc.updateMaterialList();
+			prg.selDoc.updateObjectList();
 			if (selectedLayer in prg.selDoc.outputWindow.hiddenLayers)
 				checkBox_Hide.check();
 			else

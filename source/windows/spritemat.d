@@ -37,14 +37,14 @@ public class SprMatCreate : Window {
 		textBox_path = new TextBox(""d, "textBox_path", Box(70, 20, 200, 40));
 		button_browse = new Button("Browse"d, "button_browse", Box(225, 20, 290, 40));
 		radioButton_single = new RadioButton("Single sprite"d, "radioButton0", Box(5, 45, 200, 64));
-		label_sName = new Label("Name:"d, "label0", Box(5, 20, 50, 40));
-		textBox_sName = new TextBox(""d, "textBox_path", Box(55, 20, 120, 40));
-		label_sID = new Label("ID:"d, "label0", Box(125, 20, 150, 40));
-		textBox_sID = new TextBox(""d, "textBox_path", Box(155, 20, 220, 40));
-		radioButton_multi = new RadioButton("Multiple sprites (sheet)"d, "radioButton1", Box(5, 85, 200, 104));
+		label_sName = new Label("Name:"d, "label0", Box(5, 65, 50, 85));
+		textBox_sName = new TextBox(""d, "textBox_path", Box(55, 65, 120, 85));
+		label_sID = new Label("ID:"d, "label0", Box(125, 65, 150, 85));
+		textBox_sID = new TextBox(""d, "textBox_path", Box(155, 65, 220, 85));
+		radioButton_multi = new RadioButton("Multiple sprites (sheet)"d, "radioButton1", Box(5, 90, 200, 109));
 		listView_sprSheet = new ListView(
 				new ListViewHeader(16, [40 ,40 ,40 ,40 ,40 ,80], ["ID:" ,"x:" ,"y:" ,"w:" ,"h:" ,"Name:"]), 
-				null, "listView_sprSheet", Box(5, 105, 290, 260));
+				null, "listView_sprSheet", Box(5, 110, 290, 260));
 		button_create = new Button("Create"d, "button0", Box(225, 265, 290, 285));
 		smallButton_add = new SmallButton("addMaterialB", "addMaterialA", "", Box.bySize(5, 265, 16, 16));
 		smallButton_remove = new SmallButton("removeMaterialB", "removeMaterialA", "", Box.bySize(5 + 16, 265, 16, 16));
@@ -57,26 +57,32 @@ public class SprMatCreate : Window {
 		spriteAm = new RadioButtonGroup([radioButton_single, radioButton_multi]);
 		spriteAm.onToggle = &radioButtonGroup_onToggle;
 
-		listView_sprSheet.state = ElementState.Disabled;
-		smallButton_add.state = ElementState.Disabled;
-		smallButton_remove.state = ElementState.Disabled;
-		textBox_sID.state = ElementState.Disabled;
-		textBox_sName.state = ElementState.Disabled;
-
 		addElement(label_path);
 		addElement(textBox_path);
 		addElement(button_browse);
+		button_browse.onMouseLClick = &button_browse_onClick;
 		addElement(radioButton_single);
 		addElement(radioButton_multi);
 		addElement(listView_sprSheet);
 		addElement(button_create);
+		button_create.onMouseLClick = &button_create_onClick;
 		addElement(checkBox_impPal);
 		addElement(label_palShift);
 		addElement(textBox_palShift);
 		addElement(label_palOffset);
 		addElement(textBox_palOffset);
+		addElement(textBox_sID);
+		addElement(textBox_sName);
 		addElement(smallButton_add);
+		smallButton_add.onMouseLClick = &smallButton_add_onClick;
 		addElement(smallButton_remove);
+		smallButton_remove.onMouseLClick = &smallButton_remove_onClick;
+
+		listView_sprSheet.state = ElementState.Disabled;
+		smallButton_add.state = ElementState.Disabled;
+		smallButton_remove.state = ElementState.Disabled;
+		textBox_sID.state = ElementState.Disabled;
+		textBox_sName.state = ElementState.Disabled;
 	}
 	protected void radioButtonGroup_onToggle(Event ev) {
 		if (ev.aux is radioButton_single) {
