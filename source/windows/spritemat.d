@@ -72,11 +72,16 @@ public class SprMatCreate : Window {
 		addElement(label_palOffset);
 		addElement(textBox_palOffset);
 		addElement(textBox_sID);
+		addElement(label_sID);
 		addElement(textBox_sName);
+		addElement(label_sName);
 		addElement(smallButton_add);
 		smallButton_add.onMouseLClick = &smallButton_add_onClick;
 		addElement(smallButton_remove);
 		smallButton_remove.onMouseLClick = &smallButton_remove_onClick;
+
+		listView_sprSheet.editEnable = true;
+		listView_sprSheet.multicellEditEnable = true;
 
 		listView_sprSheet.state = ElementState.Disabled;
 		smallButton_add.state = ElementState.Disabled;
@@ -144,6 +149,7 @@ public class SprMatCreate : Window {
 		listView_sprSheet ~= new ListViewItem(16, ["0","0","0","0","0",""], 
 				[TextInputFieldType.DecimalP, TextInputFieldType.DecimalP, TextInputFieldType.DecimalP, TextInputFieldType.DecimalP, 
 				TextInputFieldType.DecimalP, TextInputFieldType.Text]);
+		listView_sprSheet.refresh();
 	}
 	protected void smallButton_remove_onClick(Event ev) {
 		if (listView_sprSheet.value >= 0){

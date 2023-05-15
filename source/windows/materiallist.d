@@ -186,11 +186,4 @@ public class MaterialList : Window {
 		}
 	}
 }
-/**
- * Defines a single sprite.
- */
-public struct SpriteInfo {
-	dstring	id;		///Hexanumeric value of the ID
-	dstring	name;	///Name of the object or tile
-	dstring dim;	///Dimensions of the object, null on tiles since they share the same size on one layer
-}
+

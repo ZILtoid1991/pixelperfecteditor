@@ -991,7 +991,7 @@ public class Editor : InputListener, SystemEventListener {
 	}
 	public void openObjectList() {
 		if (!objectList) {
-			objectList = new ObjectList(130, 16, &onObjectListClosed);
+			objectList = new ObjectList(130, 230, &onObjectListClosed);
 			wh.addWindow(objectList);
 		}
 	}

@@ -19,6 +19,7 @@ import sortedlistwoarrayof;
 //import collections.sortedlist;
 import std.stdio;
 import std.format;
+
 import mapobject;
 
 import app;
@@ -45,6 +46,7 @@ public class MapDocument : MouseEventReceptor {
 	ABitmap[int][int]	sprtResMan;		///Sprite resource manager
 	
 	int					selObject;		///Selected object number
+	int					selSprMat;		///Selected sprite material
 	Box					mapSelection;	///Contains the selected map area parameters
 	Box					areaSelection;	///Contains the selected layer area parameters in pixels
 	RasterWindow		outputWindow;	///Window used to output the screen data
@@ -210,9 +212,47 @@ public class MapDocument : MouseEventReceptor {
 	public void updateMaterialList () {
 		if (selectedLayer in mainDoc.layeroutput) {
 			if (prg.materialList !is null) {
-				TileInfo[] list = mainDoc.getTileInfo(selectedLayer);
-				//writeln(list.length);
-				prg.materialList.updateMaterialList(list);
+				switch (mainDoc.layeroutput[selectedLayer].getLayerType) {
+					case LayerType.Sprite:
+						int[] id;
+						string[] name;
+						int[2][] sizes;
+						import sdlang.ast;
+						try {
+							foreach (Tag t0 ; mainDoc.layerData[selectedLayer].namespaces["File"].tags) {
+								switch (t0.name) {
+									case "SpriteSource":
+										id ~= t0.expectValue!int();
+										name ~= t0.getAttribute!string("name");
+										sizes ~= [t0.getAttribute!int("width"), t0.getAttribute!int("height")];
+										break;
+									case "SpriteSheet":
+										Tag t00 = t0.getTag("SheetData");
+										if (t00 !is null){
+											foreach (Tag t1 ; t00.tags) {
+												id ~= t1.values[0].get!int();
+												name ~= t1.getAttribute!string("name");
+												sizes ~= [t1.values[3].get!int, t1.values[4].get!int];
+											}
+										}
+										break;
+									default:
+										break;
+								}
+							}
+							prg.materialList.updateMaterialList(id, name, sizes);
+						} catch (Exception e) {
+							debug writeln(e);
+						}
+						break;
+					case LayerType.Tile, LayerType.TransformableTile:
+						TileInfo[] list = mainDoc.getTileInfo(selectedLayer);
+						//writeln(list.length);
+						prg.materialList.updateMaterialList(list);
+						break;
+					default:
+						break;
+				}
 			}
 		}
 	}
@@ -267,6 +307,13 @@ public class MapDocument : MouseEventReceptor {
 			objColor = c;
 			flags |= BOXOBJECT_ARMED;
 			outputWindow.statusBar = new Text("Box placement armed!", globalDefaultStyle.getChrFormatting("statusbar"));
+			outputWindow.draw();
+		}
+	}
+	public void armSpritePlacement() {
+		if (mode == EditMode.objectMode) {
+			flags |= SPRITE_ARMED;
+			outputWindow.statusBar = new Text("Sprite placement armed!", globalDefaultStyle.getChrFormatting("statusbar"));
 			outputWindow.draw();
 		}
 	}
@@ -560,6 +607,65 @@ public class MapDocument : MouseEventReceptor {
 								outputWindow.statusBar = new Text(format("New box object placed at: %d ; %d ; %d ; %d"d, position.left, 
 										position.top, position.right, position.bottom), globalDefaultStyle.getChrFormatting("statusbar"));
 								outputWindow.draw();
+							}
+							break;
+						case MouseButton.Mid:
+							if (mce.state) {
+								outputWindow.requestCursor(CursorType.Hand);
+								prevMouseX = x;
+								prevMouseY = y;
+								outputWindow.moveEn = true;
+							} else {
+								outputWindow.requestCursor(CursorType.Arrow);
+								outputWindow.moveEn = false;
+							}
+							//scrollSelectedLayer(prevMouseX - x, prevMouseY - y);
+							prevMouseX = x;
+							prevMouseY = y;
+							break;
+						default:
+							break;
+					}
+				} else if (flags & SPRITE_ARMED) {
+					switch (mce.button) {
+						case MouseButton.Left:
+							SpriteLayer target = cast(SpriteLayer)mainDoc.layeroutput[selectedLayer];
+							if (target is null) return;
+							const int scrollX = target.getSX, scrollY = target.getSY;
+							if (mce.state) {
+								prevMouseX = scrollX + mce.x;
+								prevMouseY = scrollY + mce.y;
+								outputWindow.armSelection();
+							} else {	//Generate sprite object
+								import sdlang;
+								outputWindow.disarmSelection();
+								//get layer tag
+								Tag layerTag = mainDoc.layerData[selectedLayer];
+								//get smallest available pID
+								const int smallestpID = getLowestObjID();
+								//calculate area
+								const int currX = scrollX + mce.x, currY = scrollY + mce.y;
+								Box position;
+								if (currX > prevMouseX) {
+									position.left = prevMouseX;
+									position.right = currX;
+								} else {
+									position.left = currX;
+									position.right = prevMouseX;
+								}
+								if (currY > prevMouseY) {
+									position.top = prevMouseY;
+									position.bottom = currY;
+								} else {
+									position.top = currY;
+									position.bottom = prevMouseY;
+								}
+								if (position.width == 1 && position.height == 1)
+									events.addToTop(new SpriteObjectPlacementEvent(this, selectedLayer, smallestpID, selSprMat, 
+											"sprt" ~ format("%d", smallestpID), position.left, position.top, 
+											selectedMappingElement.attributes.horizMirror ? -1024 : 1024, 
+											selectedMappingElement.attributes.vertMirror ? -1024 : 1024, selectedMappingElement.paletteSel, 255, 
+											RenderingMode.AlphaBlend));
 							}
 							break;
 						case MouseButton.Mid:
