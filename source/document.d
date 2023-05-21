@@ -660,12 +660,17 @@ public class MapDocument : MouseEventReceptor {
 									position.top = currY;
 									position.bottom = prevMouseY;
 								}
-								if (position.width == 1 && position.height == 1)
-									events.addToTop(new SpriteObjectPlacementEvent(this, selectedLayer, smallestpID, selSprMat, 
-											"sprt" ~ format("%d", smallestpID), position.left, position.top, 
-											selectedMappingElement.attributes.horizMirror ? -1024 : 1024, 
-											selectedMappingElement.attributes.vertMirror ? -1024 : 1024, selectedMappingElement.paletteSel, 255, 
-											RenderingMode.AlphaBlend));
+								int scaleH = selectedMappingElement.attributes.horizMirror ? -1024 : 1024, 
+										scaleV = selectedMappingElement.attributes.vertMirror ? -1024 : 1024;
+								if (position.width != 1) {
+									scaleH = cast(int)(((cast(double)sprtResMan[selectedLayer][selSprMat].width) / position.width) * 1024.0);
+								}
+								if (position.height != 1) {
+									scaleV = cast(int)(((cast(double)sprtResMan[selectedLayer][selSprMat].height) / position.height) * 1024.0);
+								}
+								events.addToTop(new SpriteObjectPlacementEvent(this, selectedLayer, smallestpID, selSprMat, 
+										"sprt" ~ format("%d", smallestpID), position.left, position.top, scaleH, scaleV, 
+										selectedMappingElement.paletteSel, 255, RenderingMode.AlphaBlend));
 							}
 							break;
 						case MouseButton.Mid:
