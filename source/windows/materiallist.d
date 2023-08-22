@@ -164,7 +164,11 @@ public class MaterialList : Window {
 			prg.selDoc.voidfill = sender.isChecked;
 	}
 	private void onItemSelect(Event ev) {
-		prg.selDoc.tileMaterial_Select(tiles[listView_materials.value].id);
+		if (tiles.length) {
+			prg.selDoc.tileMaterial_Select(tiles[listView_materials.value].id);
+		} else if (spriteIDs.length) {
+			prg.selDoc.selSprMat = spriteIDs[listView_materials.value];
+		}
 	}
 	private void onItemRename(Event ev) {
 		CellEditEvent cee = cast(CellEditEvent)ev;
