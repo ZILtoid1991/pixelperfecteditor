@@ -1084,6 +1084,8 @@ public class SpriteObjectPlacementEvent : UndoableEvent {
 			ubyte palShift;
 			MapObject mo;
 			if (backup is null) {
+				//First get the filename, then look if there's a palette file with that name, and get the palette shift attribute.
+				//A bit convoluted method, and I still haven't implemented shared resources and BOM files.
 				try {
 					string filename;
 					foreach (Tag t0 ; layerInfo.namespaces["File"].tags) {
@@ -1105,8 +1107,15 @@ public class SpriteObjectPlacementEvent : UndoableEvent {
 						}
 					}
 					filenameFound:
+					foreach (Tag t0 ; layerInfo.namespaces["File"].tags) {
+						if (t0.name == "Palette") {
+							if (t0.expectValue!string == filename) {
+								palShift = cast(ubyte)t0.getAttribute!int("palShift");
+							}
+						}
+					}
 				} catch (Exception e) {
-
+					
 				}
 				mo = new SpriteObject(pri, layer, name, matID, x, y, horizScale, vertScale, rendMode, cast(ushort)palSel, palShift, 
 						cast(ubyte)alpha);

@@ -105,7 +105,7 @@ public class MaterialList : Window {
 		tiles.length = 0;
 
 		for (int i; i < id.length ; i++) {
-			ListViewItem f = new ListViewItem(16, [format("%04Xh"d,id[i]) ~ "h", toUTF32(name[i]), 
+			ListViewItem f = new ListViewItem(16, [format("%04Xh"d,id[i]), toUTF32(name[i]), 
 					format("%d \u00d7 %d"d, size[i][0], size[i][1])], 
 					[TextInputFieldType.None, TextInputFieldType.Text, TextInputFieldType.None]);
 			//f[1].editable = true;

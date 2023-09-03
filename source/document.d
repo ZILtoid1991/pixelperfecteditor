@@ -76,7 +76,7 @@ public class MapDocument : MouseEventReceptor {
 		mainDoc = new MapFormat(File(filename));
 		events = new UndoableStack(20);
 		mode = EditMode.selectDragScroll;
-		
+		initSpriteLayers();
 	}
 	///New from scratch
 	public this(string docName, int resX, int resY) @trusted {
@@ -101,6 +101,7 @@ public class MapDocument : MouseEventReceptor {
 				}
 			}
 		}
+		writeln(sprtResMan);
 	}
 	///Returns the next available layer number.
 	public int nextLayerNumber() @safe {

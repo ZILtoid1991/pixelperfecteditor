@@ -56,7 +56,7 @@ public class ObjectList : Window {
         {//5
 			SmallButton sb = new SmallButton("addSpriteObjectB", "addSpriteObjectA", "addSpriteObject",
 					Box(49, 217, 64, 232));
-			//sb.onMouseLClick = &button_newTileLayer_onClick;
+			sb.onMouseLClick = &button_addSpriteObject;
 			buttons ~= sb;
 		}
         {//6
@@ -104,7 +104,8 @@ public class ObjectList : Window {
 	}
 	protected void button_addSpriteObject(Event ev) {
 		if (prg.selDoc !is null) {
-
+			MapDocument md = prg.selDoc;
+			md.armSpritePlacement();
 		}
 	}
 	protected void colorPicker_onSelect(Color c) {

@@ -94,6 +94,7 @@ public class LayerList : Window {
 			prg.selDoc.selectedLayer = selectedLayer;
 			prg.selDoc.updateMaterialList();
 			prg.selDoc.updateObjectList();
+			prg.selDoc.outputWindow.draw();
 			if (selectedLayer in prg.selDoc.outputWindow.hiddenLayers)
 				checkBox_Hide.check();
 			else
