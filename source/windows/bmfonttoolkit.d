@@ -255,13 +255,13 @@ public class BMFontToolkit : Window {
 		updateListView();
 	}
 	protected void onSaveButton(Event ev) {
-		handler.addWindow(new FileDialog("Load BMFont", "bmFontLoad", &onSaveEvent, 
+		handler.addWindow(new FileDialog("Save BMFont", "bmFontSave", &onSaveEvent, 
 				[FileDialog.FileAssociationDescriptor("AngelCode BMfont file", ["*.fnt"])], "./", true));
 	}
 	protected void onSaveEvent(Event ev) {
 		import std.stdio : File;
 		FileEvent fev = cast(FileEvent)ev;
-		File f = File(fev.getFullPath(), "rwb");
+		File f = File(fev.getFullPath(), "wb");
 		ubyte[] buffer = font.toBinary();
 		f.rawWrite(buffer);
 	}
