@@ -24,9 +24,11 @@ public class MaterialList : Window {
 	SmallButton		paletteUp;
 	SmallButton		paletteDown;
 	SmallButton		settings;
+	SmallButton		tileFlags;
 
 	protected TileInfo[] tiles;
 	protected int[] spriteIDs;
+	protected dstring[6] tileFlagNames;
 	//protected SpriteInfo[] sprites;
 	protected ListViewHeader tileListHeader;
 	protected ListViewHeader spriteListHeader;
@@ -76,8 +78,22 @@ public class MaterialList : Window {
 		settings.onMouseLClick = &button_editMat_onClick;
 		addElement(settings);
 		
+		tileFlags = new SmallButton("tileFlagsButtonB", "tileFlagsButtonA", "tileFlags", Box.bySize(49, 217, 16, 16));
+		tileFlags.onMouseLClick = &button_tileFlags_onClick;
+		addElement(tileFlags);
+
+		tileFlagNames[0] = "[L]Bit0: N/A";
+		tileFlagNames[1] = "[L]Bit1: N/A";
+		tileFlagNames[2] = "[L]Bit2: N/A";
+		tileFlagNames[3] = "[L]Bit3: N/A";
+		tileFlagNames[4] = "[L]Bit4: N/A";
+		tileFlagNames[5] = "[L]Bit5: N/A";
+
 		palettePos = new Label("0x00", "palettePos", Box(34, 234, 96, 248));
 		addElement(palettePos);
+	}
+	public void setTileFlagName(int num, string name) {
+		tileFlagNames[num] = tileFlagNames[num][0..8] ~ toUTF32(name);
 	}
 	public void updateMaterialList(TileInfo[] list) @trusted {
 		import pixelperfectengine.system.etc : intToHex;
@@ -94,6 +110,13 @@ public class MaterialList : Window {
 		}
 		listView_materials.setHeader(tileListHeader, output);
 		listView_materials.refresh;
+		tileFlags.state = ElementState.Enabled;
+		tileFlagNames[0] = "[L]Bit0: N/A";
+		tileFlagNames[1] = "[L]Bit1: N/A";
+		tileFlagNames[2] = "[L]Bit2: N/A";
+		tileFlagNames[3] = "[L]Bit3: N/A";
+		tileFlagNames[4] = "[L]Bit4: N/A";
+		tileFlagNames[5] = "[L]Bit5: N/A";
 		/+listBox_materials.updateColumns(output, new ListBoxHeader(tileListHeaderS.dup, tileListHeaderW.dup));+/
 	}
 	public void updateMaterialList(int[] id, string[] name, int[2][] size) @trusted {
@@ -113,6 +136,7 @@ public class MaterialList : Window {
 		}
 		listView_materials.setHeader(spriteListHeader, output);
 		listView_materials.refresh;
+		tileFlags.state = ElementState.Disabled;
 		spriteIDs = id;
 	}
 	private void vertMirror_onClick(Event ev) {
@@ -138,6 +162,30 @@ public class MaterialList : Window {
 	private void button_addMaterial_onClick(Event ev) {
 		prg.initAddMaterials;
 	}
+	private void button_tileFlags_onClick(Event ev) {
+		auto chrFrmt = getStyleSheet.getChrFormatting("smallFixed");
+		handler.addPopUpElement(new PopUpMenu([
+			new PopUpMenuElement("\0", new Text(tileFlagNames[0], chrFrmt)),
+			new PopUpMenuElement("\1", new Text(tileFlagNames[1], chrFrmt)),
+			new PopUpMenuElement("\2", new Text(tileFlagNames[2], chrFrmt)),
+			new PopUpMenuElement("\3", new Text(tileFlagNames[3], chrFrmt)),
+			new PopUpMenuElement("\4", new Text(tileFlagNames[4], chrFrmt)),
+			new PopUpMenuElement("\5", new Text(tileFlagNames[5], chrFrmt)),
+		], "tileFlags", &onTileFlagsToggle));
+	}
+	private void onTileFlagsToggle(Event ev) {
+		MenuEvent me = cast(MenuEvent)ev;
+		const int num = me.itemSource[1];
+		if (prg.selDoc) {
+			const uint currFlags = prg.selDoc.tileMaterial_SetFlag(num, tileFlagNames[num][1] == 'L');
+			if (currFlags & (1<<num)) {
+				tileFlagNames[num] = tileFlagNames[num][0..1] ~ "H" ~ tileFlagNames[num][2..$];
+			} else {
+				tileFlagNames[num] = tileFlagNames[num][0..1] ~ "L" ~ tileFlagNames[num][2..$];
+			}
+		}
+	}
+	
 	private void button_editMat_onClick(Event ev) {
 
 	}
@@ -177,14 +225,16 @@ public class MaterialList : Window {
 	}
 	public void nextTile() {
 		if (prg.selDoc) {
-			listView_materials.value = listView_materials.value + 1;
+			if (listView_materials.value < listView_materials.numEntries() - 1)
+				listView_materials.value = listView_materials.value + 1;
 			if (listView_materials.value != -1)
 				prg.selDoc.tileMaterial_Select(tiles[listView_materials.value].id);
 		}
 	}
 	public void prevTile() {
 		if (prg.selDoc) {
-			listView_materials.value = listView_materials.value - 1;
+			if (listView_materials.value > 0)
+				listView_materials.value = listView_materials.value - 1;
 			if (listView_materials.value != -1)
 				prg.selDoc.tileMaterial_Select(tiles[listView_materials.value].id);
 		}
