@@ -39,6 +39,7 @@ public class RasterWindow : Window, PaletteContainer {
 	protected static enum SELECTION_ARMED = 1 << 2;	///Selection is armed, draw box, and redirect event to document
 	protected static enum SHOW_SELECTION = 1 << 3;	///Shows selection
 	protected static enum DISPLAY_GRID = 1 << 4;	///Displays grid for TileLayers
+	protected static enum DISPLAY_TILEDATA = 1 << 5;///Displays raw tile data ()
 	//protected int[] layerList;
 	public int rasterX, rasterY;		///Raster sizes
 	protected dstring documentName;
@@ -440,7 +441,9 @@ public class RasterWindow : Window, PaletteContainer {
 		}
 		document.clearSelection();
 	}
-
+	public void onSysEsc() {
+		statusFlags &= DISPLAY_GRID | DISPLAY_TILEDATA;
+	}
 	public void loadLayers () {
 		foreach (key; document.mainDoc.layeroutput) {
 			key.setRasterizer(rasterX, rasterY);
