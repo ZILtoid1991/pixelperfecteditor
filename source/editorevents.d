@@ -955,6 +955,93 @@ public class ObjectRemovalEvent : UndoableEvent {
 		doc.updateObjectList();
 	}
 }
+public class ObjectMoveEvent : UndoableEvent {
+	MapDocument doc;
+	int layerID;
+	int objID;
+	Box newPos;
+	Box oldPos;
+	public this (MapDocument doc, int layerID, int objID, Box newPos) {
+		this.doc = doc;
+		this.layerID = layerID;
+		this.objID = objID;
+		this.newPos = newPos;
+	}
+	public void redo() {
+		try {
+			foreach (Tag t; doc.mainDoc.layerData[layerID].namespaces["Object"].tags) {
+				const int objectID = t.values[1].get!int();
+				if (t.values[1].get!int == objectID) {
+					switch (t.name) {
+					case "Sprite":
+						oldPos.left = t.values[3].get!int;
+						oldPos.top = t.values[4].get!int;
+						t.values[3] = Value(newPos.left);
+						t.values[4] = Value(newPos.top);
+						ISpriteLayer sl = cast(ISpriteLayer)doc.mainDoc.layeroutput[layerID];
+						if (sl !is null) {
+							sl.moveSprite(objID, newPos.left, newPos.top);
+						}
+						break;
+					case "Box":
+						oldPos.left = t.values[2].get!int;
+						oldPos.top = t.values[3].get!int;
+						oldPos.right = t.values[4].get!int;
+						oldPos.bottom = t.values[5].get!int;
+						t.values[2] = Value(newPos.left);
+						t.values[3] = Value(newPos.top);
+						t.values[4] = Value(newPos.right);
+						t.values[5] = Value(newPos.bottom);
+						break;
+					default:
+						break;
+					}
+					doc.updateObjectList();
+					return;
+				}
+			}
+		} catch (Exception e) {
+			
+		}
+	}
+	public void undo() {
+		try {
+			foreach (Tag t; doc.mainDoc.layerData[layerID].namespaces["Object"].tags) {
+				const int objectID = t.values[1].get!int();
+				if (t.values[1].get!int == objectID) {
+					switch (t.name) {
+					case "Sprite":
+						//oldPos.left = t.values[3].get!int;
+						//oldPos.top = t.values[4].get!int;
+						t.values[3] = Value(oldPos.left);
+						t.values[4] = Value(oldPos.top);
+						ISpriteLayer sl = cast(ISpriteLayer)doc.mainDoc.layeroutput[layerID];
+						if (sl !is null) {
+							sl.moveSprite(objID, oldPos.left, oldPos.top);
+						}
+						break;
+					case "Box":
+						//oldPos.left = t.values[2].get!int;
+						//oldPos.top = t.values[3].get!int;
+						//oldPos.right = t.values[4].get!int;
+						//oldPos.bottom = t.values[5].get!int;
+						t.values[2] = Value(oldPos.left);
+						t.values[3] = Value(oldPos.top);
+						t.values[4] = Value(oldPos.right);
+						t.values[5] = Value(oldPos.bottom);
+						break;
+					default:
+						break;
+					}
+					doc.updateObjectList();
+					return;
+				}
+			}
+		} catch (Exception e) {
+			
+		}
+	}
+}
 public class ObjectPropertyAddEvent : UndoableEvent {
 	MapObject obj;
 	Tag property;
@@ -1126,6 +1213,7 @@ public class SpriteObjectPlacementEvent : UndoableEvent {
 			sl.addSprite(doc.sprtResMan[layer][matID], pri, x, y, cast(ushort)palSel, palShift, cast(ubyte)alpha, horizScale, 
 					vertScale, rendMode);
 			doc.mainDoc.addObjectToLayer(layer, mo.serialize);
+			doc.updateObjectList();
 		}
 	}
 
@@ -1134,10 +1222,50 @@ public class SpriteObjectPlacementEvent : UndoableEvent {
 		if (sl !is null) {
 			sl.removeSprite(pri);
 			backup = doc.mainDoc.removeObjectFromLayer(layer, pri);
+			doc.updateObjectList();
 		}
 	}
 }
-
+public class ObjectRemaneEvent : UndoableEvent {
+	MapDocument md;
+	int layerID;
+	int objectID;
+	string oldName;
+	string newName;
+	public this(MapDocument md, int layerID, int objectID, string newName) {
+		this.md = md;
+		this.layerID = layerID;
+		this.objectID = objectID;
+		this.newName = newName;
+	}
+	public void redo() {
+		try {
+			foreach (Tag t; md.mainDoc.layerData[layerID].namespaces["Object"].tags) {
+				if (t.values[1].get!int == objectID) {
+					oldName = t.values[0].get!string;
+					t.values[0] = Value(newName);
+					md.updateObjectList();
+					return;
+				}
+			}
+		} catch (Exception e) {
+			
+		}
+	}
+	public void undo() {
+		try {
+			foreach (Tag t; md.mainDoc.layerData[layerID].namespaces["Object"].tags) {
+				if (t.values[1].get!int == objectID) {
+					t.values[0] = Value(oldName);
+					md.updateObjectList();
+					return;
+				}
+			}
+		} catch (Exception e) {
+			
+		}
+	}
+}
 public class AddSpriteSheetEvent : UndoableEvent {
 	MapDocument doc;
 	int layer;
@@ -1227,6 +1355,7 @@ public class AddSpriteSheetEvent : UndoableEvent {
 			doc.mainDoc.layerData[layer].add(new Tag("File", "Palette", [Value(fileSource)], attr));
 		}
 		doc.mainDoc.layerData[layer].add(t);
+		doc.updateMaterialList();
 	}
 
 	public void undo() {
@@ -1234,6 +1363,7 @@ public class AddSpriteSheetEvent : UndoableEvent {
 			doc.sprtResMan[layer].remove(i);
 			t.remove();
 		}
+		doc.updateMaterialList();
 	}
 }
 public class RemoveSpriteMaterialEvent : UndoableEvent {
@@ -1260,6 +1390,7 @@ public class RemoveSpriteMaterialEvent : UndoableEvent {
 							backup = t0.remove();
 							bitmapBackup = target.sprtResMan[layerID][materialID];
 							target.sprtResMan[layerID].remove(materialID);
+							target.updateMaterialList();
 							return;
 						}
 						break;
@@ -1270,6 +1401,7 @@ public class RemoveSpriteMaterialEvent : UndoableEvent {
 								backup = t1.remove();
 								bitmapBackup = target.sprtResMan[layerID][materialID];
 								target.sprtResMan[layerID].remove(materialID);
+								target.updateMaterialList();
 								return;
 							}
 						}
@@ -1290,5 +1422,6 @@ public class RemoveSpriteMaterialEvent : UndoableEvent {
 			parent.add(backup);
 		}
 		target.sprtResMan[layerID][materialID] = bitmapBackup;
+		target.updateMaterialList();
 	}
 }
