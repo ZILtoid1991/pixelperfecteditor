@@ -37,6 +37,7 @@ import windows.rasterwindow;
 import windows.newtilelayer;
 import windows.spritemat;
 import clipboard;
+import windows.propertylist;
 
 
 
@@ -117,6 +118,7 @@ public class TopLevelWindow : Window {
 			menuElements[2] ~= new PopUpMenuElement("materialList", "Materials");
 			menuElements[2] ~= new PopUpMenuElement("viewgrid", "Grid");
 			menuElements[2] ~= new PopUpMenuElement("objlist", "Objects");
+			menuElements[2] ~= new PopUpMenuElement("proplist", "Properties");
 			menuElements[2] ~= new PopUpMenuElement("resetLayers", "Reset layer display");
 			//menuElements[2][2] = new PopUpMenuElement("layerTools", "Layer tools", "Alt + T");
 
@@ -229,6 +231,7 @@ public class Editor : InputListener, SystemEventListener {
 	public LayerList layerList;
 	public MaterialList materialList;
 	public ObjectList objectList;
+	public PropertyList propertyList;
 	public MapClipboard mapClipboard;
 	
 	public this(string[] args){
@@ -321,8 +324,8 @@ public class Editor : InputListener, SystemEventListener {
 			globalDefaultStyle.setImage(customGUIElems[9], "objPlacementButtonB");
 			globalDefaultStyle.setImage(customGUIElems[10], "sprtPlacementButtonA");
 			globalDefaultStyle.setImage(customGUIElems[11], "sprtPlacementButtonB");
-			//globalDefaultStyle.setImage(customGUIElems[12], "importMaterialDataButtonA");
-			//globalDefaultStyle.setImage(customGUIElems[13], "importMaterialDataButtonB");
+			globalDefaultStyle.setImage(customGUIElems[12], "tileFlagsButtonA");
+			globalDefaultStyle.setImage(customGUIElems[13], "tileFlagsButtonB");
 			globalDefaultStyle.setImage(customGUIElems[14], "soloButtonA");
 			globalDefaultStyle.setImage(customGUIElems[15], "soloButtonB");
 		}
@@ -345,13 +348,18 @@ public class Editor : InputListener, SystemEventListener {
 			//globalDefaultStyle.setImage(customGUIElems[14], "paletteButtonA");
 			//globalDefaultStyle.setImage(customGUIElems[15], "paletteButtonB");
 		}
+		globalDefaultStyle.font["dylex10"] = new Fontset!Bitmap8Bit(File("../system/dylex-6x10.fnt"), "../system/");
 		globalDefaultStyle.addChrFormatting(
-				new CharacterFormattingInfo!Bitmap8Bit(globalDefaultStyle.getFontset("fixedWidth"), 0x1f, 0, 0, 16, 2), "statusbar");
+				new CharacterFormattingInfo!Bitmap8Bit(globalDefaultStyle.getFontset("fixedWidth"), 0x1f, 0, 0, 16, 2), 
+				"statusbar");
+		globalDefaultStyle.addChrFormatting(
+				new CharacterFormattingInfo!Bitmap8Bit(globalDefaultStyle.getFontset("dylex10"), 0x1f, 0, 0, 12, 0), "smallFixed");
 		{
 			import mapobject;
-			BoxObjectDrawer.defChrFormat = new CharacterFormattingInfo!Bitmap8Bit(globalDefaultStyle.getFontset("fixedWidth"), 
-					0x01, 0, 0, 16, 2);
+			BoxObjectDrawer.defChrFormat = new CharacterFormattingInfo!Bitmap8Bit(globalDefaultStyle.getFontset("dylex10"), 
+					0x01, 0, 0, 11, 0);
 			PolylineObjectDrawer.defChrFormat = BoxObjectDrawer.defChrFormat;
+			SpriteObjectName.defChrFormat = BoxObjectDrawer.defChrFormat;
 		}
 		//wh.initGUI();
 
@@ -380,6 +388,7 @@ public class Editor : InputListener, SystemEventListener {
 		openMaterialList();
 		openLayerList();
 		openObjectList();
+		openPropertyList();
 	}
 	public void menuEvent(Event ev) {
 		if (ev.type == EventType.Menu){
@@ -420,8 +429,11 @@ public class Editor : InputListener, SystemEventListener {
 				case "materialList":
 					openMaterialList();
 					break;
-				case "objList":
+				case "objlist":
 					openObjectList();
+					break;
+				case "proplist":
+					openPropertyList();
 					break;
 				case "tiledcsvi":
 					if (selDoc) {
@@ -997,5 +1009,14 @@ public class Editor : InputListener, SystemEventListener {
 	}
 	private void onObjectListClosed() {
 		objectList = null;
+	}
+	public void openPropertyList() {
+		if (!propertyList) {
+			propertyList = new PropertyList(130, 16, &onPropertyListClosed);
+			wh.addWindow(propertyList);
+		}
+	}
+	private void onPropertyListClosed() {
+		propertyList = null;
 	}
 }
