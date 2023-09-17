@@ -39,8 +39,8 @@ public class MapDocument : MouseEventReceptor {
 	//ABitmap[] delegate() imageReturnFunc;
 	Color[] delegate(MapDocument sender) paletteReturnFunc;	///Used for adding the palette for the document
 	int					selectedLayer;	///Indicates the currently selected layer
-	alias ObjectList = SortedList!(MapObject, "a.pID < b.pID", false, "a.pID == b.pID");
-	alias DrawableObjectList = SortedList!(DrawableObject, "a.pID < b.pID", false, "a.pID == b.pID");
+	alias ObjectList = SortedList!(MapObject, "a.pID > b.pID", false, "a.pID == b.pID");
+	alias DrawableObjectList = SortedList!(DrawableObject, "a.pID > b.pID", false, "a.pID == b.pID");
 	ObjectList			mapObjList;		///List of map objects from the selected layer
 	DrawableObjectList	drawableObjList;///Contains the display data of the currently selected layer's objects (if any)
 	ABitmap[int][int]	sprtResMan;		///Sprite resource manager
@@ -192,6 +192,19 @@ public class MapDocument : MouseEventReceptor {
 				outputWindow.selection.bottom = outputWindow.selection.bottom < 0 ? 0 : outputWindow.selection.bottom;
 				outputWindow.selection.bottom = outputWindow.selection.bottom >= outputWindow.rasterX ? outputWindow.rasterX - 1 : 
 						outputWindow.selection.bottom;
+				if (mapSelection.width == 1 && mapSelection.height == 1) {
+					switch (mainDoc.layeroutput[selectedLayer].getLayerType) {
+						case LayerType.Tile, LayerType.TransformableTile:
+							ITileLayer itl = cast(ITileLayer)mainDoc.layeroutput[selectedLayer];
+							MappingElement curr = itl.readMapping(mapSelection.left, mapSelection.top);
+							outputWindow.statusBar = new Text(format("tileID: %4X ; h: %1d ; v: %1d, a: %2X, pal: %2X"d, 
+									curr.tileID, curr.attributes.horizMirror, curr.attributes.vertMirror, curr.attributes.priority, 
+									curr.paletteSel), globalDefaultStyle.getChrFormatting("statusbar"));
+							break;
+						default:
+							break;
+					}
+				}
 			} else {
 				outputWindow.selection = Box (0, 0, -1, -1);
 			}
@@ -250,6 +263,12 @@ public class MapDocument : MouseEventReceptor {
 						TileInfo[] list = mainDoc.getTileInfo(selectedLayer);
 						//writeln(list.length);
 						prg.materialList.updateMaterialList(list);
+						for (int i ; i < 6 ; i++) {
+							string flagName = mainDoc.layerData[selectedLayer].getTagValue!string("TileFlagName" ~ cast(char)('0' + i));
+							if (flagName.length) {
+								prg.materialList.setTileFlagName(i, flagName);
+							}
+						}
 						break;
 					default:
 						break;
@@ -276,6 +295,10 @@ public class MapDocument : MouseEventReceptor {
 					BoxObject obj = cast(BoxObject)mo;
 					drawableObjList.put(new BoxObjectDrawer(obj));
 					break;
+				case MapObject.MapObjectType.sprite:
+					SpriteObject obj = cast(SpriteObject)mo;
+					drawableObjList.put(new SpriteObjectName(obj));
+					break;
 				default:
 					break;
 			}
@@ -288,8 +311,6 @@ public class MapDocument : MouseEventReceptor {
 		foreach (MapObject mo ; mapObjList) {
 			if (mo.pID == result) {
 				result++;
-			} else {
-				return result;
 			}
 		}
 		return result;
@@ -300,7 +321,7 @@ public class MapDocument : MouseEventReceptor {
 		updateObjectList;
 	}
 	public void onSysEsc() {
-
+		flags = 0;
 	}
 	public void armBoxPlacement(Color c) {
 		import pixelperfectengine.graphics.text;
@@ -366,6 +387,14 @@ public class MapDocument : MouseEventReceptor {
 	public void tileMaterial_Down() {
 		selectedMappingElement.tileID--;
 		statusBar_UpdateTile();
+	}
+	public ubyte tileMaterial_SetFlag(int num, bool state) {
+		if (state) {
+			selectedMappingElement.attributes.priority = cast(ubyte)((1<<num) | selectedMappingElement.attributes.priority);
+		} else {
+			selectedMappingElement.attributes.priority = cast(ubyte)(~(1<<num) & selectedMappingElement.attributes.priority);
+		}
+		return selectedMappingElement.attributes.priority;
 	}
 	public ushort tileMaterial_PaletteUp() {
 		selectedMappingElement.paletteSel++;
