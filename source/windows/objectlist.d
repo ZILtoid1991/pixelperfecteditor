@@ -5,6 +5,7 @@ import pixelperfectengine.map.mapformat;
 
 import app;
 import document;
+import editorevents;
 import std.conv : to;
 import std.utf : toUTF32, toUTF8;
 
@@ -77,19 +78,33 @@ public class ObjectList : Window {
 		buttons[3].state = ElementState.Disabled;
 		buttons[4].state = ElementState.Disabled;
 		buttons[6].state = ElementState.Disabled;
+		selectedColor = Color(0xff, 0xff, 0xff, 0xFF);
     }
     protected void onItemSelect(Event ev) {
+		if (prg.selDoc !is null && listView_objects.value != -1) {
+			MapDocument md = prg.selDoc;
+			try {
+				md.selObject = to!int(listView_objects[listView_objects.value][0].getText);
+			} catch (Exception e) {
 
+			}
+		}
     }
     protected void onItemRename(Event ev) {
-        
+        if (prg.selDoc !is null) {
+			CellEditEvent cev = cast(CellEditEvent)ev;
+			MapDocument md = prg.selDoc;
+			md.events.addToTop(new ObjectRemaneEvent(md, md.selectedLayer, md.selObject, toUTF8(cev.text.toDString)));
+		}
     }
     protected void button_trash_onClick(Event ev) {
-
+		if (prg.selDoc !is null) {
+			MapDocument md = prg.selDoc;
+			md.events.addToTop(new ObjectRemovalEvent(md, md.selectedLayer, md.selObject));
+		}
     }
 	protected void button_colorPicker(Event ev) {
-		Box b = getAbsolutePosition(cast(WindowElement)ev.sender);
-		handler.addPopUpElement(new ColorPicker(&colorPicker_onSelect, selectedColor), b.left - 129, b.top - 129);
+		handler.addPopUpElement(new ColorPicker(&colorPicker_onSelect, selectedColor));
 	}
 	protected void button_addBoxObject(Event ev) {
 		if (prg.selDoc !is null) {
@@ -114,7 +129,8 @@ public class ObjectList : Window {
 	public void updateObjectList(MapObjectRange)(MapObjectRange objects) {
 		listView_objects.clear();
 		foreach (MapObject key; objects) {
-			listView_objects ~= new ListViewItem(16, [to!dstring(key.pID), toUTF32(key.name)]);
+			listView_objects ~= new ListViewItem(16, [to!dstring(key.pID), toUTF32(key.name)], 
+					[TextInputFieldType.None, TextInputFieldType.Text]);
 		}
 	}
 }
