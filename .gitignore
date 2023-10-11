@@ -23,6 +23,7 @@ docs/
 # Code coverage
 *.lst
 
+.history/
 _debug/
 bin-x86_64-windows/
 bin-x86-windows/

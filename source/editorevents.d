@@ -1214,6 +1214,7 @@ public class SpriteObjectPlacementEvent : UndoableEvent {
 					vertScale, rendMode);
 			doc.mainDoc.addObjectToLayer(layer, mo.serialize);
 			doc.updateObjectList();
+			doc.outputWindow.draw();
 		}
 	}
 
@@ -1223,6 +1224,7 @@ public class SpriteObjectPlacementEvent : UndoableEvent {
 			sl.removeSprite(pri);
 			backup = doc.mainDoc.removeObjectFromLayer(layer, pri);
 			doc.updateObjectList();
+			doc.outputWindow.draw();
 		}
 	}
 }
