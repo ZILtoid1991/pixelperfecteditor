@@ -1,6 +1,7 @@
 module windows.propertylist;
 
 import pixelperfectengine.concrete.window;
+import sdlang;
 
 public class PropertyList : Window {
 	ListView		listView_properties;
@@ -26,6 +27,12 @@ public class PropertyList : Window {
 
 	}
 	protected void button_addParam_onClick(Event ev) {
+		
+	}
+	public void updatePropertyList_layer(Tag t) {
+
+	}
+	public void updatePropertyList_obj(Tag t) {
 		
 	}
 }
