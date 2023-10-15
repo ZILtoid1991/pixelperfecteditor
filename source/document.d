@@ -698,6 +698,8 @@ public class MapDocument : MouseEventReceptor {
 								if (position.height != 1) {
 									scaleV = cast(int)(((cast(double)sprtResMan[selectedLayer][selSprMat].height) / position.height) * 1024.0);
 								}
+								outputWindow.statusBar = new Text(format("Sprite placed at [%d;%d]", position.left, position.top), 
+										globalDefaultStyle.getChrFormatting("statusbar"));
 								events.addToTop(new SpriteObjectPlacementEvent(this, selectedLayer, smallestpID, selSprMat, 
 										"sprt" ~ format("%d", smallestpID), position.left, position.top, scaleH, scaleV, 
 										selectedMappingElement.paletteSel, 255, RenderingMode.AlphaBlend));
