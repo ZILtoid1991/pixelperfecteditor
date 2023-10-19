@@ -303,8 +303,24 @@ public class MapDocument : MouseEventReceptor {
 					break;
 			}
 		}
-		prg.objectList.updateObjectList(mapObjList);
-		prg.objectList.draw();
+		if (prg.objectList !is null) {
+			prg.objectList.updateObjectList(mapObjList);
+			prg.objectList.draw();
+		}
+	}
+	public void updatePropertyList_obj() {
+		MapObject selectedObj = mapObjList.searchBy!(int, "a.pID == b", "a.pID > b")(selObject);
+		if (prg.propertyList !is null && selectedObj !is null) {
+			prg.propertyList.updatePropertyList_obj(selectedObj.mainTag);
+			prg.propertyList.draw();
+		}
+	}
+	public void updatePropertyList_layer() {
+		auto layerTag = mainDoc.layerData[selectedLayer];
+		if (prg.propertyList !is null && layerTag !is null) {
+			prg.propertyList.updatePropertyList_layer(layerTag);
+			prg.propertyList.draw();
+		}
 	}
 	protected int getLowestObjID() {
 		int result;
@@ -698,7 +714,7 @@ public class MapDocument : MouseEventReceptor {
 								if (position.height != 1) {
 									scaleV = cast(int)(((cast(double)sprtResMan[selectedLayer][selSprMat].height) / position.height) * 1024.0);
 								}
-								outputWindow.statusBar = new Text(format("Sprite placed at [%d;%d]", position.left, position.top), 
+								outputWindow.statusBar = new Text(format("Sprite placed at [%d;%d]"d, position.left, position.top), 
 										globalDefaultStyle.getChrFormatting("statusbar"));
 								events.addToTop(new SpriteObjectPlacementEvent(this, selectedLayer, smallestpID, selSprMat, 
 										"sprt" ~ format("%d", smallestpID), position.left, position.top, scaleH, scaleV, 

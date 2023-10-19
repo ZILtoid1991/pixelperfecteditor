@@ -1,6 +1,7 @@
 module sortedlistwoarrayof;
 import std.functional : binaryFun;
 import collections.commons;
+import collections.sortedlist;
 
 /**
  * Implements a sorted list of type T.
@@ -142,6 +143,18 @@ public struct SortedList(E, alias cmp = "a < b", bool allowDuplicates = true, al
 				}
 			}
 			return opSlice(f, t);
+		}
+		/** 
+		 * Looks up value `a` in the list, then returns the element equal with it. Returns E.init if not found.
+		 * Intended for use with structs and classes that can interface with the type of T through the cmp and equal
+		 * functions's overrides.
+		 */
+		E searchBy(T, alias lequal, alias lcmp)(T a) @nogc @safe pure nothrow {
+			foreach_reverse(b; _array) {
+				if(binaryFun!lequal(a, b)) return b;
+				else if(binaryFun!lcmp(a, b)) break;
+			}
+			return E.init;
 		}
 		/**
 		 * Set operators.
