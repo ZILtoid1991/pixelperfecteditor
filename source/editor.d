@@ -354,6 +354,12 @@ public class Editor : InputListener, SystemEventListener {
 				"statusbar");
 		globalDefaultStyle.addChrFormatting(
 				new CharacterFormattingInfo!Bitmap8Bit(globalDefaultStyle.getFontset("dylex10"), 0x1f, 0, 0, 12, 0), "smallFixed");
+		globalDefaultStyle.addChrFormatting(new CharacterFormattingInfo!(Bitmap8Bit)(globalDefaultStyle.getFontset("default"), 
+				0x20, FormattingFlags.leftJustify, 0, 15, 2), "property-mandatory");
+		globalDefaultStyle.addChrFormatting(new CharacterFormattingInfo!(Bitmap8Bit)(globalDefaultStyle.getFontset("default"), 
+				0x21, FormattingFlags.leftJustify, 0, 15, 2), "property-constant");
+		globalDefaultStyle.addChrFormatting(new CharacterFormattingInfo!(Bitmap8Bit)(globalDefaultStyle.getFontset("default"), 
+				0x22, FormattingFlags.leftJustify, 0, 15, 2), "property-recognized");
 		{
 			import mapobject;
 			BoxObjectDrawer.defChrFormat = new CharacterFormattingInfo!Bitmap8Bit(globalDefaultStyle.getFontset("dylex10"), 
@@ -382,6 +388,9 @@ public class Editor : InputListener, SystemEventListener {
 		rasters.addLayer(windowing, 0);
 		rasters.addLayer(bitmapPreview, 1);
 		rasters.loadPalette(loadPaletteFromFile("../system/concreteGUIE1.tga"));
+		rasters.setPaletteIndex(0x00_20, Color(0x00,0xFF,0x00,0xff));
+		rasters.setPaletteIndex(0x00_21, Color(0xFF,0x00,0xFF,0xff));
+		rasters.setPaletteIndex(0x00_22, Color(0x7F,0x7F,0xFF,0xff));
 		wh.setBaseWindow(new TopLevelWindow(848, 480, this));
 		wh.addBackground(loadBitmapFromFile!Bitmap32Bit("../system/background.png"));
 		mapClipboard = new MapClipboard(10);

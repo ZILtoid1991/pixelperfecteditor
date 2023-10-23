@@ -309,7 +309,7 @@ public class MapDocument : MouseEventReceptor {
 		}
 	}
 	public void updatePropertyList_obj() {
-		MapObject selectedObj = mapObjList.searchBy!(int, "a.pID == b", "a.pID > b")(selObject);
+		MapObject selectedObj = mapObjList.searchBy!(int, "a == b.pID", "a > b.pID")(selObject);
 		if (prg.propertyList !is null && selectedObj !is null) {
 			prg.propertyList.updatePropertyList_obj(selectedObj.mainTag);
 			prg.propertyList.draw();
