@@ -95,6 +95,7 @@ public class LayerList : Window {
 			prg.selDoc.updateMaterialList();
 			prg.selDoc.updateObjectList();
 			prg.selDoc.outputWindow.draw();
+			prg.selDoc.updatePropertyList_layer();
 			if (selectedLayer in prg.selDoc.outputWindow.hiddenLayers)
 				checkBox_Hide.check();
 			else
@@ -183,6 +184,8 @@ public class LayerList : Window {
 			const int selectedLayer = to!int(listView_layers[listView_layers.value][0].text.text);
 			prg.selDoc.selectedLayer = selectedLayer;
 			prg.selDoc.updateMaterialList();
+			prg.selDoc.updateObjectList();
+			prg.selDoc.updatePropertyList_layer();
 			if (selectedLayer in prg.selDoc.outputWindow.hiddenLayers)
 				checkBox_Hide.check();
 			else
@@ -201,6 +204,8 @@ public class LayerList : Window {
 			const int selectedLayer = to!int(listView_layers[listView_layers.value][0].text.text);
 			prg.selDoc.selectedLayer = selectedLayer;
 			prg.selDoc.updateMaterialList();
+			prg.selDoc.updateObjectList();
+			prg.selDoc.updatePropertyList_layer();
 			if (selectedLayer in prg.selDoc.outputWindow.hiddenLayers)
 				checkBox_Hide.check();
 			else

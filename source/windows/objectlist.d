@@ -85,6 +85,7 @@ public class ObjectList : Window {
 			MapDocument md = prg.selDoc;
 			try {
 				md.selObject = to!int(listView_objects[listView_objects.value][0].getText);
+				md.updatePropertyList_obj();
 			} catch (Exception e) {
 
 			}
