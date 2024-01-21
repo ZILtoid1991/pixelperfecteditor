@@ -175,7 +175,7 @@ public class MaterialList : Window {
 	}
 	private void onTileFlagsToggle(Event ev) {
 		MenuEvent me = cast(MenuEvent)ev;
-		const int num = me.itemSource[1];
+		const int num = cast(int)me.itemNum;
 		if (prg.selDoc) {
 			const uint currFlags = prg.selDoc.tileMaterial_SetFlag(num, tileFlagNames[num][1] == 'L');
 			if (currFlags & (1<<num)) {
