@@ -23,13 +23,15 @@ public class PropertyList : Window {
         listView_properties = new ListView(new ListViewHeader(16, [90, 240], ["Name"d, "Value"d]), null, 
 				"listView_properties", Box.bySize(1, 17, 128, 180));
 		addElement(listView_properties);
+		listView_properties.onItemSelect = &listView_properties_onSelect;
+		listView_properties.onTextInput = &listView_properties_onTextEdit;
 		
 		removeParam = new SmallButton("removeMaterialB", "removeMaterialA", "rem", Box.bySize(113, 198, 16, 16));
 		removeParam.onMouseLClick = &button_trash_onClick;
 		removeParam.state = ElementState.Disabled;
 		addElement(removeParam);		
 		
-		addParam = new SmallButton("addMaterialB", "addMaterialA", "add", Box(113 - 16, 198, 16, 16));
+		addParam = new SmallButton("addMaterialB", "addMaterialA", "add", Box.bySize(113 - 16, 198, 16, 16));
 		addParam.onMouseLClick = &button_addParam_onClick;
 		addElement(addParam);
 		
@@ -38,7 +40,14 @@ public class PropertyList : Window {
 		const int selectedItem = listView_properties.value;
 	}
 	protected void button_addParam_onClick(Event ev) {
-		
+		PopUpMenuElement[] menuList;
+		menuList ~= new PopUpMenuElement("string", "String"d);
+		menuList ~= new PopUpMenuElement("float", "Float"d);
+		menuList ~= new PopUpMenuElement("int", "Integer"d);
+		handler.addPopUpElement(new PopUpMenu(menuList, "valueMenu", &valueMenu_onSelect));
+	}
+	protected void valueMenu_onSelect(Event ev) {
+
 	}
 	protected void listView_properties_onSelect(Event ev) {
 		const int selectedItem = listView_properties.value;
