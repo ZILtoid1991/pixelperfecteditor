@@ -4,6 +4,8 @@ import pixelperfectengine.concrete.window;
 import sdlang;
 import std.utf : toUTF32, toUTF8;
 import std.conv : to;
+import app;
+import editorevents;
 
 public class PropertyList : Window {
 	ListView		listView_properties;
@@ -38,6 +40,11 @@ public class PropertyList : Window {
 	}
 	protected void button_trash_onClick(Event ev) {
 		const int selectedItem = listView_properties.value;
+		if (!(propertyFlags[selectedItem] & PropertyFlags.Mandatory) && selectedItem >= 0) {
+			if (prg.selDoc !is null) {
+
+			}
+		}
 	}
 	protected void button_addParam_onClick(Event ev) {
 		PopUpMenuElement[] menuList;
@@ -47,7 +54,7 @@ public class PropertyList : Window {
 		handler.addPopUpElement(new PopUpMenu(menuList, "valueMenu", &valueMenu_onSelect));
 	}
 	protected void valueMenu_onSelect(Event ev) {
-
+		MenuEvent me = cast(MenuEvent)ev;
 	}
 	protected void listView_properties_onSelect(Event ev) {
 		const int selectedItem = listView_properties.value;
