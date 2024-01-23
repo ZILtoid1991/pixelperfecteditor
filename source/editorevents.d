@@ -1046,7 +1046,7 @@ public class ObjectPropertyAddEvent : UndoableEvent {
 	MapObject obj;
 	Tag property;
 	MapDocument doc;
-	public this (string name, string val, MapObject obj, MapDocument doc) {
+	public this (T)(string name, string val, MapObject obj, MapDocument doc) {
 		import std.string;
 		this.obj = obj;
 		if (isNumeric(val)) {
@@ -1064,18 +1064,16 @@ public class ObjectPropertyAddEvent : UndoableEvent {
 	}
 }
 public class ObjectPropertyEditEvent : UndoableEvent {
-	MapObject obj;
+	Tag obj;
 	Tag oldVal, newVal;
 	MapDocument doc;
-	public this (string name, string val, MapObject obj, MapDocument doc) {
+	public this (T)(string name, T val, Tag obj, MapDocument doc) {
 		import std.string;
 		this.obj = obj;
-		if (isNumeric(val)) {
-			newVal = new Tag(null, name, [Value(to!double(val))]);
-		} else {
-			newVal = new Tag(null, name, [Value(val)]);
-		}
-		oldVal = obj.mainTag.getTag(name);
+		
+		newVal = new Tag(null, name, [Value(val)]);
+		
+		oldVal = obj.getTag(name);
 	}
 	public void redo() {
 		oldVal.remove;
@@ -1090,19 +1088,19 @@ public class ObjectPropertyEditEvent : UndoableEvent {
 public class ObjectPropertyRemoveEvent : UndoableEvent {
 	string propertyName;
 	Tag backup;
-	MapObject obj;
+	Tag obj;
 	MapDocument doc;
-	public this (string name, MapObject obj, MapDocument doc) {
+	public this (string name, Tag obj, MapDocument doc) {
 		this.obj = obj;
 		propertyName = name;
-		backup = this.obj.mainTag.getTag(name);
+		backup = this.obj.getTag(name);
 	}
 	public void redo() {
 		backup.remove();
 	}
 
 	public void undo() {
-		obj.mainTag.add(backup);
+		obj.add(backup);
 	}
 }
 public class CreateSpriteLayerEvent : UndoableEvent {
