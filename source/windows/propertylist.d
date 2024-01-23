@@ -6,6 +6,7 @@ import std.utf : toUTF32, toUTF8;
 import std.conv : to;
 import app;
 import editorevents;
+import core.internal.utf;
 
 public class PropertyList : Window {
 	ListView		listView_properties;
@@ -41,8 +42,11 @@ public class PropertyList : Window {
 	protected void button_trash_onClick(Event ev) {
 		const int selectedItem = listView_properties.value;
 		if (!(propertyFlags[selectedItem] & PropertyFlags.Mandatory) && selectedItem >= 0) {
-			if (prg.selDoc !is null) {
-
+			if (prg.selDoc !is null && reference !is null) {
+				if (reference.namespace == "Object") {
+					const string propertyName = listView_properties.selectedElement()[0].getText().toUTF8();
+					prg.selDoc.events.addToTop(new ObjectPropertyRemoveEvent(propertyName, reference, prg.selDoc));
+				}
 			}
 		}
 	}
@@ -65,7 +69,24 @@ public class PropertyList : Window {
 		}
 	}
 	protected void listView_properties_onTextEdit(Event ev) {
-
+		const int selectedItem = listView_properties.value;
+		if (!(propertyFlags[selectedItem] & PropertyFlags.Constant) && selectedItem >= 0) {
+			if (prg.selDoc !is null && reference !is null) {
+				if (reference.namespace == "Object") {
+					const string propertyName = listView_properties.selectedElement()[0].getText().toUTF8();
+					switch (listView_properties.selectedElement()[1].textInputType) {
+						case TextInputFieldType.Integer:
+							break;
+						case TextInputFieldType.Decimal:
+							break;
+						case TextInputFieldType.Text:
+							break;
+						default:
+							break;
+					}
+				}
+			}
+		}
 	}
 	protected static TextInputFieldType getFieldType(Tag t) {
 		if (t.values.length == 0) return TextInputFieldType.None;
