@@ -7,12 +7,14 @@ import std.conv : to;
 import app;
 import editorevents;
 import core.internal.utf;
+import pixelperfectengine.concrete.popup.popuptextinput;
 
 public class PropertyList : Window {
 	ListView		listView_properties;
 	SmallButton		removeParam, addParam;
 	uint[]			propertyFlags;
 	Tag				reference;
+	size_t			typeSel;
 	enum PropertyFlags {
 		init,
 		Recognized		=	1<<0,
@@ -59,10 +61,12 @@ public class PropertyList : Window {
 	}
 	protected void valueMenu_onSelect(Event ev) {
 		MenuEvent me = cast(MenuEvent)ev;
+		typeSel = me.itemNum;
 	}
 	protected void listView_properties_onSelect(Event ev) {
 		const int selectedItem = listView_properties.value;
-		if ((propertyFlags[selectedItem] & PropertyFlags.Constant) || (propertyFlags[selectedItem] & PropertyFlags.Mandatory)) {
+		if ((propertyFlags[selectedItem] & PropertyFlags.Constant) || 
+				(propertyFlags[selectedItem] & PropertyFlags.Mandatory)) {
 			removeParam.state = ElementState.Disabled;
 		} else {
 			removeParam.state = ElementState.Enabled;
@@ -70,16 +74,23 @@ public class PropertyList : Window {
 	}
 	protected void listView_properties_onTextEdit(Event ev) {
 		const int selectedItem = listView_properties.value;
-		if (!(propertyFlags[selectedItem] & PropertyFlags.Constant) && selectedItem >= 0) {
-			if (prg.selDoc !is null && reference !is null) {
+		if (!(propertyFlags[selectedItem] & PropertyFlags.Constant) && selectedItem >= 0 && prg.selDoc !is null && 
+				reference !is null) {
+			if (!(propertyFlags[selectedItem] & PropertyFlags.Mandatory)) {
 				if (reference.namespace == "Object") {
 					const string propertyName = listView_properties.selectedElement()[0].getText().toUTF8();
 					switch (listView_properties.selectedElement()[1].textInputType) {
 						case TextInputFieldType.Integer:
+							prg.selDoc.events.addToTop(new ObjectPropertyEditEvent(propertyName, 
+									listView_properties.selectedElement()[1].getText().to!int(), reference, prg.selDoc));
 							break;
 						case TextInputFieldType.Decimal:
+							prg.selDoc.events.addToTop(new ObjectPropertyEditEvent(propertyName, 
+									listView_properties.selectedElement()[1].getText().to!double(), reference, prg.selDoc));
 							break;
 						case TextInputFieldType.Text:
+							prg.selDoc.events.addToTop(new ObjectPropertyEditEvent(propertyName, 
+									listView_properties.selectedElement()[1].getText().toUTF8(), reference, prg.selDoc));
 							break;
 						default:
 							break;
