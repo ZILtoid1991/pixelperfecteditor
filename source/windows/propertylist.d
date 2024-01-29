@@ -21,6 +21,7 @@ public class PropertyList : Window {
 		Mandatory		=	1<<1,
 		Constant		=	1<<2,
 		IsMenu			=	1<<3,
+		NewField		=	1<<4,
 	}
 	public this(int x, int y, void delegate() onClose) {
 		super(Box(0 + x, 0 + y, 129 + x, 213 + y), "Properties: NULL"d);
@@ -62,6 +63,7 @@ public class PropertyList : Window {
 	protected void valueMenu_onSelect(Event ev) {
 		MenuEvent me = cast(MenuEvent)ev;
 		typeSel = me.itemNum;
+		handler.addPopUpElement();
 	}
 	protected void listView_properties_onSelect(Event ev) {
 		const int selectedItem = listView_properties.value;
