@@ -21,7 +21,7 @@ public class AboutWindow : Window {
 		label2 = new Label("Version: "d ~ verInfo, "label2", Coordinate(5, 40, 300, 60));
 		label3 = new Label("Build date: "d, "label3", Coordinate(5, 60, 300, 80));
 		label4 = new Label("Engine ver.: "d ~ engineVer, "label4", Coordinate(5, 80, 300, 100));
-		label5 = new Label("SDL2 ver.: "d ~ sdlVer, "label5", Coordinate(5, 100, 300, 120));
+		label5 = new Label("SDL2 ver. 2.0.5: "d, "label5", Coordinate(5, 100, 300, 120));
 		label6 = new Label("System/OS: "d ~ osInfo, "label6", Coordinate(5, 120, 300, 140));
 		label7 = new Label("Rendering method: "d ~ renderInfo, "label7", Coordinate(5, 140, 300, 160));
 		buttonClose = new Button("Close"d, "buttonClose", Coordinate(231, 160, 300, 180));

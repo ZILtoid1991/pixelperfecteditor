@@ -1046,7 +1046,7 @@ public class ObjectPropertyAddEvent : UndoableEvent {
 	MapObject obj;
 	Tag property;
 	MapDocument doc;
-	public this (T)(string name, string val, MapObject obj, MapDocument doc) {
+	public this (T)(string name, T val, MapObject obj, MapDocument doc) {
 		import std.string;
 		this.obj = obj;
 		if (isNumeric(val)) {
@@ -1077,12 +1077,12 @@ public class ObjectPropertyEditEvent : UndoableEvent {
 	}
 	public void redo() {
 		oldVal.remove;
-		obj.mainTag.add(newVal);
+		obj.add(newVal);
 	}
 
 	public void undo() {
 		newVal.remove;
-		obj.mainTag.add(oldVal);
+		obj.add(oldVal);
 	}
 }
 public class ObjectPropertyRemoveEvent : UndoableEvent {

@@ -965,7 +965,7 @@ public class Editor : InputListener, SystemEventListener {
 	public void onExit(){
 		import pixelperfectengine.concrete.dialogs.defaultdialog;
 		exitDialog=true;
-		DefaultDialog dd = new DefaultDialog(Coordinate(10,10,220,75), "exitdialog","Exit application", ["Are you sure?"],
+		DefaultDialog dd = new DefaultDialog(Point(10,10), 256, "exitdialog","Exit application", "Are you sure?",
 				["Yes","No","Pls save"],["ok","close","save"]);
 
 		dd.output = &confirmExit;

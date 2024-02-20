@@ -21,7 +21,6 @@ public class PropertyList : Window {
 		Mandatory		=	1<<1,
 		Constant		=	1<<2,
 		IsMenu			=	1<<3,
-		NewField		=	1<<4,
 	}
 	public this(int x, int y, void delegate() onClose) {
 		super(Box(0 + x, 0 + y, 129 + x, 213 + y), "Properties: NULL"d);
@@ -31,6 +30,7 @@ public class PropertyList : Window {
 		addElement(listView_properties);
 		listView_properties.onItemSelect = &listView_properties_onSelect;
 		listView_properties.onTextInput = &listView_properties_onTextEdit;
+		listView_properties.onItemAdd = &listView_properties_onItemAdd;
 		
 		removeParam = new SmallButton("removeMaterialB", "removeMaterialA", "rem", Box.bySize(113, 198, 16, 16));
 		removeParam.onMouseLClick = &button_trash_onClick;
@@ -43,6 +43,7 @@ public class PropertyList : Window {
 		
 	}
 	protected void button_trash_onClick(Event ev) {
+		if (prg.selDoc is null) return;
 		const int selectedItem = listView_properties.value;
 		if (!(propertyFlags[selectedItem] & PropertyFlags.Mandatory) && selectedItem >= 0) {
 			if (prg.selDoc !is null && reference !is null) {
@@ -54,6 +55,7 @@ public class PropertyList : Window {
 		}
 	}
 	protected void button_addParam_onClick(Event ev) {
+		if (prg.selDoc is null) return;
 		PopUpMenuElement[] menuList;
 		menuList ~= new PopUpMenuElement("string", "String"d);
 		menuList ~= new PopUpMenuElement("float", "Float"d);
@@ -61,9 +63,28 @@ public class PropertyList : Window {
 		handler.addPopUpElement(new PopUpMenu(menuList, "valueMenu", &valueMenu_onSelect));
 	}
 	protected void valueMenu_onSelect(Event ev) {
+		if (prg.selDoc is null) return;
 		MenuEvent me = cast(MenuEvent)ev;
 		typeSel = me.itemNum;
-		handler.addPopUpElement();
+		auto chrFrmt_def = getStyleSheet().getChrFormatting("default");
+		switch (typeSel) {
+			case 0:
+				listView_properties.insertAndEdit(0, new ListViewItem(16, 
+						[ListViewItem.Field(new Text("", chrFrmt_def), null, TextInputFieldType.Text),
+						ListViewItem.Field(new Text("", chrFrmt_def), null, TextInputFieldType.Text)]));
+				break;
+			case 1:
+				listView_properties.insertAndEdit(0, new ListViewItem(16, 
+						[ListViewItem.Field(new Text("", chrFrmt_def), null, TextInputFieldType.Text),
+						ListViewItem.Field(new Text("", chrFrmt_def), null, TextInputFieldType.Decimal)]));
+				break;
+			case 2:
+				listView_properties.insertAndEdit(0, new ListViewItem(16, 
+						[ListViewItem.Field(new Text("", chrFrmt_def), null, TextInputFieldType.Text),
+						ListViewItem.Field(new Text("", chrFrmt_def), null, TextInputFieldType.Integer)]));
+				break;
+			default: break;
+		}
 	}
 	protected void listView_properties_onSelect(Event ev) {
 		const int selectedItem = listView_properties.value;
@@ -74,7 +95,28 @@ public class PropertyList : Window {
 			removeParam.state = ElementState.Enabled;
 		}
 	}
+	protected void listView_properties_onItemAdd(Event ev) {
+		if (prg.selDoc is null) return;
+		//CellEditEvent cev = cast(CellEditEvent)ev;
+		ListViewItem liv = cast(ListViewItem)ev.aux;
+		switch (typeSel) {
+			case 0:
+				prg.selDoc.events.addToTop(new ObjectPropertyAddEvent(liv[0].getText().toUTF8(), liv[1].getText().toUTF8(), 
+						reference, prg.selDoc));
+				break;
+			case 1:
+				prg.selDoc.events.addToTop(new ObjectPropertyAddEvent(liv[0].getText().toUTF8(), liv[1].getText().to!double(), 
+						reference, prg.selDoc));
+				break;
+			case 2:
+				prg.selDoc.events.addToTop(new ObjectPropertyAddEvent(liv[0].getText().toUTF8(), liv[1].getText().to!int(), 
+						reference, prg.selDoc));
+				break;
+			default: break;
+		}
+	}
 	protected void listView_properties_onTextEdit(Event ev) {
+		if (prg.selDoc is null) return;
 		const int selectedItem = listView_properties.value;
 		if (!(propertyFlags[selectedItem] & PropertyFlags.Constant) && selectedItem >= 0 && prg.selDoc !is null && 
 				reference !is null) {
