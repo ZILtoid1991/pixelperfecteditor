@@ -1043,20 +1043,16 @@ public class ObjectMoveEvent : UndoableEvent {
 	}
 }
 public class ObjectPropertyAddEvent : UndoableEvent {
-	MapObject obj;
+	Tag obj;
 	Tag property;
 	MapDocument doc;
-	public this (T)(string name, T val, MapObject obj, MapDocument doc) {
+	public this (T)(string name, T val, Tag obj, MapDocument doc) {
 		import std.string;
 		this.obj = obj;
-		if (isNumeric(val)) {
-			property = new Tag(null, name, [Value(to!double(val))]);
-		} else {
-			property = new Tag(null, name, [Value(val)]);
-		}
+		property = new Tag(null, name, [Value(val)]);
 	}
 	public void redo() {
-		obj.mainTag.add(property);
+		obj.add(property);
 	}
 
 	public void undo() {

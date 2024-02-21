@@ -43,19 +43,17 @@ public class PropertyList : Window {
 		
 	}
 	protected void button_trash_onClick(Event ev) {
-		if (prg.selDoc is null) return;
+		if (prg.selDoc is null || reference is null) return;
 		const int selectedItem = listView_properties.value;
 		if (!(propertyFlags[selectedItem] & PropertyFlags.Mandatory) && selectedItem >= 0) {
-			if (prg.selDoc !is null && reference !is null) {
-				if (reference.namespace == "Object") {
-					const string propertyName = listView_properties.selectedElement()[0].getText().toUTF8();
-					prg.selDoc.events.addToTop(new ObjectPropertyRemoveEvent(propertyName, reference, prg.selDoc));
-				}
+			if (reference.namespace == "Object") {
+				const string propertyName = listView_properties.selectedElement()[0].getText().toUTF8();
+				prg.selDoc.events.addToTop(new ObjectPropertyRemoveEvent(propertyName, reference, prg.selDoc));
 			}
 		}
 	}
 	protected void button_addParam_onClick(Event ev) {
-		if (prg.selDoc is null) return;
+		if (prg.selDoc is null || reference is null) return;
 		PopUpMenuElement[] menuList;
 		menuList ~= new PopUpMenuElement("string", "String"d);
 		menuList ~= new PopUpMenuElement("float", "Float"d);
@@ -63,7 +61,7 @@ public class PropertyList : Window {
 		handler.addPopUpElement(new PopUpMenu(menuList, "valueMenu", &valueMenu_onSelect));
 	}
 	protected void valueMenu_onSelect(Event ev) {
-		if (prg.selDoc is null) return;
+		if (prg.selDoc is null || reference is null) return;
 		MenuEvent me = cast(MenuEvent)ev;
 		typeSel = me.itemNum;
 		auto chrFrmt_def = getStyleSheet().getChrFormatting("default");
@@ -96,30 +94,31 @@ public class PropertyList : Window {
 		}
 	}
 	protected void listView_properties_onItemAdd(Event ev) {
-		if (prg.selDoc is null) return;
+		if (prg.selDoc is null || reference is null) return;
 		//CellEditEvent cev = cast(CellEditEvent)ev;
 		ListViewItem liv = cast(ListViewItem)ev.aux;
-		switch (typeSel) {
-			case 0:
-				prg.selDoc.events.addToTop(new ObjectPropertyAddEvent(liv[0].getText().toUTF8(), liv[1].getText().toUTF8(), 
-						reference, prg.selDoc));
-				break;
-			case 1:
-				prg.selDoc.events.addToTop(new ObjectPropertyAddEvent(liv[0].getText().toUTF8(), liv[1].getText().to!double(), 
-						reference, prg.selDoc));
-				break;
-			case 2:
-				prg.selDoc.events.addToTop(new ObjectPropertyAddEvent(liv[0].getText().toUTF8(), liv[1].getText().to!int(), 
-						reference, prg.selDoc));
-				break;
-			default: break;
+		if (reference.namespace == "Object") {
+			switch (typeSel) {
+				case 0:
+					prg.selDoc.events.addToTop(new ObjectPropertyAddEvent(liv[0].getText().toUTF8(), liv[1].getText().toUTF8(), 
+							reference, prg.selDoc));
+					break;
+				case 1:
+					prg.selDoc.events.addToTop(new ObjectPropertyAddEvent(liv[0].getText().toUTF8(), liv[1].getText().to!double(), 
+							reference, prg.selDoc));
+					break;
+				case 2:
+					prg.selDoc.events.addToTop(new ObjectPropertyAddEvent(liv[0].getText().toUTF8(), liv[1].getText().to!int(), 
+							reference, prg.selDoc));
+					break;
+				default: break;
+			}
 		}
 	}
 	protected void listView_properties_onTextEdit(Event ev) {
-		if (prg.selDoc is null) return;
+		if (prg.selDoc is null || reference is null) return;
 		const int selectedItem = listView_properties.value;
-		if (!(propertyFlags[selectedItem] & PropertyFlags.Constant) && selectedItem >= 0 && prg.selDoc !is null && 
-				reference !is null) {
+		if (!(propertyFlags[selectedItem] & PropertyFlags.Constant) && selectedItem >= 0) {
 			if (!(propertyFlags[selectedItem] & PropertyFlags.Mandatory)) {
 				if (reference.namespace == "Object") {
 					const string propertyName = listView_properties.selectedElement()[0].getText().toUTF8();

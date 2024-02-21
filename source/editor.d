@@ -383,7 +383,7 @@ public class Editor : InputListener, SystemEventListener {
 		
 		ow ~= new OutputScreen("Pixel Perfect Editor", 1696, 960);
 
-		rasters = new Raster(848, 480, ow[0], 0, 2);
+		rasters = new Raster(848, 480, ow[0], 0, 1);
 		ow[0].setMainRaster(rasters);
 		rasters.addLayer(windowing, 0);
 		rasters.addLayer(bitmapPreview, 1);
