@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE ETML>
+<etml>
+    <text id="properties_title">
+        Properties:
+    </text>
+
+    <text id="bmfonteditor_title">
+        BMFont Editor
+    </text>
+    <text id="bmfonteditor_lvhInfo_name">
+        Name:
+    </text>
+    <text id="bmfonteditor_lvhInfo_value">
+        Value:
+    </text>
+    <text id="bmfonteditor_lvhChar_id">
+    </text>
+    <text id="bmfonteditor_lvhChar_x">
+    </text>
+    <text id="bmfonteditor_lvhChar_y">
+    </text>
+    <text id="bmfonteditor_lvhChar_w">
+    </text>
+    <text id="bmfonteditor_lvhChar_h">
+    </text>
+    <text id="bmfonteditor_lvhChar_x0">
+    </text>
+    <text id="bmfonteditor_lvhChar_y0">
+    </text>
+    <text id="bmfonteditor_lvhChar_xA">
+    </text>
+    <text id="bmfonteditor_lvhChar_p">
+    </text>
+    <text id="bmfonteditor_lvhChar_ch">
+    </text>
+    <text id="bmfonteditor_lvhKerning_id0">
+    </text>
+    <text id="bmfonteditor_lvhKerning_id1">
+    </text>
+    <text id="bmfonteditor_lvhKerning_am">
+    </text>
+    <text id="bmfonteditor_lvhSources_id">
+    </text>
+    <text id="bmfonteditor_lvhSources_path">
+    </text>
+</etml>
