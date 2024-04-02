@@ -1,11 +1,11 @@
 {
 	"fileVersion": 1,
 	"versions": {
-		"bindbc-common": "0.1.2",
-		"bindbc-loader": "1.1.4",
+		"bindbc-common": "0.1.5",
+		"bindbc-loader": "1.1.5",
 		"bindbc-lua": "0.6.0",
 		"bindbc-opengl": "1.1.0",
-		"bindbc-sdl": "1.4.5",
+		"bindbc-sdl": "1.4.7",
 		"bitleveld": "0.1.0",
 		"bmfont": "0.1.0",
 		"collections-d": "0.5.1",
@@ -18,7 +18,7 @@
 		"midi-di": "0.0.1",
 		"midi2": "0.2.0",
 		"newxml": "0.2.1",
-		"pixelperfectengine": "0.11.0-alpha.2",
+		"pixelperfectengine": "0.11.0-alpha.3",
 		"sdlang-d": "0.10.6",
 		"silly": "1.1.1",
 		"taggedalgebraic": "0.11.22",
