@@ -38,9 +38,9 @@ public class SprMatCreate : Window {
 		button_browse = new Button("Browse"d, "button_browse", Box(225, 20, 290, 40));
 		radioButton_single = new RadioButton("Single sprite"d, "radioButton0", Box(5, 45, 200, 64));
 		label_sName = new Label("Name:"d, "label0", Box(5, 65, 50, 85));
-		textBox_sName = new TextBox(""d, "textBox_path", Box(55, 65, 120, 85));
+		textBox_sName = new TextBox(""d, "textBox_name", Box(55, 65, 120, 85));
 		label_sID = new Label("ID:"d, "label0", Box(125, 65, 150, 85));
-		textBox_sID = new TextBox(""d, "textBox_path", Box(155, 65, 220, 85));
+		textBox_sID = new TextBox(""d, "textBox_sID", Box(155, 65, 220, 85));
 		radioButton_multi = new RadioButton("Multiple sprites (sheet)"d, "radioButton1", Box(5, 90, 200, 109));
 		listView_sprSheet = new ListView(
 				new ListViewHeader(16, [40 ,40 ,40 ,40 ,40 ,80], ["ID:" ,"x:" ,"y:" ,"w:" ,"h:" ,"Name:"]), 

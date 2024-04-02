@@ -17,8 +17,10 @@ import pixelperfectengine.system.file;
 import pixelperfectengine.system.etc;
 import pixelperfectengine.system.config;
 import pixelperfectengine.system.systemutility;
+public import pixelperfectengine.system.lang.textparser;
 import std.stdio;
 import std.conv;
+import std.utf;
 import core.stdc.string : memcpy;
 import bindbc.sdl;
 import pixelperfectengine.concrete.window;
@@ -91,29 +93,26 @@ public class TopLevelWindow : Window {
 			PopUpMenuElement[] menuElements;
 			menuElements ~= new PopUpMenuElement("file", mt("FILE"));
 
-			menuElements[0].setLength(7);
-			menuElements[0][0] = new PopUpMenuElement("new", "New PPE map");
-			menuElements[0][1] = new PopUpMenuElement("newTemp", "New PPE map from template");
-			menuElements[0][2] = new PopUpMenuElement("load", "Load PPE map");
-			menuElements[0][3] = new PopUpMenuElement("save", "Save PPE map");
-			menuElements[0][4] = new PopUpMenuElement("saveAs", "Save PPE map as");
-			menuElements[0][5] = new PopUpMenuElement("saveTemp", "Save PPE map as template");
-			menuElements[0][6] = new PopUpMenuElement("exit", "Exit application");
+			menuElements[0] ~= new PopUpMenuElement("new", "New PPE map");
+			menuElements[0] ~= new PopUpMenuElement("newTemp", "New PPE map from template");
+			menuElements[0] ~= new PopUpMenuElement("load", "Load PPE map");
+			menuElements[0] ~= new PopUpMenuElement("save", "Save PPE map");
+			menuElements[0] ~= new PopUpMenuElement("saveAs", "Save PPE map as");
+			menuElements[0] ~= new PopUpMenuElement("saveTemp", "Save PPE map as template");
+			menuElements[0] ~= new PopUpMenuElement("exit", "Exit application");
 
 			menuElements ~= new PopUpMenuElement("edit", mt("EDIT"));
 
-			menuElements[1].setLength(7);
-			menuElements[1][0] = new PopUpMenuElement("undo", "Undo");
-			menuElements[1][1] = new PopUpMenuElement("redo", "Redo");
-			menuElements[1][2] = new PopUpMenuElement("copy", "Copy");
-			menuElements[1][3] = new PopUpMenuElement("cut", "Cut");
-			menuElements[1][4] = new PopUpMenuElement("paste", "Paste");
-			menuElements[1][5] = new PopUpMenuElement("editorSetup", "Editor settings");
-			menuElements[1][6] = new PopUpMenuElement("docSetup", "Document settings");
+			menuElements[1] ~= new PopUpMenuElement("undo", "Undo");
+			menuElements[1] ~= new PopUpMenuElement("redo", "Redo");
+			menuElements[1] ~= new PopUpMenuElement("copy", "Copy");
+			menuElements[1] ~= new PopUpMenuElement("cut", "Cut");
+			menuElements[1] ~= new PopUpMenuElement("paste", "Paste");
+			menuElements[1] ~= new PopUpMenuElement("editorSetup", "Editor settings");
+			menuElements[1] ~= new PopUpMenuElement("docSetup", "Document settings");
 
 			menuElements ~= new PopUpMenuElement("view", mt("VIEW"));
 
-			//menuElements[2].setLength(2);
 			menuElements[2] ~= new PopUpMenuElement("layerList", "Layers");
 			menuElements[2] ~= new PopUpMenuElement("materialList", "Materials");
 			menuElements[2] ~= new PopUpMenuElement("viewgrid", "Grid");
@@ -124,7 +123,6 @@ public class TopLevelWindow : Window {
 
 			menuElements ~= new PopUpMenuElement("layers", mt("LAYERS"));
 
-			//menuElements[3].setLength(5);
 			menuElements[3] ~= new PopUpMenuElement("newLayer", "New layer");
 			menuElements[3] ~= new PopUpMenuElement("delLayer", "Delete layer");
 			menuElements[3] ~= new PopUpMenuElement("\\submenu\\", "Import layerdata", ">");
@@ -138,15 +136,13 @@ public class TopLevelWindow : Window {
 
 			menuElements ~= new PopUpMenuElement("tools", mt("TOOLS"));
 
-			menuElements[4].setLength(2);
-			menuElements[4][0] = new PopUpMenuElement("tgaTool", "TGA Toolkit");
-			menuElements[4][1] = new PopUpMenuElement("bmfontTool", "BMFont Toolkit");
+			//menuElements[4] ~= new PopUpMenuElement("tgaTool", "TGA Toolkit");
+			menuElements[4] ~= new PopUpMenuElement("bmfontTool", "BMFont Toolkit");
 
 			menuElements ~= new PopUpMenuElement("help", mt("HELP"));
 
-			menuElements[5].setLength(2);
-			menuElements[5][0] = new PopUpMenuElement("helpFile", "Content");
-			menuElements[5][1] = new PopUpMenuElement("about", "About");
+			//menuElements[5][0] = new PopUpMenuElement("helpFile", "Content");
+			menuElements[5] ~= new PopUpMenuElement("about", "About");
 
 			mb = new MenuBar("mb", Box(0,0, width - 1, 15), menuElements);
 
@@ -223,6 +219,7 @@ public class Editor : InputListener, SystemEventListener {
 	public WindowHandler wh;
 	
 	public ConfigurationProfile configFile;
+	public TextParser lang;
 	private int mouseX, mouseY;
 	//private Coordinate selection, selectedTiles;
 	
@@ -233,8 +230,10 @@ public class Editor : InputListener, SystemEventListener {
 	public ObjectList objectList;
 	public PropertyList propertyList;
 	public MapClipboard mapClipboard;
+	public int[4] windowSizes;
 	
 	public this(string[] args){
+		import sdlang;
 		ConfigurationProfile.setVaultPath("ZILtoid1991","PixelPerfectEditor");
 		if (args.length > 1) {
 			if (args[1] == "--restore") {
@@ -243,14 +242,59 @@ public class Editor : InputListener, SystemEventListener {
 		}
 		configFile = new ConfigurationProfile();
 
+		//lang = new TextParser
+		foreach (Tag t ; configFile.ancillaryTags) {
+			if (t.name == "graphicsScaling") {
+				windowSizes[2] = t.values[0].get!int;
+				windowSizes[3] = t.values[1].get!int;
+			} else if (t.name == "rasterSize") {
+				windowSizes[0] = t.values[0].get!int;
+				windowSizes[1] = t.values[1].get!int;
+			}
+		}
+		if (!windowSizes[0]) windowSizes[0] = 848;
+		if (!windowSizes[1]) windowSizes[1] = 480;
+		if (!windowSizes[2]) windowSizes[2] = 2;
+		if (!windowSizes[3]) windowSizes[3] = 2;
+
 		windowing = new SpriteLayer(RenderingMode.Copy);
 		bitmapPreview = new SpriteLayer();
 
-		wh = new WindowHandler(1696,960,848,480,windowing);
+		wh = new WindowHandler(windowSizes[0] * windowSizes[2], windowSizes[1] * windowSizes[3], windowSizes[0], 
+				windowSizes[1], windowing);
 		//wh.ie = this;
 
 		//Initialize the Concrete framework
 		INIT_CONCRETE();
+		//Parse language file
+		dstring langFile;
+		//Note to self: create a better way to check for XML encoding
+		{
+			import sdlang;
+			import std.algorithm.searching;
+			string cc, lc;
+			foreach (Tag t ; configFile.ancillaryTags) {
+				if (t.name == "local") {
+					cc = t.values[0].get!string();
+					lc = t.values[1].get!string();
+					break;
+				}
+			}
+			File f = File(getPathToLocalizationFile(cc, lc, ".xml"));
+			char[] buffer;
+			buffer.length = cast(size_t)f.size;
+			f.rawRead(buffer);
+			const size_t firstlineEnd = countUntil(buffer, '\n', '\r');
+			if (countUntil(buffer[0..firstlineEnd], cast(const(char)[])"UTF-16"w) != -1) {
+				langFile = toUTF32(cast(wstring)(buffer).idup);
+			} else if (countUntil(buffer[0..firstlineEnd], cast(const(char)[])"UTF-32"d) != -1) {
+				langFile = cast(dstring)(buffer).idup;
+			} else {
+				langFile = toUTF32(buffer.idup);
+			}
+		}
+		lang = new TextParser(langFile, globalDefaultStyle.getChrFormatting("default"));
+		lang.parse();
 		//writeln(globalDefaultStyle.drawParameters);
 		//Initialize custom GUI elements
 		{
@@ -381,9 +425,10 @@ public class Editor : InputListener, SystemEventListener {
 		
 		WindowElement.inputHandler = input;
 		
-		ow ~= new OutputScreen("Pixel Perfect Editor", 1696, 960);
+		ow ~= new OutputScreen("Pixel Perfect Editor", cast(ushort)(windowSizes[0] * windowSizes[2]), 
+				cast(ushort)(windowSizes[1] * windowSizes[3]));
 
-		rasters = new Raster(848, 480, ow[0], 0, 1);
+		rasters = new Raster(cast(ushort)windowSizes[0], cast(ushort)windowSizes[1], ow[0], 0, 1);
 		ow[0].setMainRaster(rasters);
 		rasters.addLayer(windowing, 0);
 		rasters.addLayer(bitmapPreview, 1);
@@ -391,7 +436,7 @@ public class Editor : InputListener, SystemEventListener {
 		rasters.setPaletteIndex(0x00_20, Color(0x00,0xFF,0x00,0xff));
 		rasters.setPaletteIndex(0x00_21, Color(0xFF,0x00,0xFF,0xff));
 		rasters.setPaletteIndex(0x00_22, Color(0x7F,0x7F,0xFF,0xff));
-		wh.setBaseWindow(new TopLevelWindow(848, 480, this));
+		wh.setBaseWindow(new TopLevelWindow(windowSizes[0], windowSizes[1], this));
 		wh.addBackground(loadBitmapFromFile!Bitmap32Bit("../system/background.png"));
 		mapClipboard = new MapClipboard(10);
 		openMaterialList();

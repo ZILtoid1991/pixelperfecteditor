@@ -1,56 +1,151 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE ETML>
 <etml>
-    <text id="properties_title">Properties:</text>
+    <text id="properties_title">Properties: </text>
+    <text id="properties_name">Name</text>
+    <text id="properties_value">Value</text>
+
+    <text id="layerlist_title">Layers</text>
+    <text id="layerlist_priority">Pri</text>
+    <text id="layerlist_type">Type</text>
+    <text id="layerlist_name">Name</text>
 
     <text id="bmfonteditor_title">BMFont Editor</text>
     <text id="bmfonteditor_lvhInfo_name">Name:</text>
     <text id="bmfonteditor_lvhInfo_value">Value:</text>
-    <text id="bmfonteditor_lvhChar_id">
-    </text>
-    <text id="bmfonteditor_lvhChar_x">
-    </text>
-    <text id="bmfonteditor_lvhChar_y">
-    </text>
-    <text id="bmfonteditor_lvhChar_w">
-    </text>
-    <text id="bmfonteditor_lvhChar_h">
-    </text>
-    <text id="bmfonteditor_lvhChar_x0">
-    </text>
-    <text id="bmfonteditor_lvhChar_y0">
-    </text>
-    <text id="bmfonteditor_lvhChar_xA">
-    </text>
-    <text id="bmfonteditor_lvhChar_p">
-    </text>
-    <text id="bmfonteditor_lvhChar_ch">
-    </text>
-    <text id="bmfonteditor_lvhKerning_id0">
-    </text>
-    <text id="bmfonteditor_lvhKerning_id1">
-    </text>
-    <text id="bmfonteditor_lvhKerning_am">
-    </text>
-    <text id="bmfonteditor_lvhSources_id">
-    </text>
-    <text id="bmfonteditor_lvhSources_path">
-    </text>
-    <text id="bmfonteditor_lvhKerning_id1">
-    </text>
-    <text id="bmfonteditor_lvhKerning_am">
-    </text>
-    <text id="bmfonteditor_lvhSources_id">
-    </text>
-    <text id="bmfonteditor_lvhSources_path">
-    </text>
+    <text id="bmfonteditor_lvhChar_id">ID:</text>
+    <text id="bmfonteditor_lvhChar_x">x:</text>
+    <text id="bmfonteditor_lvhChar_y">y:</text>
+    <text id="bmfonteditor_lvhChar_w">w:</text>
+    <text id="bmfonteditor_lvhChar_h">h:</text>
+    <text id="bmfonteditor_lvhChar_x0">x0:</text>
+    <text id="bmfonteditor_lvhChar_y0">y0:</text>
+    <text id="bmfonteditor_lvhChar_xA">xA:</text>
+    <text id="bmfonteditor_lvhChar_p">p:</text>
+    <text id="bmfonteditor_lvhChar_ch">ch:</text>
+    <text id="bmfonteditor_lvhKerning_id0">ID0:</text>
+    <text id="bmfonteditor_lvhKerning_id1">ID1:</text>
+    <text id="bmfonteditor_lvhKerning_am">am:</text>
+    <text id="bmfonteditor_lvhSources_id">ID:</text>
+    <text id="bmfonteditor_lvhSources_path">Path:</text>
+    <text id="bmfonteditor_lvinfo_size">Font Size:</text>
+    <text id="bmfonteditor_lvinfo_bitfield">Bitfield:</text>
+    <text id="bmfonteditor_lvinfo_charset">Charset:</text>
+    <text id="bmfonteditor_lvinfo_strechhz">Stretch horiz:</text>
+    <text id="bmfonteditor_lvinfo_antial">Anti-Alias:</text>
+    <text id="bmfonteditor_lvinfo_padup">Padding[up]:</text>
+    <text id="bmfonteditor_lvinfo_paddn">Padding[down]:</text>
+    <text id="bmfonteditor_lvinfo_padle">Padding[left]:</text>
+    <text id="bmfonteditor_lvinfo_padri">Padding[right]:</text>
+    <text id="bmfonteditor_lvinfo_spahz">Spacing[horiz]:</text>
+    <text id="bmfonteditor_lvinfo_spave">Spacing[vert]:</text>
+    <text id="bmfonteditor_lvinfo_name">Font name:</text>
+    <text id="bmfonteditor_lvinfo_outline">Outline:</text>
+    <text id="bmfonteditor_lvcommon_lh">Line Height:</text>
+    <text id="bmfonteditor_lvcommon_base">Base:</text>
+    <text id="bmfonteditor_lvcommon_scw">Scale Width:</text>
+    <text id="bmfonteditor_lvcommon_sch">Scale Height:</text>
+    <text id="bmfonteditor_lvcommon_pages">Pages:</text>
+    <text id="bmfonteditor_lvcommon_bitfield">Bitfield:</text>
+    <text id="bmfonteditor_lvcommon_cha">Channel Type[alpha]:</text>
+    <text id="bmfonteditor_lvcommon_chr">Channel Type[red]:</text>
+    <text id="bmfonteditor_lvcommon_chg">Channel Type[green]:</text>
+    <text id="bmfonteditor_lvcommon_chb">Channel Type[blue]:</text>
     <text id="bmfonteditor_load">Load</text>
     <text id="bmfonteditor_save">Save</text>
     <text id="bmfonteditor_remove">Remove</text>
     <text id="bmfonteditor_add">Add</text>
-    <text id="bmfonteditor_common"></text>
-    <text id="bmfonteditor_info"></text>
-    <text id="bmfonteditor_char"></text>
-    <text id="bmfonteditor_kerning"></text>
-    <text id="bmfonteditor_sources"></text>
+    <text id="bmfonteditor_common">Common</text>
+    <text id="bmfonteditor_info">Info</text>
+    <text id="bmfonteditor_char">Characters</text>
+    <text id="bmfonteditor_kerning">Kerning</text>
+    <text id="bmfonteditor_sources">Sources</text>
+    <text id="bmfonteditor_fd_load">Load BMFont</text>
+    <text id="bmfonteditor_fd_save">Save BMFont</text>
+    <text id="fd_bmfont">AngelCode BMFont file</text>
+
+    <text id="resizemap_title">Resize Map</text>
+    <text id="resizemap_width">Width:</text>
+    <text id="resizemap_height">Height:</text>
+    <text id="resizemap_hoffs">H. Offset:</text>
+    <text id="resizemap_voffs">V. Offset:</text>
+    <text id="resizemap_repeat">Pattern repeat</text>
+    <text id="resizemap_err_invdata_title">Invalid data!</text>
+    <text id="resizemap_err_invdata_msg">Please enter numeric values with optional '%' symbol at the end!</text>
+
+    <text id="sprmat_title">Create New Sprite Material</text>
+    <text id="sprmat_filesrc">File source:</text>
+    <text id="sprmat_browse">Browse</text>
+    <text id="sprmat_singlesprt">Single sprite</text>
+    <text id="sprmat_name">Name:</text>
+    <text id="sprmat_id">ID:</text>
+    <text id="sprmat_multisprt">Miltiple sprites (sheet)</text>
+    <text id="sprmat_lw_id">ID:</text>
+    <text id="sprmat_lw_x">x:</text>
+    <text id="sprmat_lw_y">y:</text>
+    <text id="sprmat_lw_w">w:</text>
+    <text id="sprmat_lw_h">h:</text>
+    <text id="sprmat_lw_name">Name:</text>
+    <text id="sprmat_create">Create</text>
+    <text id="sprmat_imppal">Import palette</text>
+    <text id="sprmat_palSh">palShift:</text>
+    <text id="sprmat_paloffs">palOffset:</text>
+    <text id="sprmat_fd_title">Select sprite sheet source</text>
+    <text id="sprmat_err_id_title">ID error!</text>
+    <text id="sprmat_err_id_text">ID duplicates found!</text>
+
+    <text id="fd_allsup">All supported file</text>
+    <text id="fd_png">Portable network graphics file</text>
+    <text id="fd_targa">Truevision TARGA</text>
+    <text id="fd_winbmp">Windows bitmap</text>
+
+    <text id="menubar_file">FILE</text>
+    <text id="menubar_file_new">New PPE map</text>
+    <text id="menubar_file_newtemp">New PPE map from template</text>
+    <text id="menubar_file_load">Load PPE map</text>
+    <text id="menubar_file_save">Save PPE map</text>
+    <text id="menubar_file_saveas">Save PPE map as</text>
+    <text id="menubar_file_savetemp">Save PPE map as template</text>
+    <text id="menubar_file_exit">Exit application</text>
+
+    <text id="menubar_edit">EDIT</text>
+    <text id="menubar_edit_undo">Undo</text>
+    <text id="menubar_edit_redo">Redo</text>
+    <text id="menubar_edit_copy">Copy</text>
+    <text id="menubar_edit_cut">Cut</text>
+    <text id="menubar_edit_paste">Paste</text>
+    <text id="menubar_edit_editorsetup">Editor settings</text>
+    <text id="menubar_edit_docsetup">Document settings</text>
+
+    <text id="menubar_view">VIEW</text>
+    <text id="menubar_view_layerlist">Layers</text>
+    <text id="menubar_view_materiallist">Materials</text>
+    <text id="menubar_view_grid">Grid</text>
+    <text id="menubar_view_objects">Objects</text>
+    <text id="menubar_view_props">Properties</text>
+    <text id="menubar_view_reset">Reset layer display</text>
+
+    <text id="menubar_layers">LAYERS</text>
+    <text id="menubar_layers_new">New layer</text>
+    <text id="menubar_layers_delete">Delete layer</text>
+    <text id="menubar_layers_import">Import layerdata</text>
+    <text id="menubar_layers_importcsv">Tiled CSV file</text>
+    <text id="menubar_layers_importppebin">PPE binary map file</text>
+    <text id="menubar_layers_export">Export layerdata</text>
+    <text id="menubar_layers_exportcsv">Tiled CSV file</text>
+    <text id="menubar_layers_exportppebin">PPE binary map file</text>
+    <text id="menubar_layers_resrc">Layer resources</text>
+    <text id="menubar_layers_resize">Resize layer</text>
+
+    <text id="menubar_tools">TOOLS</text>
+    <text id="menubar_tools_tga">TGA Toolkit</text>
+    <text id="menubar_tools_bmfont">BMFont editor</text>
+
+    <text id="menubar_help">HELP</text>
+    <text id="menubar_help_content">Content</text>
+    <text id="menubar_help_about">About</text>
+
+    <text id="fd_savedoc">Save document as</text>
+    <text id="fd_loaddoc">Load document</text>
+    <text id="fd_xmf">PPE map file</text>
 </etml>

@@ -105,9 +105,13 @@ input {
     }
 }
 /*
- * Game settings, etc.
+ * Localization settings
  */
-etc {
-    graphicsScaling 2 2
-    rasterSize 848 480
-}
+local "US" "en"
+/*
+ * Graphics settings
+ * graphicsScaling: multipliers for the x and y axes
+ * rasterSize: rendering raster size (output window size = raster size multiplied by graphics scaling)
+ */
+graphicsScaling 2 2
+rasterSize 848 480
