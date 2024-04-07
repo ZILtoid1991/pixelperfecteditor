@@ -4,12 +4,22 @@ import pixelperfectengine.concrete.window;
 import sdlang;
 import std.utf : toUTF32, toUTF8;
 import std.conv : to;
+import std.algorithm.searching : countUntil;
 import app;
 import editorevents;
 import core.internal.utf;
 import pixelperfectengine.concrete.popup.popuptextinput;
 
 public class PropertyList : Window {
+	///List of recognized names for objects.
+	static immutable string[] recognizednamesObj = [];
+	///List of recognized names for layers.
+	static immutable string[] recognizednamesLayer = ["ScrollRateX", "ScrollRateY", "TileFlagName0", "TileFlagName1", 
+			"TileFlagName2", "TileFlagName3", "TileFlagName4", "TileFlagName5"];
+	///List of forbidden names (already in use, etc.) for objects.
+	static immutable string[] forbiddennamesObj = ["", "left", "top", "bottom", "right", "posX", "posY", "scaleHoriz", 
+			"scaleVert", "masterAlpha", "palSel"];
+	static immutable string[] forbiddennamesLayer = ["", "tileW", "tileH", "RenderingMode"];
 	ListView		listView_properties;
 	SmallButton		removeParam, addParam;
 	uint[]			propertyFlags;
@@ -97,19 +107,40 @@ public class PropertyList : Window {
 		if (prg.selDoc is null || reference is null) return;
 		//CellEditEvent cev = cast(CellEditEvent)ev;
 		ListViewItem liv = cast(ListViewItem)ev.aux;
+		const string name = liv[0].getText().toUTF8();
 		if (reference.namespace == "Object") {
+			if (countUntil(forbiddennamesObj, name) != -1) {
+				listView_properties.removeEntry(0);
+				return;
+			}
+			if (countUntil(recognizednamesObj, name) == -1) propertyFlags = 0 ~ propertyFlags;
+			else propertyFlags = PropertyFlags.Recognized ~ propertyFlags;
 			switch (typeSel) {
 				case 0:
-					prg.selDoc.events.addToTop(new ObjectPropertyAddEvent(liv[0].getText().toUTF8(), liv[1].getText().toUTF8(), 
-							reference, prg.selDoc));
+					prg.selDoc.events.addToTop(new ObjectPropertyAddEvent(name, liv[1].getText().toUTF8(), reference, prg.selDoc));
 					break;
 				case 1:
-					prg.selDoc.events.addToTop(new ObjectPropertyAddEvent(liv[0].getText().toUTF8(), liv[1].getText().to!double(), 
-							reference, prg.selDoc));
+					prg.selDoc.events.addToTop(new ObjectPropertyAddEvent(name, liv[1].getText().to!double(), reference, prg.selDoc));
 					break;
 				case 2:
-					prg.selDoc.events.addToTop(new ObjectPropertyAddEvent(liv[0].getText().toUTF8(), liv[1].getText().to!int(), 
-							reference, prg.selDoc));
+					prg.selDoc.events.addToTop(new ObjectPropertyAddEvent(name, liv[1].getText().to!int(), reference, prg.selDoc));
+					break;
+				default: break;
+			}
+		} else if (reference.namespace == "Layer") {
+			if (countUntil(forbiddennamesLayer, name) != -1) {
+				listView_properties.removeEntry(0);
+				return;
+			}
+			switch (typeSel) {
+				case 0:
+					prg.selDoc.events.addToTop(new LayerPropertyAddEvent(name, liv[1].getText().toUTF8(), reference, prg.selDoc));
+					break;
+				case 1:
+					prg.selDoc.events.addToTop(new LayerPropertyAddEvent(name, liv[1].getText().to!double(), reference, prg.selDoc));
+					break;
+				case 2:
+					prg.selDoc.events.addToTop(new LayerPropertyAddEvent(name, liv[1].getText().to!int(), reference, prg.selDoc));
 					break;
 				default: break;
 			}

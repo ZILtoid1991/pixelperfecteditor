@@ -272,15 +272,7 @@ public class Editor : InputListener, SystemEventListener {
 		{
 			import sdlang;
 			import std.algorithm.searching;
-			string cc, lc;
-			foreach (Tag t ; configFile.ancillaryTags) {
-				if (t.name == "local") {
-					cc = t.values[0].get!string();
-					lc = t.values[1].get!string();
-					break;
-				}
-			}
-			File f = File(getPathToLocalizationFile(cc, lc, ".xml"));
+			File f = File(getPathToLocalizationFile(configFile.localCountry, configFile.localLang, ".xml"));
 			char[] buffer;
 			buffer.length = cast(size_t)f.size;
 			f.rawRead(buffer);

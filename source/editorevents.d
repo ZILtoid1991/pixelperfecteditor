@@ -1099,6 +1099,63 @@ public class ObjectPropertyRemoveEvent : UndoableEvent {
 		obj.add(backup);
 	}
 }
+public class LayerPropertyAddEvent : UndoableEvent {
+	Tag layer;
+	Tag property;
+	MapDocument doc;
+	public this (T)(string name, T val, Tag layer, MapDocument doc) {
+		import std.string;
+		this.layer = layer;
+		property = new Tag(null, name, [Value(val)]);
+	}
+	public void redo() {
+		layer.add(property);
+	}
+
+	public void undo() {
+		property.remove();
+	}
+}
+public class LayerPropertyEditEvent : UndoableEvent {
+	Tag layer;
+	Tag oldVal, newVal;
+	MapDocument doc;
+	public this (T)(string name, T val, Tag layer, MapDocument doc) {
+		import std.string;
+		this.layer = layer;
+		
+		newVal = new Tag(null, name, [Value(val)]);
+		
+		oldVal = layer.getTag(name);
+	}
+	public void redo() {
+		oldVal.remove;
+		layer.add(newVal);
+	}
+
+	public void undo() {
+		newVal.remove;
+		layer.add(oldVal);
+	}
+}
+public class LayerPropertyRemoveEvent : UndoableEvent {
+	string propertyName;
+	Tag backup;
+	Tag layer;
+	MapDocument doc;
+	public this (string name, Tag layer, MapDocument doc) {
+		this.layer = layer;
+		propertyName = name;
+		backup = this.layer.getTag(name);
+	}
+	public void redo() {
+		backup.remove();
+	}
+
+	public void undo() {
+		layer.add(backup);
+	}
+}
 public class CreateSpriteLayerEvent : UndoableEvent {
 	SpriteLayer creation;
 	MapDocument target;
