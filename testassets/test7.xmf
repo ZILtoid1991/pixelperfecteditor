@@ -460,6 +460,7 @@ Layer:Tile "layer01" 0 16 16 64 64 {
 	}
 	Object:Box "boxObject0" 0 56 78 185 174 {
 		Color "3ffd0100"
+		aaaa "aaaaa"
 	}
 	Object:Box "boxObject1" 1 134 113 260 206 {
 		Color "0197fd00"

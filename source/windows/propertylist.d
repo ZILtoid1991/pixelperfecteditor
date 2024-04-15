@@ -18,7 +18,7 @@ public class PropertyList : Window {
 			"TileFlagName2", "TileFlagName3", "TileFlagName4", "TileFlagName5"];
 	///List of forbidden names (already in use, etc.) for objects.
 	static immutable string[] forbiddennamesObj = ["", "left", "top", "bottom", "right", "posX", "posY", "scaleHoriz", 
-			"scaleVert", "masterAlpha", "palSel"];
+			"scaleVert", "masterAlpha", "palSel", "RenderingMode", "Color"];
 	static immutable string[] forbiddennamesLayer = ["", "tileW", "tileH", "RenderingMode"];
 	ListView		listView_properties;
 	SmallButton		removeParam, addParam;
@@ -266,6 +266,7 @@ public class PropertyList : Window {
 							[ListViewItem.Field(new Text("right"d, chrFrmt_mand), null),
 							ListViewItem.Field(new Text(to!dstring(t.values[5]), chrFrmt_def), null, TextInputFieldType.Integer)]);
 					propertyFlags ~= PropertyFlags.Mandatory;
+					
 					break;
 				case "Sprite":
 					listView_properties ~= new ListViewItem(16, 
@@ -299,6 +300,30 @@ public class PropertyList : Window {
 					break;
 				default:
 					break;
+			}
+			foreach (Tag t0; t.tags) {
+				switch (t0.name) {
+					case "Color":
+						if (t.name == "Sprite") goto default;
+						listView_properties ~= new ListViewItem(16, 
+								[ListViewItem.Field(new Text(toUTF32(t0.name), chrFrmt_mand), null),
+								ListViewItem.Field(new Text(getFieldValue(t0), chrFrmt_def), null, getFieldType(t0))]);
+						propertyFlags ~= PropertyFlags.Mandatory;
+						break;
+					case "RenderingMode":
+						if (t.name != "Sprite") goto default;
+						listView_properties ~= new ListViewItem(16, 
+								[ListViewItem.Field(new Text(toUTF32(t0.name), chrFrmt_mand), null),
+								ListViewItem.Field(new Text(getFieldValue(t0), chrFrmt_def), null, getFieldType(t0))]);
+						propertyFlags ~= PropertyFlags.Mandatory | PropertyFlags.IsMenu;
+						break;
+					default:
+						listView_properties ~= new ListViewItem(16, 
+								[ListViewItem.Field(new Text(toUTF32(t0.name), chrFrmt_def), null),
+								ListViewItem.Field(new Text(getFieldValue(t0), chrFrmt_def), null, getFieldType(t0))]);
+						propertyFlags ~= 0;
+						break;
+				}
 			}
 		} catch (Exception ex) {
 
