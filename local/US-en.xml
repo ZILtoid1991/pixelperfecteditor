@@ -64,6 +64,18 @@
     <text id="bmfonteditor_fd_save">Save BMFont</text>
     <text id="fd_bmfont">AngelCode BMFont file</text>
 
+    <text id="button_browse" formatId="button">Browse</text>
+    <text id="button_ok" formatId="button">Ok</text>
+
+    <text id="addtiles_title">Add Tiles</text>
+    <text id="addtiles_source">Source:</text>
+    <text id="addtiles_palShift">Palette shift:</text>
+    <text id="addtiles_palImport">Import palette</text>
+    <text id="addtiles_embDat">Use embedded mat data</text>
+    <text id="addtiles_palOffset">Palette offset:</text>
+    <text id="addtiles_name">Name:</text>
+    <text id="addtiles_numStyle">Num style and form:</text>
+
     <text id="resizemap_title">Resize Map</text>
     <text id="resizemap_width">Width:</text>
     <text id="resizemap_height">Height:</text>

@@ -286,6 +286,7 @@ public class Editor : InputListener, SystemEventListener {
 			}
 		}
 		lang = new TextParser(langFile, globalDefaultStyle.getChrFormatting("default"));
+		lang.namedFormats["button"] = globalDefaultStyle.getChrFormatting("button");
 		lang.parse();
 		//writeln(globalDefaultStyle.drawParameters);
 		//Initialize custom GUI elements
