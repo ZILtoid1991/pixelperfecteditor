@@ -9,7 +9,7 @@ import std.conv : to;
 import std.string : format;
 import std.format : unformatValue;
 import std.algorithm.mutation : remove;
-
+import app;
 
 public class BMFontToolkit : Window {
 	Font font;
@@ -29,25 +29,33 @@ public class BMFontToolkit : Window {
 	RadioButton radioButton_char;
 	RadioButton radioButton_kerning;
 	RadioButton radioButton_sources;
-	public this(){
-		super(Box(0, 0, 345, 305), "BMFont Editor");
+	public this() {
+		auto lang = prg.lang.output;
+		super(Box(0, 0, 345, 305), lang["bmfonteditor_title"]);
 
-		lvhInfo = new ListViewHeader(16, [100, 200], ["Name:", "Value:"]);
-		lvhChar = new ListViewHeader(16, [40, 32, 32, 24, 24, 32, 32, 24, 16, 24], 
-				["ID:", "x:", "y:", "w:", "h:", "xO:", "yO:", "xA:", "p:", "Ch:"]);
-		lvhKerning = new ListViewHeader(16, [48, 48, 32], ["ID0:", "ID1:", "am:"]);
-		lvhSources = new ListViewHeader(16, [32, 300], ["ID:", "Path:"]);
-
+		lvhInfo = new ListViewHeader(16, [100, 200], [lang["bmfonteditor_lvhInfo_name"], lang["bmfonteditor_lvhInfo_value"]]);
+		lvhChar = new ListViewHeader(
+			16, [40, 32, 32, 24, 24, 32, 32, 24, 16, 24], [lang["bmfonteditor_lvhChar_id"], lang["bmfonteditor_lvhChar_x"], 
+			lang["bmfonteditor_lvhChar_y"], lang["bmfonteditor_lvhChar_w"], lang["bmfonteditor_lvhChar_h"], 
+			lang["bmfonteditor_lvhChar_x0"], lang["bmfonteditor_lvhChar_y0"], lang["bmfonteditor_lvhChar_xA"], 
+			lang["bmfonteditor_lvhChar_p"], lang["bmfonteditor_lvhChar_ch"]]
+		);
+		lvhKerning = new ListViewHeader(16, [48, 48, 32], [lang["bmfonteditor_lvhKerning_id0"], 
+			lang["bmfonteditor_lvhKerning_id1"], lang["bmfonteditor_lvhKerning_am"]]
+		);
+		lvhSources = new ListViewHeader(16, [32, 300], 
+			[lang["bmfonteditor_lvhSources_id"], lang["bmfonteditor_lvhSources_path"]]
+		);
 		listView0 = new ListView(lvhInfo, [], "listView0", Box(5, 20, 260, 300));
-		button_load = new Button("Load"d, "button_load", Box(265, 20, 340, 40));
-		button_save = new Button("Save"d, "button_save", Box(265, 45, 340, 65));
-		button_remove = new Button("Remove"d, "button_remove", Box(265, 280, 340, 300));
-		button_add = new Button("Add"d, "button_add", Box(265, 255, 340, 275));
-		radioButton_common = new RadioButton("Common"d, "radioButton_common", Box(265, 70, 340, 86));
-		radioButton_info = new RadioButton("Info"d, "radioButton_info", Box(265, 87, 340, 103));
-		radioButton_char = new RadioButton("Characters"d, "radioButton_char", Box(265, 104, 339, 120));
-		radioButton_kerning = new RadioButton("Kerning"d, "radioButton_kerning", Box(265, 121, 340, 137));
-		radioButton_sources = new RadioButton("Sources"d, "radioButton_sources", Box(265, 138, 340, 154));
+		button_load = new Button(lang["bmfonteditor_load"], "button_load", Box(265, 20, 340, 40));
+		button_save = new Button(lang["bmfonteditor_save"], "button_save", Box(265, 45, 340, 65));
+		button_remove = new Button(lang["bmfonteditor_remove"], "button_remove", Box(265, 280, 340, 300));
+		button_add = new Button(lang["bmfonteditor_add"], "button_add", Box(265, 255, 340, 275));
+		radioButton_common = new RadioButton(lang["bmfonteditor_common"], "radioButton_common", Box(265, 70, 340, 86));
+		radioButton_info = new RadioButton(lang["bmfonteditor_info"], "radioButton_info", Box(265, 87, 340, 103));
+		radioButton_char = new RadioButton(lang["bmfonteditor_char"], "radioButton_char", Box(265, 104, 339, 120));
+		radioButton_kerning = new RadioButton(lang["bmfonteditor_kerning"], "radioButton_kerning", Box(265, 121, 340, 137));
+		radioButton_sources = new RadioButton(lang["bmfonteditor_sources"], "radioButton_sources", Box(265, 138, 340, 154));
 
 		addElement(listView0);
 		addElement(button_load);
@@ -241,8 +249,8 @@ public class BMFontToolkit : Window {
 		
 	}
 	protected void onLoadButton(Event ev) {
-		handler.addWindow(new FileDialog("Load BMFont", "bmFontLoad", &onLoadEvent, 
-				[FileDialog.FileAssociationDescriptor("AngelCode BMfont file", ["*.fnt"])], "./", false));
+		handler.addWindow(new FileDialog(prg.lang.output["bmfonteditor_fd_load"], "bmFontLoad", &onLoadEvent, 
+				[FileDialog.FileAssociationDescriptor(prg.lang.output["fd_bmfont"].toDString, ["*.fnt"])], "./", false));
 	}
 	protected void onLoadEvent(Event ev) {
 		import std.stdio : File;
@@ -255,8 +263,8 @@ public class BMFontToolkit : Window {
 		updateListView();
 	}
 	protected void onSaveButton(Event ev) {
-		handler.addWindow(new FileDialog("Save BMFont", "bmFontSave", &onSaveEvent, 
-				[FileDialog.FileAssociationDescriptor("AngelCode BMfont file", ["*.fnt"])], "./", true));
+		handler.addWindow(new FileDialog(prg.lang.output["bmfonteditor_fd_save"], "bmFontSave", &onSaveEvent, 
+				[FileDialog.FileAssociationDescriptor(prg.lang.output["fd_bmfont"].toDString, ["*.fnt"])], "./", true));
 	}
 	protected void onSaveEvent(Event ev) {
 		import std.stdio : File;
@@ -269,6 +277,7 @@ public class BMFontToolkit : Window {
 		updateListView();
 	}
 	protected void updateListView() {
+		auto lang = prg.lang.output;
 		void setButtons(ElementState es) {
 			button_remove.state(es);
 			button_add.state(es);
@@ -277,34 +286,34 @@ public class BMFontToolkit : Window {
 			setButtons(ElementState.Disabled);
 			TextInputFieldType[] tift = [TextInputFieldType.None, TextInputFieldType.Text];
 			listView0.setHeader(lvhInfo, [
-				new ListViewItem(16, ["Font Size:", to!dstring(font.info.fontSize)], tift),
-				new ListViewItem(16, ["Bitfield:", to!dstring(font.info.bitField)], tift),
-				new ListViewItem(16, ["Charset:", to!dstring(font.info.charSet)], tift),
-				new ListViewItem(16, ["Stretch horiz:", to!dstring(font.info.stretchH)], tift),
-				new ListViewItem(16, ["Anti-Alias:", to!dstring(font.info.aa)], tift),
-				new ListViewItem(16, ["Padding[up]:", to!dstring(font.info.padding[0])], tift),
-				new ListViewItem(16, ["Padding[down]:", to!dstring(font.info.padding[1])], tift),
-				new ListViewItem(16, ["Padding[left]:", to!dstring(font.info.padding[2])], tift),
-				new ListViewItem(16, ["Padding[right]:", to!dstring(font.info.padding[3])], tift),
-				new ListViewItem(16, ["Spacing[horiz]:", to!dstring(font.info.spacing[0])], tift),
-				new ListViewItem(16, ["Spacing[vert]:", to!dstring(font.info.spacing[1])], tift),
-				new ListViewItem(16, ["Font name:", to!dstring(font.info.fontName)], tift),
-				new ListViewItem(16, ["Outline:", to!dstring(font.info.outline)], tift),
+				new ListViewItem(16, [lang["bmfonteditor_lvinfo_size"], to!dstring(font.info.fontSize)], tift),
+				new ListViewItem(16, [lang["bmfonteditor_lvinfo_bitfield"], to!dstring(font.info.bitField)], tift),
+				new ListViewItem(16, [lang["bmfonteditor_lvinfo_charset"], to!dstring(font.info.charSet)], tift),
+				new ListViewItem(16, [lang["bmfonteditor_lvinfo_strechhz"], to!dstring(font.info.stretchH)], tift),
+				new ListViewItem(16, [lang["bmfonteditor_lvinfo_antial"], to!dstring(font.info.aa)], tift),
+				new ListViewItem(16, [lang["bmfonteditor_lvinfo_padup"], to!dstring(font.info.padding[0])], tift),
+				new ListViewItem(16, [lang["bmfonteditor_lvinfo_paddn"], to!dstring(font.info.padding[1])], tift),
+				new ListViewItem(16, [lang["bmfonteditor_lvinfo_padle"], to!dstring(font.info.padding[2])], tift),
+				new ListViewItem(16, [lang["bmfonteditor_lvinfo_padri"], to!dstring(font.info.padding[3])], tift),
+				new ListViewItem(16, [lang["bmfonteditor_lvinfo_spahz"], to!dstring(font.info.spacing[0])], tift),
+				new ListViewItem(16, [lang["bmfonteditor_lvinfo_spave"], to!dstring(font.info.spacing[1])], tift),
+				new ListViewItem(16, [lang["bmfonteditor_lvinfo_name"], to!dstring(font.info.fontName)], tift),
+				new ListViewItem(16, [lang["bmfonteditor_lvinfo_outline"], to!dstring(font.info.outline)], tift),
 			]);
 		} else if (radioButton_common.isChecked) {
 			setButtons(ElementState.Disabled);
 			TextInputFieldType[] tift = [TextInputFieldType.None, TextInputFieldType.Text];
 			listView0.setHeader(lvhInfo, [
-				new ListViewItem(16, ["Line Height:", to!dstring(font.info.fontSize)], tift),
-				new ListViewItem(16, ["Base:", to!dstring(font.info.bitField)], tift),
-				new ListViewItem(16, ["Scale Width:", to!dstring(font.info.charSet)], tift),
-				new ListViewItem(16, ["Scale Height:", to!dstring(font.info.stretchH)], tift),
-				new ListViewItem(16, ["Pages:", to!dstring(font.info.aa)], tift),
-				new ListViewItem(16, ["Bitfield:", to!dstring(font.info.padding[0])], tift),
-				new ListViewItem(16, ["Channel Type[alpha]:", to!dstring(font.info.padding[1])], tift),
-				new ListViewItem(16, ["Channel Type[red]:", to!dstring(font.info.padding[2])], tift),
-				new ListViewItem(16, ["Channel Type[green]:", to!dstring(font.info.padding[3])], tift),
-				new ListViewItem(16, ["Channel Type[blue]:", to!dstring(font.info.spacing[0])], tift),
+				new ListViewItem(16, [lang["bmfonteditor_lvcommon_lh"], to!dstring(font.info.fontSize)], tift),
+				new ListViewItem(16, [lang["bmfonteditor_lvcommon_base"], to!dstring(font.info.bitField)], tift),
+				new ListViewItem(16, [lang["bmfonteditor_lvcommon_scw"], to!dstring(font.info.charSet)], tift),
+				new ListViewItem(16, [lang["bmfonteditor_lvcommon_sch"], to!dstring(font.info.stretchH)], tift),
+				new ListViewItem(16, [lang["bmfonteditor_lvcommon_pages"], to!dstring(font.info.aa)], tift),
+				new ListViewItem(16, [lang["bmfonteditor_lvcommon_bitfield"], to!dstring(font.info.padding[0])], tift),
+				new ListViewItem(16, [lang["bmfonteditor_lvcommon_cha"], to!dstring(font.info.padding[1])], tift),
+				new ListViewItem(16, [lang["bmfonteditor_lvcommon_chr"], to!dstring(font.info.padding[2])], tift),
+				new ListViewItem(16, [lang["bmfonteditor_lvcommon_chg"], to!dstring(font.info.padding[3])], tift),
+				new ListViewItem(16, [lang["bmfonteditor_lvcommon_chb"], to!dstring(font.info.spacing[0])], tift),
 			]);
 		} else if (radioButton_char.isChecked) {
 			setButtons(ElementState.Enabled);

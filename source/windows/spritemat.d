@@ -5,6 +5,7 @@ import document;
 import editorevents;
 import std.conv : to;
 import std.utf;
+import editor;
 
 public class SprMatCreate : Window {
 	Label label_path;
@@ -29,29 +30,31 @@ public class SprMatCreate : Window {
 	MapDocument md;
 	int layerID;
 	bool multi;
-	public this(MapDocument md, int layerID) {
-		super(Box(0, 0, 295, 330), "Create New Sprite Material");
+	public this(MapDocument md, int layerID, Editor editor) {
+		super(Box(0, 0, 295, 330), editor.lang.output["sprmat_title"]);
 		this.md = md;
 		this.layerID = layerID;
-		label_path = new Label("File source:"d, "label0", Box(5, 20, 70, 40));
+		label_path = new Label(editor.lang.output["sprmat_filesrc"], "label0", Box(5, 20, 70, 40));
 		textBox_path = new TextBox(""d, "textBox_path", Box(70, 20, 200, 40));
-		button_browse = new Button("Browse"d, "button_browse", Box(225, 20, 290, 40));
-		radioButton_single = new RadioButton("Single sprite"d, "radioButton0", Box(5, 45, 200, 64));
-		label_sName = new Label("Name:"d, "label0", Box(5, 65, 50, 85));
+		button_browse = new Button(editor.lang.output["button_browse"], "button_browse", Box(225, 20, 290, 40));
+		radioButton_single = new RadioButton(editor.lang.output["sprmat_singlesprt"], "radioButton0", Box(5, 45, 200, 64));
+		label_sName = new Label(editor.lang.output["sprmat_name"], "label0", Box(5, 65, 50, 85));
 		textBox_sName = new TextBox(""d, "textBox_name", Box(55, 65, 120, 85));
-		label_sID = new Label("ID:"d, "label0", Box(125, 65, 150, 85));
+		label_sID = new Label(editor.lang.output["sprmat_id"], "label0", Box(125, 65, 150, 85));
 		textBox_sID = new TextBox(""d, "textBox_sID", Box(155, 65, 220, 85));
-		radioButton_multi = new RadioButton("Multiple sprites (sheet)"d, "radioButton1", Box(5, 90, 200, 109));
+		radioButton_multi = new RadioButton(editor.lang.output["sprmat_multisprt"], "radioButton1", Box(5, 90, 200, 109));
 		listView_sprSheet = new ListView(
-				new ListViewHeader(16, [40 ,40 ,40 ,40 ,40 ,80], ["ID:" ,"x:" ,"y:" ,"w:" ,"h:" ,"Name:"]), 
+				new ListViewHeader(16, [40 ,40 ,40 ,40 ,40 ,80], [editor.lang.output["sprmat_lw_id"], 
+				editor.lang.output["sprmat_lw_x"], editor.lang.output["sprmat_lw_y"], editor.lang.output["sprmat_lw_w"], 
+				editor.lang.output["sprmat_lw_h"], editor.lang.output["sprmat_lw_name"]]), 
 				null, "listView_sprSheet", Box(5, 110, 290, 260));
-		button_create = new Button("Create"d, "button0", Box(225, 265, 290, 285));
+		button_create = new Button(editor.lang.output["sprmat_create"], "button0", Box(225, 265, 290, 285));
 		smallButton_add = new SmallButton("addMaterialB", "addMaterialA", "", Box.bySize(5, 265, 16, 16));
 		smallButton_remove = new SmallButton("removeMaterialB", "removeMaterialA", "", Box.bySize(5 + 16, 265, 16, 16));
-		checkBox_impPal = new CheckBox("Import palette"d, "CheckBox0", Box(5, 285, 200, 305));
-		label_palShift = new Label("palShift:"d, "label_palShift", Box(5, 305, 50, 325));
+		checkBox_impPal = new CheckBox(editor.lang.output["sprmat_imppal"], "CheckBox0", Box(5, 285, 200, 305));
+		label_palShift = new Label(editor.lang.output["sprmat_palSh"], "label_palShift", Box(5, 305, 50, 325));
 		textBox_palShift = new TextBox("0"d, "textBox_palShift", Box(50, 305, 100, 325));
-		label_palOffset = new Label("palOffset:"d, "label_palOffset", Box(105, 305, 150, 325));
+		label_palOffset = new Label(editor.lang.output["sprmat_paloffs"], "label_palOffset", Box(105, 305, 150, 325));
 		textBox_palOffset = new TextBox("0"d, "textBox_palOffset", Box(150, 305, 200, 325));
 
 		spriteAm = new RadioButtonGroup([radioButton_single, radioButton_multi]);
@@ -108,11 +111,11 @@ public class SprMatCreate : Window {
 	}
 	protected void button_browse_onClick(Event ev) {
 		import pixelperfectengine.concrete.dialogs.filedialog;
-		handler.addWindow(new FileDialog("Select sprite sheet source", "fileLoad", &onFileSelect, 
-				[FileDialog.FileAssociationDescriptor("All supported files", [".png",".tga",".bmp"]),
-				FileDialog.FileAssociationDescriptor("Portable network graphics file", [".png"]),
-				FileDialog.FileAssociationDescriptor("Truevision TARGA", [".tga"]),
-				FileDialog.FileAssociationDescriptor("Windows bitmap", [".bmp"])], "./"));
+		handler.addWindow(new FileDialog(editor.lang.output["sprmat_fd_title"], "fileLoad", &onFileSelect, 
+				[FileDialog.FileAssociationDescriptor(editor.lang.output["fd_allsup"].toDString(), [".png",".tga",".bmp"]),
+				FileDialog.FileAssociationDescriptor(editor.lang.output["fd_png"].toDString(), [".png"]),
+				FileDialog.FileAssociationDescriptor(editor.lang.output["fd_targa"].toDString(), [".tga"]),
+				FileDialog.FileAssociationDescriptor(editor.lang.output["fd_winbmp"].toDString(), [".bmp"])], "./"));
 	}
 	protected void onFileSelect(Event ev) {
 		FileEvent fev = cast(FileEvent)ev;

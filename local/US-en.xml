@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE ETML>
 <etml>
-    <text id="properties_title">Properties: </text>
+    <text id="properties_title">Properties</text>
     <text id="properties_name">Name</text>
     <text id="properties_value">Value</text>
 
@@ -51,10 +51,10 @@
     <text id="bmfonteditor_lvcommon_chr">Channel Type[red]:</text>
     <text id="bmfonteditor_lvcommon_chg">Channel Type[green]:</text>
     <text id="bmfonteditor_lvcommon_chb">Channel Type[blue]:</text>
-    <text id="bmfonteditor_load">Load</text>
-    <text id="bmfonteditor_save">Save</text>
-    <text id="bmfonteditor_remove">Remove</text>
-    <text id="bmfonteditor_add">Add</text>
+    <text id="bmfonteditor_load" formatId="button">Load</text>
+    <text id="bmfonteditor_save" formatId="button">Save</text>
+    <text id="bmfonteditor_remove" formatId="button">Remove</text>
+    <text id="bmfonteditor_add" formatId="button">Add</text>
     <text id="bmfonteditor_common">Common</text>
     <text id="bmfonteditor_info">Info</text>
     <text id="bmfonteditor_char">Characters</text>
@@ -79,6 +79,7 @@
     <text id="resizemap_title">Resize Map</text>
     <text id="resizemap_width">Width:</text>
     <text id="resizemap_height">Height:</text>
+    <text id="resizemap_origin">Origin:</text>
     <text id="resizemap_hoffs">H. Offset:</text>
     <text id="resizemap_voffs">V. Offset:</text>
     <text id="resizemap_repeat">Pattern repeat</text>
@@ -91,7 +92,7 @@
     <text id="sprmat_singlesprt">Single sprite</text>
     <text id="sprmat_name">Name:</text>
     <text id="sprmat_id">ID:</text>
-    <text id="sprmat_multisprt">Miltiple sprites (sheet)</text>
+    <text id="sprmat_multisprt">Multiple sprites (sheet)</text>
     <text id="sprmat_lw_id">ID:</text>
     <text id="sprmat_lw_x">x:</text>
     <text id="sprmat_lw_y">y:</text>

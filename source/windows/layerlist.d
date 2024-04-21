@@ -15,11 +15,14 @@ public class LayerList : Window {
 	CheckBox checkBox_Hide;
 	CheckBox checkBox_Solo;
 	public this(int x, int y, void delegate() onClose){
-		super(Box(0 + x, 0 + y, 129 + x, 213 + y), "Layers"d);
+		super(Box(0 + x, 0 + y, 129 + x, 213 + y), prg.lang.output["layerlist_title"]);
 		this.onClose = onClose;
 		
 		listView_layers = new ListView(
-			new ListViewHeader(16, [24, 40, 96], ["Pri"d ,"Type"d, "Name"d]), null, "listView_layers", Box(1, 17, 128, 179)
+			new ListViewHeader(16, [24, 40, 96], 
+					[editor.lang.output["layerlist_priority"] ,editor.lang.output["layerlist_type"], 
+					editor.lang.output["layerlist_name"]]), 
+					null, "listView_layers", Box(1, 17, 128, 179)
 		);
 		listView_layers.editEnable = true;
 		listView_layers.multicellEditEnable = true;

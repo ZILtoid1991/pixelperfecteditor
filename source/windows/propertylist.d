@@ -33,9 +33,10 @@ public class PropertyList : Window {
 		IsMenu			=	1<<3,
 	}
 	public this(int x, int y, void delegate() onClose) {
-		super(Box(0 + x, 0 + y, 129 + x, 213 + y), "Properties: NULL"d);
+		super(Box(0 + x, 0 + y, 129 + x, 213 + y), prg.lang.output["properties_title"]);
 		this.onClose = onClose;
-        listView_properties = new ListView(new ListViewHeader(16, [90, 240], ["Name"d, "Value"d]), null, 
+        listView_properties = new ListView(new ListViewHeader(16, [90, 240], 
+				[prg.lang.output["properties_name"], prg.lang.output["properties_value"]]), null, 
 				"listView_properties", Box.bySize(1, 17, 128, 180));
 		addElement(listView_properties);
 		listView_properties.onItemSelect = &listView_properties_onSelect;
