@@ -85,64 +85,63 @@ public class NewDocumentDialog : Window{
 public class TopLevelWindow : Window {
 	public this(int width, int height, Editor prg) {
 		Text mt(dstring text) @safe nothrow {
-			return new Text(text, globalDefaultStyle.getChrFormatting("menuBar"));
+			return new Text(text, globalDefaultStyle.getChrFormatting("default"));
 		}
 		super(Box(0, 0, width, height), ""d, [], null);
 		MenuBar mb;
 		{
 			PopUpMenuElement[] menuElements;
-			menuElements ~= new PopUpMenuElement("file", mt("FILE"));
+			menuElements ~= new PopUpMenuElement("file", prg.lang.output["menubar_file"]);
 
-			menuElements[0] ~= new PopUpMenuElement("new", "New PPE map");
-			menuElements[0] ~= new PopUpMenuElement("newTemp", "New PPE map from template");
-			menuElements[0] ~= new PopUpMenuElement("load", "Load PPE map");
-			menuElements[0] ~= new PopUpMenuElement("save", "Save PPE map");
-			menuElements[0] ~= new PopUpMenuElement("saveAs", "Save PPE map as");
-			menuElements[0] ~= new PopUpMenuElement("saveTemp", "Save PPE map as template");
-			menuElements[0] ~= new PopUpMenuElement("exit", "Exit application");
+			menuElements[0] ~= new PopUpMenuElement("new", prg.lang.output["menubar_file_new"]);
+			menuElements[0] ~= new PopUpMenuElement("newTemp", prg.lang.output["menubar_file_newtemp"]);
+			menuElements[0] ~= new PopUpMenuElement("load", prg.lang.output["menubar_file_load"]);
+			menuElements[0] ~= new PopUpMenuElement("save", prg.lang.output["menubar_file_save"]);
+			menuElements[0] ~= new PopUpMenuElement("saveAs", prg.lang.output["menubar_file_saveas"]);
+			menuElements[0] ~= new PopUpMenuElement("saveTemp", prg.lang.output["menubar_file_savetemp"]);
+			menuElements[0] ~= new PopUpMenuElement("exit", prg.lang.output["menubar_file_exit"]);
 
-			menuElements ~= new PopUpMenuElement("edit", mt("EDIT"));
+			menuElements ~= new PopUpMenuElement("edit", prg.lang.output["menubar_edit"]);
 
-			menuElements[1] ~= new PopUpMenuElement("undo", "Undo");
-			menuElements[1] ~= new PopUpMenuElement("redo", "Redo");
-			menuElements[1] ~= new PopUpMenuElement("copy", "Copy");
-			menuElements[1] ~= new PopUpMenuElement("cut", "Cut");
-			menuElements[1] ~= new PopUpMenuElement("paste", "Paste");
-			menuElements[1] ~= new PopUpMenuElement("editorSetup", "Editor settings");
-			menuElements[1] ~= new PopUpMenuElement("docSetup", "Document settings");
+			menuElements[1] ~= new PopUpMenuElement("undo", prg.lang.output["menubar_edit_undo"]);
+			menuElements[1] ~= new PopUpMenuElement("redo", prg.lang.output["menubar_edit_redo"]);
+			menuElements[1] ~= new PopUpMenuElement("copy", prg.lang.output["menubar_edit_copy"]);
+			menuElements[1] ~= new PopUpMenuElement("cut", prg.lang.output["menubar_edit_cut"]);
+			menuElements[1] ~= new PopUpMenuElement("paste", prg.lang.output["menubar_edit_paste"]);
+			menuElements[1] ~= new PopUpMenuElement("editorSetup", prg.lang.output["menubar_edit_editorsetup"]);
+			menuElements[1] ~= new PopUpMenuElement("docSetup", prg.lang.output["menubar_edit_docsetup"]);
 
-			menuElements ~= new PopUpMenuElement("view", mt("VIEW"));
+			menuElements ~= new PopUpMenuElement("view", prg.lang.output["menubar_view"]);
 
-			menuElements[2] ~= new PopUpMenuElement("layerList", "Layers");
-			menuElements[2] ~= new PopUpMenuElement("materialList", "Materials");
-			menuElements[2] ~= new PopUpMenuElement("viewgrid", "Grid");
-			menuElements[2] ~= new PopUpMenuElement("objlist", "Objects");
-			menuElements[2] ~= new PopUpMenuElement("proplist", "Properties");
-			menuElements[2] ~= new PopUpMenuElement("resetLayers", "Reset layer display");
-			//menuElements[2][2] = new PopUpMenuElement("layerTools", "Layer tools", "Alt + T");
+			menuElements[2] ~= new PopUpMenuElement("layerList", prg.lang.output["menubar_view_layerlist"]);
+			menuElements[2] ~= new PopUpMenuElement("materialList", prg.lang.output["menubar_view_materiallist"]);
+			menuElements[2] ~= new PopUpMenuElement("viewgrid", prg.lang.output["menubar_view_grid"]);
+			menuElements[2] ~= new PopUpMenuElement("objlist", prg.lang.output["menubar_view_objects"]);
+			menuElements[2] ~= new PopUpMenuElement("proplist", prg.lang.output["menubar_view_props"]);
+			menuElements[2] ~= new PopUpMenuElement("resetLayers", prg.lang.output["menubar_view_reset"]);
 
-			menuElements ~= new PopUpMenuElement("layers", mt("LAYERS"));
+			menuElements ~= new PopUpMenuElement("layers", prg.lang.output["menubar_layers"]);
 
-			menuElements[3] ~= new PopUpMenuElement("newLayer", "New layer");
-			menuElements[3] ~= new PopUpMenuElement("delLayer", "Delete layer");
-			menuElements[3] ~= new PopUpMenuElement("\\submenu\\", "Import layerdata", ">");
-			menuElements[3][2] ~= new PopUpMenuElement("tiledcsvi", "Tiled CSV file");
-			menuElements[3][2] ~= new PopUpMenuElement("ppebinmapi", "PPE binary map file");
-			menuElements[3] ~= new PopUpMenuElement("\\submenu\\", "Export layerdata", ">");
-			menuElements[3][3] ~= new PopUpMenuElement("tiledcsve", "Tiled CSV file");
-			menuElements[3][3] ~= new PopUpMenuElement("ppebinmape", "PPE binary map file");
-			menuElements[3] ~= new PopUpMenuElement("layerSrc", "Layer resources");
-			menuElements[3] ~= new PopUpMenuElement("resizeLayer", "Resize layer");
+			menuElements[3] ~= new PopUpMenuElement("newLayer", prg.lang.output["menubar_layers_new"]);
+			menuElements[3] ~= new PopUpMenuElement("delLayer", prg.lang.output["menubar_layers_delete"]);
+			menuElements[3] ~= new PopUpMenuElement("\\submenu\\", prg.lang.output["menubar_layers_import"], mt(">"));
+			menuElements[3][2] ~= new PopUpMenuElement("tiledcsvi", prg.lang.output["menubar_layers_importcsv"]);
+			menuElements[3][2] ~= new PopUpMenuElement("ppebinmapi", prg.lang.output["menubar_layers_importppebin"]);
+			menuElements[3] ~= new PopUpMenuElement("\\submenu\\", prg.lang.output["menubar_layers_export"], mt(">"));
+			menuElements[3][3] ~= new PopUpMenuElement("tiledcsve", prg.lang.output["menubar_layers_exportcsv"]);
+			menuElements[3][3] ~= new PopUpMenuElement("ppebinmape", prg.lang.output["menubar_layers_exportppebin"]);
+			menuElements[3] ~= new PopUpMenuElement("layerSrc", prg.lang.output["menubar_layers_resrc"]);
+			menuElements[3] ~= new PopUpMenuElement("resizeLayer", prg.lang.output["menubar_layers_resize"]);
 
-			menuElements ~= new PopUpMenuElement("tools", mt("TOOLS"));
+			menuElements ~= new PopUpMenuElement("tools", prg.lang.output["menubar_tools"]);
 
-			//menuElements[4] ~= new PopUpMenuElement("tgaTool", "TGA Toolkit");
-			menuElements[4] ~= new PopUpMenuElement("bmfontTool", "BMFont Toolkit");
+			//menuElements[4] ~= new PopUpMenuElement("tgaTool", prg.lang.output["menubar_tools_tga"]);
+			menuElements[4] ~= new PopUpMenuElement("bmfontTool", prg.lang.output["menubar_tools_bmfont"]);
 
-			menuElements ~= new PopUpMenuElement("help", mt("HELP"));
+			menuElements ~= new PopUpMenuElement("help", prg.lang.output["menubar_help"]);
 
-			//menuElements[5][0] = new PopUpMenuElement("helpFile", "Content");
-			menuElements[5] ~= new PopUpMenuElement("about", "About");
+			//menuElements[5][0] = new PopUpMenuElement("helpFile", prg.lang.output["menubar_help_content"]);
+			menuElements[5] ~= new PopUpMenuElement("about", prg.lang.output["menubar_help_about"]);
 
 			mb = new MenuBar("mb", Box(0,0, width - 1, 15), menuElements);
 
@@ -287,6 +286,7 @@ public class Editor : InputListener, SystemEventListener {
 		}
 		lang = new TextParser(langFile, globalDefaultStyle.getChrFormatting("default"));
 		lang.namedFormats["button"] = globalDefaultStyle.getChrFormatting("button");
+		lang.namedFormats["menubar"] = globalDefaultStyle.getChrFormatting("menuBar");
 		lang.parse();
 		//writeln(globalDefaultStyle.drawParameters);
 		//Initialize custom GUI elements
@@ -432,10 +432,10 @@ public class Editor : InputListener, SystemEventListener {
 		wh.setBaseWindow(new TopLevelWindow(windowSizes[0], windowSizes[1], this));
 		wh.addBackground(loadBitmapFromFile!Bitmap32Bit("../system/background.png"));
 		mapClipboard = new MapClipboard(10);
-		openMaterialList();
-		openLayerList();
-		openObjectList();
-		openPropertyList();
+		//openMaterialList();
+		//openLayerList();
+		//openObjectList();
+		//openPropertyList();
 	}
 	public void menuEvent(Event ev) {
 		if (ev.type == EventType.Menu){
@@ -969,7 +969,7 @@ public class Editor : InputListener, SystemEventListener {
 				const int tileX = itl.getTileWidth, tileY = itl.getTileHeight;
 				wh.addWindow(new AddTiles(this, tileX, tileY));
 			} else if (selDoc.mainDoc.getLayerInfo(selDoc.selectedLayer).type == LayerType.Sprite) {
-				wh.addWindow(new SprMatCreate(selDoc, selDoc.selectedLayer));
+				wh.addWindow(new SprMatCreate(selDoc, selDoc.selectedLayer, this));
 			}
 		}
 	}
@@ -988,7 +988,12 @@ public class Editor : InputListener, SystemEventListener {
 	public void setRasterRefresh(){
 		rasterRefresh = true;
 	}
-	public void whereTheMagicHappens(){
+	public void whereTheMagicHappens() {
+		//potential bug/odd behavior: I had to move these from the CTOR to here, as there they couldn't access some resources
+		openMaterialList();
+		openLayerList();
+		openObjectList();
+		openPropertyList();
 		//rasters.refresh();
 		while(!onexit){
 			input.test();

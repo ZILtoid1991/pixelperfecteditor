@@ -33,13 +33,15 @@ public class MaterialList : Window {
 	protected ListViewHeader tileListHeader;
 	protected ListViewHeader spriteListHeader;
 	public this(int x, int y, void delegate() onClose) @trusted {
-		super(Box(x, y, x + 129, y + 249), "Materials"d);
+		super(Box(x, y, x + 129, y + 249), prg.lang.output["materiallist_title"]);
 		this.onClose = onClose;
 		StyleSheet ss = getStyleSheet();
 		/+listBox_materials = new ListBox("listBox0", Coordinate(1, 17, 129, 218), [], new ListBoxHeader(tileListHeaderS.dup,
 				tileListHeaderW.dup));+/
-		tileListHeader = new ListViewHeader(16, [32, 120], ["ID"d, "Name"d]);
-		spriteListHeader = new ListViewHeader(16, [40, 120, 64], ["ID"d, "Name"d, "Dim"d]);
+		tileListHeader = new ListViewHeader(16, [32, 120], 
+			[prg.lang.output["materiallist_id"], prg.lang.output["materiallist_name"]]);
+		spriteListHeader = new ListViewHeader(16, [40, 120, 64], 
+			[prg.lang.output["materiallist_id"], prg.lang.output["materiallist_name"], prg.lang.output["materiallist_dim"]]);
 		listView_materials = new ListView(tileListHeader, null, "listView_materials", Box(1, 17, 128, 215));
 		listView_materials.onItemSelect = &onItemSelect;
 		listView_materials.editEnable = true;

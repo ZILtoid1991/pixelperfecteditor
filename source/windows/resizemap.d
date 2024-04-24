@@ -43,10 +43,10 @@ public class ResizeMap : Window {
 		addElement(label4);
 		checkBox_repeat = new CheckBox(lang["resizemap_repeat"], "repeat", Box(5, 102, 135, 118));
 		addElement(checkBox_repeat);
-		mX = new TextBox(to!dstring(x), lang[""], Box(80, 20, 135, 38));
+		mX = new TextBox(to!dstring(x), "", Box(80, 20, 135, 38));
 		addElement(mX);
 		mX.onTextInput = &checkTextInput;
-		mY = new TextBox(to!dstring(y), lang[""], Box(80, 40, 135, 58));
+		mY = new TextBox(to!dstring(y), "", Box(80, 40, 135, 58));
 		addElement(mY);
 		mY.onTextInput = &checkTextInput;
 		offsetX = new TextBox("0", "offsetX", Box(80, 60, 135, 78));

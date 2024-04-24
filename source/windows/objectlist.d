@@ -17,9 +17,10 @@ public class ObjectList : Window {
     CheckBox        checkBox_Solo;
 	Color			selectedColor;
     public this(int x, int y, void delegate() onClose) @trusted {
-        super(Box(x, y, x + 129, y + 249), "Objects"d);
+        super(Box(x, y, x + 129, y + 249), prg.lang.output["objectlist_title"]);
         this.onClose = onClose;
-        listView_objects = new ListView(new ListViewHeader(16, [40, 120], ["ID"d, "Name"d]), null, "listView_objects", 
+        listView_objects = new ListView(new ListViewHeader(16, [40, 120], 
+				[prg.lang.output["objectlist_id"], prg.lang.output["objectlist_name"]]), null, "listView_objects", 
                 Box(1, 17, 128, 215));
         listView_objects.editEnable = true;
         listView_objects.onItemSelect = &onItemSelect;

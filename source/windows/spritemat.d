@@ -6,6 +6,7 @@ import editorevents;
 import std.conv : to;
 import std.utf;
 import editor;
+import app;
 
 public class SprMatCreate : Window {
 	Label label_path;
@@ -111,11 +112,11 @@ public class SprMatCreate : Window {
 	}
 	protected void button_browse_onClick(Event ev) {
 		import pixelperfectengine.concrete.dialogs.filedialog;
-		handler.addWindow(new FileDialog(editor.lang.output["sprmat_fd_title"], "fileLoad", &onFileSelect, 
-				[FileDialog.FileAssociationDescriptor(editor.lang.output["fd_allsup"].toDString(), [".png",".tga",".bmp"]),
-				FileDialog.FileAssociationDescriptor(editor.lang.output["fd_png"].toDString(), [".png"]),
-				FileDialog.FileAssociationDescriptor(editor.lang.output["fd_targa"].toDString(), [".tga"]),
-				FileDialog.FileAssociationDescriptor(editor.lang.output["fd_winbmp"].toDString(), [".bmp"])], "./"));
+		handler.addWindow(new FileDialog(prg.lang.output["sprmat_fd_title"], "fileLoad", &onFileSelect, 
+				[FileDialog.FileAssociationDescriptor(prg.lang.output["fd_allsup"].toDString(), [".png",".tga",".bmp"]),
+				FileDialog.FileAssociationDescriptor(prg.lang.output["fd_png"].toDString(), [".png"]),
+				FileDialog.FileAssociationDescriptor(prg.lang.output["fd_targa"].toDString(), [".tga"]),
+				FileDialog.FileAssociationDescriptor(prg.lang.output["fd_winbmp"].toDString(), [".bmp"])], "./"));
 	}
 	protected void onFileSelect(Event ev) {
 		FileEvent fev = cast(FileEvent)ev;

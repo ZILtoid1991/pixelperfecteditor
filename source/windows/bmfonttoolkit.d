@@ -282,38 +282,63 @@ public class BMFontToolkit : Window {
 			button_remove.state(es);
 			button_add.state(es);
 		}
+		alias Field = ListViewItem.Field;
+		CharacterFormattingInfo!(Bitmap!("B", ubyte)) dfs = getStyleSheet().getChrFormatting("default");
 		if (radioButton_info.isChecked) {
 			setButtons(ElementState.Disabled);
 			TextInputFieldType[] tift = [TextInputFieldType.None, TextInputFieldType.Text];
 			listView0.setHeader(lvhInfo, [
-				new ListViewItem(16, [lang["bmfonteditor_lvinfo_size"], to!dstring(font.info.fontSize)], tift),
-				new ListViewItem(16, [lang["bmfonteditor_lvinfo_bitfield"], to!dstring(font.info.bitField)], tift),
-				new ListViewItem(16, [lang["bmfonteditor_lvinfo_charset"], to!dstring(font.info.charSet)], tift),
-				new ListViewItem(16, [lang["bmfonteditor_lvinfo_strechhz"], to!dstring(font.info.stretchH)], tift),
-				new ListViewItem(16, [lang["bmfonteditor_lvinfo_antial"], to!dstring(font.info.aa)], tift),
-				new ListViewItem(16, [lang["bmfonteditor_lvinfo_padup"], to!dstring(font.info.padding[0])], tift),
-				new ListViewItem(16, [lang["bmfonteditor_lvinfo_paddn"], to!dstring(font.info.padding[1])], tift),
-				new ListViewItem(16, [lang["bmfonteditor_lvinfo_padle"], to!dstring(font.info.padding[2])], tift),
-				new ListViewItem(16, [lang["bmfonteditor_lvinfo_padri"], to!dstring(font.info.padding[3])], tift),
-				new ListViewItem(16, [lang["bmfonteditor_lvinfo_spahz"], to!dstring(font.info.spacing[0])], tift),
-				new ListViewItem(16, [lang["bmfonteditor_lvinfo_spave"], to!dstring(font.info.spacing[1])], tift),
-				new ListViewItem(16, [lang["bmfonteditor_lvinfo_name"], to!dstring(font.info.fontName)], tift),
-				new ListViewItem(16, [lang["bmfonteditor_lvinfo_outline"], to!dstring(font.info.outline)], tift),
+				new ListViewItem(16, [Field(lang["bmfonteditor_lvinfo_size"], null), 
+					Field(new Text(to!dstring(font.info.fontSize),dfs), null, TextInputFieldType.Text)]),
+				new ListViewItem(16, [Field(lang["bmfonteditor_lvinfo_bitfield"], null), 
+					Field(new Text(to!dstring(font.info.bitField),dfs), null, TextInputFieldType.Text)]),
+				new ListViewItem(16, [Field(lang["bmfonteditor_lvinfo_charset"], null), 
+					Field(new Text(to!dstring(font.info.charSet),dfs), null, TextInputFieldType.Text)]),
+				new ListViewItem(16, [Field(lang["bmfonteditor_lvinfo_strechhz"], null), 
+					Field(new Text(to!dstring(font.info.stretchH),dfs), null, TextInputFieldType.Text)]),
+				new ListViewItem(16, [Field(lang["bmfonteditor_lvinfo_antial"], null), 
+					Field(new Text(to!dstring(font.info.aa),dfs), null, TextInputFieldType.Text)]),
+				new ListViewItem(16, [Field(lang["bmfonteditor_lvinfo_padup"], null), 
+					Field(new Text(to!dstring(font.info.padding[0]),dfs), null, TextInputFieldType.Text)]),
+				new ListViewItem(16, [Field(lang["bmfonteditor_lvinfo_paddn"], null), 
+					Field(new Text(to!dstring(font.info.padding[1]),dfs), null, TextInputFieldType.Text)]),
+				new ListViewItem(16, [Field(lang["bmfonteditor_lvinfo_padle"], null), 
+					Field(new Text(to!dstring(font.info.padding[2]),dfs), null, TextInputFieldType.Text)]),
+				new ListViewItem(16, [Field(lang["bmfonteditor_lvinfo_padri"], null), 
+					Field(new Text(to!dstring(font.info.padding[3]),dfs), null, TextInputFieldType.Text)]),
+				new ListViewItem(16, [Field(lang["bmfonteditor_lvinfo_spahz"], null), 
+					Field(new Text(to!dstring(font.info.spacing[0]),dfs), null, TextInputFieldType.Text)]),
+				new ListViewItem(16, [Field(lang["bmfonteditor_lvinfo_spave"], null), 
+					Field(new Text(to!dstring(font.info.spacing[1]),dfs), null, TextInputFieldType.Text)]),
+				new ListViewItem(16, [Field(lang["bmfonteditor_lvinfo_name"], null), 
+					Field(new Text(to!dstring(font.info.fontName),dfs), null, TextInputFieldType.Text)]),
+				new ListViewItem(16, [Field(lang["bmfonteditor_lvinfo_outline"], null), 
+					Field(new Text(to!dstring(font.info.outline),dfs), null, TextInputFieldType.Text)]),
 			]);
 		} else if (radioButton_common.isChecked) {
 			setButtons(ElementState.Disabled);
 			TextInputFieldType[] tift = [TextInputFieldType.None, TextInputFieldType.Text];
 			listView0.setHeader(lvhInfo, [
-				new ListViewItem(16, [lang["bmfonteditor_lvcommon_lh"], to!dstring(font.info.fontSize)], tift),
-				new ListViewItem(16, [lang["bmfonteditor_lvcommon_base"], to!dstring(font.info.bitField)], tift),
-				new ListViewItem(16, [lang["bmfonteditor_lvcommon_scw"], to!dstring(font.info.charSet)], tift),
-				new ListViewItem(16, [lang["bmfonteditor_lvcommon_sch"], to!dstring(font.info.stretchH)], tift),
-				new ListViewItem(16, [lang["bmfonteditor_lvcommon_pages"], to!dstring(font.info.aa)], tift),
-				new ListViewItem(16, [lang["bmfonteditor_lvcommon_bitfield"], to!dstring(font.info.padding[0])], tift),
-				new ListViewItem(16, [lang["bmfonteditor_lvcommon_cha"], to!dstring(font.info.padding[1])], tift),
-				new ListViewItem(16, [lang["bmfonteditor_lvcommon_chr"], to!dstring(font.info.padding[2])], tift),
-				new ListViewItem(16, [lang["bmfonteditor_lvcommon_chg"], to!dstring(font.info.padding[3])], tift),
-				new ListViewItem(16, [lang["bmfonteditor_lvcommon_chb"], to!dstring(font.info.spacing[0])], tift),
+				new ListViewItem(16, [Field(lang["bmfonteditor_lvcommon_lh"], null), 
+					Field(new Text(to!dstring(font.info.fontSize),dfs), null, TextInputFieldType.Text)]),
+				new ListViewItem(16, [Field(lang["bmfonteditor_lvcommon_base"], null), 
+					Field(new Text(to!dstring(font.info.bitField),dfs), null, TextInputFieldType.Text)]),
+				new ListViewItem(16, [Field(lang["bmfonteditor_lvcommon_scw"], null), 
+					Field(new Text(to!dstring(font.info.charSet),dfs), null, TextInputFieldType.Text)]),
+				new ListViewItem(16, [Field(lang["bmfonteditor_lvcommon_sch"], null), 
+					Field(new Text(to!dstring(font.info.stretchH),dfs), null, TextInputFieldType.Text)]),
+				new ListViewItem(16, [Field(lang["bmfonteditor_lvcommon_pages"], null), 
+					Field(new Text(to!dstring(font.info.aa),dfs), null, TextInputFieldType.Text)]),
+				new ListViewItem(16, [Field(lang["bmfonteditor_lvcommon_bitfield"], null), 
+					Field(new Text(to!dstring(font.info.padding[0]),dfs), null, TextInputFieldType.Text)]),
+				new ListViewItem(16, [Field(lang["bmfonteditor_lvcommon_cha"], null), 
+					Field(new Text(to!dstring(font.info.padding[1]),dfs), null, TextInputFieldType.Text)]),
+				new ListViewItem(16, [Field(lang["bmfonteditor_lvcommon_chr"], null), 
+					Field(new Text(to!dstring(font.info.padding[2]),dfs), null, TextInputFieldType.Text)]),
+				new ListViewItem(16, [Field(lang["bmfonteditor_lvcommon_chg"], null), 
+					Field(new Text(to!dstring(font.info.padding[3]),dfs), null, TextInputFieldType.Text)]),
+				new ListViewItem(16, [Field(lang["bmfonteditor_lvcommon_chb"], null), 
+					Field(new Text(to!dstring(font.info.spacing[0]),dfs), null, TextInputFieldType.Text)]),
 			]);
 		} else if (radioButton_char.isChecked) {
 			setButtons(ElementState.Enabled);

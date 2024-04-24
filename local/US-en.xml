@@ -10,6 +10,15 @@
     <text id="layerlist_type">Type</text>
     <text id="layerlist_name">Name</text>
 
+    <text id="objectlist_title">Objects</text>
+    <text id="objectlist_id">ID</text>
+    <text id="objectlist_name">Name</text>
+
+    <text id="materiallist_title">Objects</text>
+    <text id="materiallist_id">ID</text>
+    <text id="materiallist_name">Name</text>
+    <text id="materiallist_dim">Dim</text>
+
     <text id="bmfonteditor_title">BMFont Editor</text>
     <text id="bmfonteditor_lvhInfo_name">Name:</text>
     <text id="bmfonteditor_lvhInfo_value">Value:</text>
@@ -112,7 +121,7 @@
     <text id="fd_targa">Truevision TARGA</text>
     <text id="fd_winbmp">Windows bitmap</text>
 
-    <text id="menubar_file">FILE</text>
+    <text id="menubar_file" formatId="menubar">FILE</text>
     <text id="menubar_file_new">New PPE map</text>
     <text id="menubar_file_newtemp">New PPE map from template</text>
     <text id="menubar_file_load">Load PPE map</text>
@@ -121,7 +130,7 @@
     <text id="menubar_file_savetemp">Save PPE map as template</text>
     <text id="menubar_file_exit">Exit application</text>
 
-    <text id="menubar_edit">EDIT</text>
+    <text id="menubar_edit" formatId="menubar">EDIT</text>
     <text id="menubar_edit_undo">Undo</text>
     <text id="menubar_edit_redo">Redo</text>
     <text id="menubar_edit_copy">Copy</text>
@@ -130,7 +139,7 @@
     <text id="menubar_edit_editorsetup">Editor settings</text>
     <text id="menubar_edit_docsetup">Document settings</text>
 
-    <text id="menubar_view">VIEW</text>
+    <text id="menubar_view" formatId="menubar">VIEW</text>
     <text id="menubar_view_layerlist">Layers</text>
     <text id="menubar_view_materiallist">Materials</text>
     <text id="menubar_view_grid">Grid</text>
@@ -138,7 +147,7 @@
     <text id="menubar_view_props">Properties</text>
     <text id="menubar_view_reset">Reset layer display</text>
 
-    <text id="menubar_layers">LAYERS</text>
+    <text id="menubar_layers" formatId="menubar">LAYERS</text>
     <text id="menubar_layers_new">New layer</text>
     <text id="menubar_layers_delete">Delete layer</text>
     <text id="menubar_layers_import">Import layerdata</text>
@@ -150,15 +159,21 @@
     <text id="menubar_layers_resrc">Layer resources</text>
     <text id="menubar_layers_resize">Resize layer</text>
 
-    <text id="menubar_tools">TOOLS</text>
+    <text id="menubar_tools" formatId="menubar">TOOLS</text>
     <text id="menubar_tools_tga">TGA Toolkit</text>
     <text id="menubar_tools_bmfont">BMFont editor</text>
 
-    <text id="menubar_help">HELP</text>
+    <text id="menubar_help" formatId="menubar">HELP</text>
     <text id="menubar_help_content">Content</text>
     <text id="menubar_help_about">About</text>
 
     <text id="fd_savedoc">Save document as</text>
     <text id="fd_loaddoc">Load document</text>
     <text id="fd_xmf">PPE map file</text>
+    <text id="fd_csvi">Import layer from CSV</text>
+    <text id="fd_csve">Export layer as CSV</text>
+    <text id="fd_csv">Tiled CSV file</text>
+    <text id="fd_mbfi">Import layer from MBF</text>
+    <text id="fd_mbfe">Export layer as MBF</text>
+    <text id="fd_mbf">PixelPerfectEngine map binary file</text>
 </etml>
