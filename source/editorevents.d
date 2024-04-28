@@ -1279,6 +1279,40 @@ public class SpriteObjectPlacementEvent : UndoableEvent {
 		}
 	}
 }
+public class SpriteAttrEditEvent : UndoableEvent {
+	string attrName;
+	Value val;
+	Tag backup;
+	MapDocument doc;
+	int target;
+	int layer;
+	MapObject selectedObj;
+
+	public this(T)(T val, string attrName, MapDocument doc, int target, int layer) {
+		this.val = Value(val);
+		this.attrName = attrName;
+		this.doc = doc;
+		this.target = target;
+		this.layer = layer;
+		selectedObj = doc.mapObjList.searchBy!(int, "a == b.pID", "a > b.pID")(target);
+		backup = selectedObj.mainTag;
+	}
+	public void redo() {
+		foreach (Attribute a ; selectedObj.mainTag.attributes) {
+			if (a.name == attrName) {
+				a.remove;
+				break;
+			}
+		}
+		selectedObj.mainTag.add(new Attribute(attrName, val));
+		doc.updateObjectList();
+	}
+
+	public void undo() {
+		selectedObj.mainTag = backup;
+		doc.updateObjectList();
+	}
+}
 public class ObjectRemaneEvent : UndoableEvent {
 	MapDocument md;
 	int layerID;

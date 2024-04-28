@@ -6,6 +6,7 @@ import std.utf : toUTF32, toUTF8;
 import std.conv : to;
 import std.algorithm.searching : countUntil;
 import app;
+import document;
 import editorevents;
 import core.internal.utf;
 import pixelperfectengine.concrete.popup.popuptextinput;
@@ -42,6 +43,8 @@ public class PropertyList : Window {
 		listView_properties.onItemSelect = &listView_properties_onSelect;
 		listView_properties.onTextInput = &listView_properties_onTextEdit;
 		listView_properties.onItemAdd = &listView_properties_onItemAdd;
+		listView_properties.editEnable = true;
+		listView_properties.multicellEditEnable = true;
 		
 		removeParam = new SmallButton("removeMaterialB", "removeMaterialA", "rem", Box.bySize(113, 198, 16, 16));
 		removeParam.onMouseLClick = &button_trash_onClick;
@@ -151,9 +154,9 @@ public class PropertyList : Window {
 		if (prg.selDoc is null || reference is null) return;
 		const int selectedItem = listView_properties.value;
 		if (!(propertyFlags[selectedItem] & PropertyFlags.Constant) && selectedItem >= 0) {
-			if (!(propertyFlags[selectedItem] & PropertyFlags.Mandatory)) {
+			const string propertyName = listView_properties.selectedElement()[0].getText().toUTF8();
+			if (!(propertyFlags[selectedItem] & PropertyFlags.Mandatory)) {	//Handle any non-mandatory tags
 				if (reference.namespace == "Object") {
-					const string propertyName = listView_properties.selectedElement()[0].getText().toUTF8();
 					switch (listView_properties.selectedElement()[1].textInputType) {
 						case TextInputFieldType.Integer:
 							prg.selDoc.events.addToTop(new ObjectPropertyEditEvent(propertyName, 
@@ -167,6 +170,61 @@ public class PropertyList : Window {
 							prg.selDoc.events.addToTop(new ObjectPropertyEditEvent(propertyName, 
 									listView_properties.selectedElement()[1].getText().toUTF8(), reference, prg.selDoc));
 							break;
+						default:
+							break;
+					}
+				} else if (reference.namespace == "Layer") {
+					switch (listView_properties.selectedElement()[1].textInputType) {
+						case TextInputFieldType.Integer:
+							prg.selDoc.events.addToTop(new LayerPropertyEditEvent(propertyName, 
+									listView_properties.selectedElement()[1].getText().to!int(), reference, prg.selDoc));
+							break;
+						case TextInputFieldType.Decimal:
+							prg.selDoc.events.addToTop(new LayerPropertyEditEvent(propertyName, 
+									listView_properties.selectedElement()[1].getText().to!double(), reference, prg.selDoc));
+							break;
+						case TextInputFieldType.Text:
+							prg.selDoc.events.addToTop(new LayerPropertyEditEvent(propertyName, 
+									listView_properties.selectedElement()[1].getText().toUTF8(), reference, prg.selDoc));
+							break;
+						default:
+							break;
+					}
+				}
+			} else {							//Handle special tags and values
+				if (reference.namespace == "Object") {
+					Box objectMove;
+					int objID;
+					if (reference.name == "Box") {
+						BoxObject bo = cast(BoxObject)(prg.selDoc.mapObjList[prg.selDoc.selObject]);
+						if (bo) {
+							objectMove = bo.position;
+							objID = bo.pID;
+						}
+					} else {	//Sprite object, as others are not implemented yet
+						SpriteObject so = cast(SpriteObject)(prg.selDoc.mapObjList[prg.selDoc.selObject]);
+						if (so) {
+							objectMove = Box.bySize(so.x, so.y, 0, 0);
+						}
+					}
+					switch (propertyName) {
+						case "left":
+							objectMove.left = listView_properties.selectedElement()[1].getText().to!int();
+							prg.selDoc.events.addToTop(new ObjectMoveEvent(prg.selDoc, prg.selDoc.selectedLayer, objID, objectMove));
+							break;
+						case "top":
+							objectMove.top = listView_properties.selectedElement()[1].getText().to!int();
+							prg.selDoc.events.addToTop(new ObjectMoveEvent(prg.selDoc, prg.selDoc.selectedLayer, objID, objectMove));
+							break;
+						case "bottom":
+							objectMove.bottom = listView_properties.selectedElement()[1].getText().to!int();
+							prg.selDoc.events.addToTop(new ObjectMoveEvent(prg.selDoc, prg.selDoc.selectedLayer, objID, objectMove));
+							break;
+						case "right":
+							objectMove.right = listView_properties.selectedElement()[1].getText().to!int();
+							prg.selDoc.events.addToTop(new ObjectMoveEvent(prg.selDoc, prg.selDoc.selectedLayer, objID, objectMove));
+							break;
+						case "renderingMode": break; //Just to be safe
 						default:
 							break;
 					}
@@ -297,6 +355,10 @@ public class PropertyList : Window {
 							[ListViewItem.Field(new Text("palSel"d, chrFrmt_mand), null),
 							ListViewItem.Field(new Text(to!dstring(t.getAttribute!int("palSel", 0)), chrFrmt_def), null, 
 							TextInputFieldType.Integer)]);
+					/* listView_properties ~= new ListViewItem(16, 
+							[ListViewItem.Field(new Text("palSel"d, chrFrmt_mand), null),
+							ListViewItem.Field(new Text(to!dstring(t.getAttribute!int("palSel", 0)), chrFrmt_def), null, 
+							TextInputFieldType.Integer)]); */
 					propertyFlags ~= PropertyFlags.Mandatory;
 					break;
 				default:
