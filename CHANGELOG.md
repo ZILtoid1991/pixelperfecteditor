@@ -1,3 +1,28 @@
+# v0.11.0-alpha
+
+## New features
+
+### Object handling
+
+The editor can handle two kind of objects:
+
+* Box objects, to mark collision events, etc.
+* Sprite objects, only available on dedicated sprite layers.
+
+Objects are notated on each layer individually.
+
+### Property handling
+
+The editor can assign and edit properties of objects and layers, which can be read by the target applications.
+
+### Language files
+
+Language file support has been added. There are blindspots in what it's currently applied for.
+
+## Bug fixes
+
+Usually bugs that were present in prior engine versions. (Curr.: 0.11.0-alpha.4)
+
 # v0.10.1
 
 ## New features
