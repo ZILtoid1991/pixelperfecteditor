@@ -970,8 +970,8 @@ public class ObjectMoveEvent : UndoableEvent {
 	public void redo() {
 		try {
 			foreach (Tag t; doc.mainDoc.layerData[layerID].namespaces["Object"].tags) {
-				const int objectID = t.values[1].get!int();
-				if (t.values[1].get!int == objectID) {
+				const int currObjID = t.values[1].get!int;
+				if (currObjID == objID) {
 					switch (t.name) {
 					case "Sprite":
 						oldPos.left = t.values[3].get!int;
@@ -997,6 +997,7 @@ public class ObjectMoveEvent : UndoableEvent {
 						break;
 					}
 					doc.updateObjectList();
+					doc.outputWindow.draw();
 					return;
 				}
 			}

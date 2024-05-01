@@ -205,14 +205,15 @@ public class PropertyList : Window {
 						SpriteObject so = cast(SpriteObject)(prg.selDoc.mapObjList[prg.selDoc.selObject]);
 						if (so) {
 							objectMove = Box.bySize(so.x, so.y, 0, 0);
+							objID = so.pID;
 						}
 					}
 					switch (propertyName) {
-						case "left":
+						case "left", "posX":
 							objectMove.left = listView_properties.selectedElement()[1].getText().to!int();
 							prg.selDoc.events.addToTop(new ObjectMoveEvent(prg.selDoc, prg.selDoc.selectedLayer, objID, objectMove));
 							break;
-						case "top":
+						case "top", "posY":
 							objectMove.top = listView_properties.selectedElement()[1].getText().to!int();
 							prg.selDoc.events.addToTop(new ObjectMoveEvent(prg.selDoc, prg.selDoc.selectedLayer, objID, objectMove));
 							break;
@@ -226,6 +227,8 @@ public class PropertyList : Window {
 							break;
 						case "renderingMode": break; //Just to be safe
 						default:
+							prg.selDoc.events.addToTop(new SpriteAttrEditEvent(listView_properties.selectedElement()[1].getText().to!int(),
+									propertyName, prg.selDoc, prg.selDoc.selObject, prg.selDoc.selectedLayer));
 							break;
 					}
 				}
