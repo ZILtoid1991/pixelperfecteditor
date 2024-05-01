@@ -291,7 +291,7 @@ public class Editor : InputListener, SystemEventListener {
 		//writeln(globalDefaultStyle.drawParameters);
 		//Initialize custom GUI elements
 		{
-			Bitmap8Bit[] customGUIElems = loadBitmapSheetFromFile!Bitmap8Bit("../system/concreteGUIE1.tga", 16, 16);
+			Bitmap8Bit[] customGUIElems = loadBitmapSheetFromFile!Bitmap8Bit(getPathToAsset("/system/concreteGUIE1.tga"), 16, 16);
 			globalDefaultStyle.setImage(customGUIElems[0], "menuButtonA");
 			globalDefaultStyle.setImage(customGUIElems[1], "menuButtonB");
 			globalDefaultStyle.setImage(customGUIElems[2], "fullSizeButtonA");
@@ -310,7 +310,7 @@ public class Editor : InputListener, SystemEventListener {
 			globalDefaultStyle.setImage(customGUIElems[15], "blankButtonB");
 		}
 		{
-			Bitmap8Bit[] customGUIElems = loadBitmapSheetFromFile!Bitmap8Bit("../system/concreteGUIE4.tga", 16, 16);
+			Bitmap8Bit[] customGUIElems = loadBitmapSheetFromFile!Bitmap8Bit(getPathToAsset("/system/concreteGUIE4.tga"), 16, 16);
 			globalDefaultStyle.setImage(customGUIElems[0], "addMaterialA");
 			globalDefaultStyle.setImage(customGUIElems[1], "addMaterialB");
 			globalDefaultStyle.setImage(customGUIElems[2], "removeMaterialA");
@@ -329,7 +329,7 @@ public class Editor : InputListener, SystemEventListener {
 			globalDefaultStyle.setImage(customGUIElems[15], "paletteUpB");
 		}
 		{
-			Bitmap8Bit[] customGUIElems = loadBitmapSheetFromFile!Bitmap8Bit("../system/concreteGUIE3.tga", 16, 16);
+			Bitmap8Bit[] customGUIElems = loadBitmapSheetFromFile!Bitmap8Bit(getPathToAsset("/system/concreteGUIE3.tga"), 16, 16);
 			globalDefaultStyle.setImage(customGUIElems[0], "trashButtonA");
 			globalDefaultStyle.setImage(customGUIElems[1], "trashButtonB");
 			globalDefaultStyle.setImage(customGUIElems[2], "visibilityButtonA");
@@ -348,7 +348,7 @@ public class Editor : InputListener, SystemEventListener {
 			globalDefaultStyle.setImage(customGUIElems[15], "paletteButtonB");
 		}
 		{
-			Bitmap8Bit[] customGUIElems = loadBitmapSheetFromFile!Bitmap8Bit("../system/concreteGUIE5.tga", 16, 16);
+			Bitmap8Bit[] customGUIElems = loadBitmapSheetFromFile!Bitmap8Bit(getPathToAsset("/system/concreteGUIE5.tga"), 16, 16);
 			globalDefaultStyle.setImage(customGUIElems[0], "percentButtonA");
 			globalDefaultStyle.setImage(customGUIElems[1], "percentButtonB");
 			globalDefaultStyle.setImage(customGUIElems[2], "tileButtonA");
@@ -367,7 +367,7 @@ public class Editor : InputListener, SystemEventListener {
 			globalDefaultStyle.setImage(customGUIElems[15], "soloButtonB");
 		}
 		{
-			Bitmap8Bit[] customGUIElems = loadBitmapSheetFromFile!Bitmap8Bit("../system/concreteGUIE6.tga", 16, 16);
+			Bitmap8Bit[] customGUIElems = loadBitmapSheetFromFile!Bitmap8Bit(getPathToAsset("/system/concreteGUIE6.tga"), 16, 16);
 			globalDefaultStyle.setImage(customGUIElems[0], "colorPickerA");
 			globalDefaultStyle.setImage(customGUIElems[1], "colorPickerB");
 			globalDefaultStyle.setImage(customGUIElems[2], "addBoxObjectA");
@@ -385,7 +385,8 @@ public class Editor : InputListener, SystemEventListener {
 			//globalDefaultStyle.setImage(customGUIElems[14], "paletteButtonA");
 			//globalDefaultStyle.setImage(customGUIElems[15], "paletteButtonB");
 		}
-		globalDefaultStyle.font["dylex10"] = new Fontset!Bitmap8Bit(File("../system/dylex-6x10.fnt"), "../system/");
+		globalDefaultStyle.font["dylex10"] = new Fontset!Bitmap8Bit(File(getPathToAsset("../system/dylex-6x10.fnt")), 
+				getPathToAsset("../system/"));
 		globalDefaultStyle.addChrFormatting(
 				new CharacterFormattingInfo!Bitmap8Bit(globalDefaultStyle.getFontset("fixedWidth"), 0x1f, 0, 0, 16, 2), 
 				"statusbar");
@@ -425,12 +426,12 @@ public class Editor : InputListener, SystemEventListener {
 		ow[0].setMainRaster(rasters);
 		rasters.addLayer(windowing, 0);
 		rasters.addLayer(bitmapPreview, 1);
-		rasters.loadPalette(loadPaletteFromFile("../system/concreteGUIE1.tga"));
+		rasters.loadPalette(loadPaletteFromFile(getPathToAsset("../system/concreteGUIE1.tga")));
 		rasters.setPaletteIndex(0x00_20, Color(0x00,0xFF,0x00,0xff));
 		rasters.setPaletteIndex(0x00_21, Color(0xFF,0x00,0xFF,0xff));
 		rasters.setPaletteIndex(0x00_22, Color(0x7F,0x7F,0xFF,0xff));
 		wh.setBaseWindow(new TopLevelWindow(windowSizes[0], windowSizes[1], this));
-		wh.addBackground(loadBitmapFromFile!Bitmap32Bit("../system/background.png"));
+		wh.addBackground(loadBitmapFromFile!Bitmap32Bit(getPathToAsset("../system/background.png")));
 		mapClipboard = new MapClipboard(10);
 		//openMaterialList();
 		//openLayerList();
