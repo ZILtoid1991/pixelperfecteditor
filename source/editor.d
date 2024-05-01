@@ -85,7 +85,7 @@ public class NewDocumentDialog : Window{
 public class TopLevelWindow : Window {
 	public this(int width, int height, Editor prg) {
 		Text mt(dstring text) @safe nothrow {
-			return new Text(text, globalDefaultStyle.getChrFormatting("default"));
+			return new Text(text, globalDefaultStyle.getChrFormatting("defaultRJ"));
 		}
 		super(Box(0, 0, width, height), ""d, [], null);
 		MenuBar mb;
