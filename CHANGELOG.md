@@ -23,6 +23,11 @@ Language file support has been added. There are blindspots in what it's currentl
 
 Usually bugs that were present in prior engine versions. (Curr.: 0.11.0-alpha.4)
 
+## Known issues
+
+* This version is very untested. I have a barely-paying full time job, which allows me to work on stuff like this, but often I'm even too tired to remember who I am, because I need to wake up 6 AM every day while I don't really have a sleep-cycle.
+* There's a regression related to the submenus of the menubar, which now causes segfaults. I'll fix it ASAP, might be an engine-side thing.
+
 # v0.10.1
 
 ## New features
