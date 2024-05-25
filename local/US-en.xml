@@ -14,7 +14,7 @@
     <text id="objectlist_id">ID</text>
     <text id="objectlist_name">Name</text>
 
-    <text id="materiallist_title">Objects</text>
+    <text id="materiallist_title">Materials</text>
     <text id="materiallist_id">ID</text>
     <text id="materiallist_name">Name</text>
     <text id="materiallist_dim">Dim</text>
