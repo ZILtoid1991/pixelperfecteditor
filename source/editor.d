@@ -127,6 +127,7 @@ public class TopLevelWindow : Window {
 			menuElements[3] ~= new PopUpMenuElement("\\submenu\\", prg.lang.output["menubar_layers_import"], mt(">"));
 			menuElements[3][2] ~= new PopUpMenuElement("tiledcsvi", prg.lang.output["menubar_layers_importcsv"]);
 			menuElements[3][2] ~= new PopUpMenuElement("ppebinmapi", prg.lang.output["menubar_layers_importppebin"]);
+			menuElements[3][2] ~= new PopUpMenuElement("bitmapi", prg.lang.output["menubar_layers_importbmp"]);
 			menuElements[3] ~= new PopUpMenuElement("\\submenu\\", prg.lang.output["menubar_layers_export"], mt(">"));
 			menuElements[3][3] ~= new PopUpMenuElement("tiledcsve", prg.lang.output["menubar_layers_exportcsv"]);
 			menuElements[3][3] ~= new PopUpMenuElement("ppebinmape", prg.lang.output["menubar_layers_exportppebin"]);
@@ -488,8 +489,8 @@ public class Editor : InputListener, SystemEventListener {
 						if (selDoc.getLayerInfo(selDoc.selectedLayer).type == LayerType.Tile || 
 								selDoc.getLayerInfo(selDoc.selectedLayer).type == LayerType.TransformableTile) {
 							import pixelperfectengine.concrete.dialogs.filedialog;
-							wh.addWindow(new FileDialog("Import layer from CSV", "tiledcsvi", &tiledCSVImport, 
-									[FileDialog.FileAssociationDescriptor("Tiled CSV file", ["*.csv"])], "./",));
+							wh.addWindow(new FileDialog(lang.output["fd_csvi"], "tiledcsvi", &tiledCSVImport, 
+									[FileDialog.FileAssociationDescriptor(lang.output["fd_csv"].toDString(), ["*.csv"])], "./",));
 						}
 					}
 					break;
@@ -498,8 +499,9 @@ public class Editor : InputListener, SystemEventListener {
 						if (selDoc.getLayerInfo(selDoc.selectedLayer).type == LayerType.Tile || 
 								selDoc.getLayerInfo(selDoc.selectedLayer).type == LayerType.TransformableTile) {
 							import pixelperfectengine.concrete.dialogs.filedialog;
-							wh.addWindow(new FileDialog("Export layer as CSV", "tiledcsve", &tiledCSVExport, 
-									[FileDialog.FileAssociationDescriptor("Tiled CSV file", ["*.csv"])], "./", true));
+							wh.addWindow(new FileDialog(lang.output["fd_csve"], "tiledcsve", &tiledCSVExport, 
+									[FileDialog.FileAssociationDescriptor(lang.output["fd_csv"].toDString(), ["*.csv"])], "./", 
+									FileDialog.Type.Save));
 						}
 					}
 					break;
@@ -519,7 +521,19 @@ public class Editor : InputListener, SystemEventListener {
 								selDoc.getLayerInfo(selDoc.selectedLayer).type == LayerType.TransformableTile) {
 							import pixelperfectengine.concrete.dialogs.filedialog;
 							wh.addWindow(new FileDialog("Export layer as MBF", "ppebinmape", &ppeBinExport, 
-									[FileDialog.FileAssociationDescriptor("PixelPerfectEngine map binary file", ["*.mbf"])], "./", true));
+									[FileDialog.FileAssociationDescriptor("PixelPerfectEngine map binary file", ["*.mbf"])], "./", 
+									FileDialog.Type.Save));
+						}
+					}
+					break;
+				case "bitmapi":
+					if (selDoc) {
+						if (selDoc.getLayerInfo(selDoc.selectedLayer).type == LayerType.Tile || 
+								selDoc.getLayerInfo(selDoc.selectedLayer).type == LayerType.TransformableTile) {
+							import pixelperfectengine.concrete.dialogs.filedialog;
+							wh.addWindow(new FileDialog("Export layer as MBF", "ppebinmape", &ppeBinExport, 
+									[FileDialog.FileAssociationDescriptor("PixelPerfectEngine map binary file", ["*.mbf"])], "./", 
+									FileDialog.Type.Save));
 						}
 					}
 					break;
@@ -611,6 +625,16 @@ public class Editor : InputListener, SystemEventListener {
 			}
 		} catch (Exception e) {
 			wh.message("MBF Export Error!", to!dstring(e.msg));
+		}
+	}
+	private void bitmapImport(Event ev) {
+		import pixelperfectengine.map.mapdata;
+		try {
+			if (selDoc) {
+				
+			}
+		} catch (Exception e) {
+			wh.message(lang.output["error_bmi_title"].toDString, to!dstring(e.msg));
 		}
 	}
 	/**
@@ -894,7 +918,7 @@ public class Editor : InputListener, SystemEventListener {
 	public void onSaveAs () {
 		import pixelperfectengine.concrete.dialogs.filedialog;
 		FileDialog fd = new FileDialog("Save document as","docSave",&onSaveDialog,[FileDialog.FileAssociationDescriptor(
-			"PPE map file", ["*.xmf"])],"./",true);
+			"PPE map file", ["*.xmf"])],"./",FileDialog.Type.Save);
 		wh.addWindow(fd);
 	}
 	public void onSaveDialog(Event ev) {
@@ -1010,7 +1034,7 @@ public class Editor : InputListener, SystemEventListener {
 		import pixelperfectengine.concrete.dialogs.defaultdialog;
 		exitDialog=true;
 		DefaultDialog dd = new DefaultDialog(Point(10,10), 256, "exitdialog","Exit application", "Are you sure?",
-				["Yes","No","Pls save"],["ok","close","save"]);
+				["Quit","Stay","Save and Quit"],["ok","close","save"]);
 
 		dd.output = &confirmExit;
 		wh.addWindow(dd);

@@ -153,6 +153,7 @@
     <text id="menubar_layers_import">Import layerdata</text>
     <text id="menubar_layers_importcsv">Tiled CSV file</text>
     <text id="menubar_layers_importppebin">PPE binary map file</text>
+    <text id="menubar_layers_importbmp">Bitmap file</text>
     <text id="menubar_layers_export">Export layerdata</text>
     <text id="menubar_layers_exportcsv">Tiled CSV file</text>
     <text id="menubar_layers_exportppebin">PPE binary map file</text>
@@ -167,6 +168,12 @@
     <text id="menubar_help_content">Content</text>
     <text id="menubar_help_about">About</text>
 
+    <text id="exitdialog_title">Quit application</text>
+    <text id="exitdialog_prompt">Are you sure</text>
+    <text id="exitdialog_title">Quit</text>
+    <text id="exitdialog_title">Stay</text>
+    <text id="exitdialog_title">Save and Quit</text>
+
     <text id="fd_savedoc">Save document as</text>
     <text id="fd_loaddoc">Load document</text>
     <text id="fd_xmf">PPE map file</text>
@@ -175,5 +182,8 @@
     <text id="fd_csv">Tiled CSV file</text>
     <text id="fd_mbfi">Import layer from MBF</text>
     <text id="fd_mbfe">Export layer as MBF</text>
+    <text id="fd_bmi">Import layer from Bitmap data</text>
     <text id="fd_mbf">PixelPerfectEngine map binary file</text>
+    <text id="error_bmi_title">Bitmap import error</text>
+    <text id="error_bmi_wrongformat">Bitmap file must be either grayscale of indexed!</text>
 </etml>
