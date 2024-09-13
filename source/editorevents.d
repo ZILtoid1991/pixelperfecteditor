@@ -19,13 +19,20 @@ T clamp(T)(T input, const T min, const T max) @nogc @safe pure nothrow {
 	else if (input <= min) input = min;
 	return input;
 }
-
+///Defines and editor event that does not overwrite any existing tiles in a tilemap.
 public class WriteToMapVoidFill : UndoableEvent {
 	ITileLayer target;
-	Coordinate area;
+	Box area;
 	MappingElement me;
 	MappingElement[] original;
-	public this(ITileLayer target, Coordinate area, MappingElement me){
+	/**
+	 * Creates an editor event that does not overwrite any existing tiles in a tilemap.
+	 * Params:
+	 *   target = the tile layer, which needs to be edited.
+	 *   area = the area, which will be edited.
+	 *   me = the mapping element, which will be written into the tilemap.
+	 */
+	public this(ITileLayer target, Box area, MappingElement me){
 		this.target = target;
 		this.area = area;
 		this.me = me;
@@ -53,13 +60,20 @@ public class WriteToMapVoidFill : UndoableEvent {
 		}
 	}
 }
-
+///Defines an editor event, that will overwrite the selected portion of a tilemap.
 public class WriteToMapOverwrite : UndoableEvent {
 	ITileLayer target;
-	Coordinate area;
+	Box area;
 	MappingElement me;
 	MappingElement[] original;
-	public this(ITileLayer target, Coordinate area, MappingElement me){
+	/**
+	 * Creates an editor event, that will overwrite the selected portion of a tilemap.
+	 * Params:
+	 *   target = the tile layer, which needs to be edited.
+	 *   area = the area, which will be edited.
+	 *   me = the mapping element, which will be written into the tilemap.
+	 */
+	public this(ITileLayer target, Box area, MappingElement me){
 		this.target = target;
 		this.area = area;
 		this.me = me;
@@ -85,13 +99,21 @@ public class WriteToMapOverwrite : UndoableEvent {
 		}
 	}
 }
-
+///Defines an editor event, that replaces a single tile into a tilemap.
 public class WriteToMapSingle : UndoableEvent {
 	ITileLayer target;
 	int x;
 	int y;
 	MappingElement me;
 	MappingElement original;
+	/**
+	 * Creates an editor event, that will overwrite the selected portion of a tilemap.
+	 * Params:
+	 *   target = the tile layer, which needs to be edited.
+	 *   x = horizontal coordinate of the tile.
+	 *   y = vertical coordinate of the tile.
+	 *   me = the mapping element, which will be written into the tilemap.
+	 */
 	public this(ITileLayer target, int x, int y, MappingElement me) {
 		this.target = target;
 		this.x = x;
@@ -110,20 +132,32 @@ public class WriteToMapSingle : UndoableEvent {
 		target.writeMapping(x,y,original);
 	}
 }
-
+///Defines an editor event, which creates a tile layer.
 public class CreateTileLayerEvent : UndoableEvent {
-	TileLayer creation;
-	MapDocument target;
-	int tX;
-	int tY;
-	int mX;
-	int mY;
-	int pri;
-	string name;
-	string file;
-	bool embed;
-	Tag backup;
-
+	TileLayer creation;///The created tile layer.
+	MapDocument target;///The target map document.
+	int tX;			///Tile width
+	int tY;			///Tile height
+	int mX;			///Map width
+	int mY;			///Map height
+	int pri;		///Priority ID
+	string name;	///Layer name
+	string file;	///Tilemap file if applicable
+	bool embed;		///True if tilemap data is embedded as base64
+	Tag backup;		///Any backup data if needed
+	/**
+	 * Params:
+	 *   target = The target map document.
+	 *   tX = Tile width
+	 *   tY = Tile height
+	 *   mX = Map width
+	 *   my = Map height
+	 *   pri = Priority ID
+	 *   name = Layer name
+	 *   file = Tilemap file if applicable
+	 *   embed = True if tilemap data is embedded as base64
+	 *   backup = Any backup data if needed
+	 */
 	public this(MapDocument target, int tX, int tY, int mX, int mY, dstring name, string file, bool embed) {
 		import std.utf : toUTF8;
 		creation = new TileLayer(tX, tY);
@@ -265,12 +299,27 @@ public class CreateTileLayerEvent : UndoableEvent {
 		target.updateMaterialList();
 	}
 }
+///Defines an editor event, that resizes the selected tilemap.
 public class ResizeTileMapEvent : UndoableEvent {
 	MappingElement[] backup, destMap;
 	int mX, mY, offsetX, offsetY, newX, newY;
 	MapDocument targetDoc;
 	int layer;
 	bool patternRepeat;
+	/**
+	 * Creates an editor event, that resizes the selected tilemap.
+	 * Params:
+	 *    params = resize parameters.
+	 *      [0] : Original map width.
+	 *      [1] : Original map height.
+	 *      [2] : Horizontal offset of the map.
+	 *      [3] : Vertical offset of the map.
+	 *      [4] : New map width.
+	 *      [5] : New map height.
+	 *    targetDoc = the selected document.
+	 *    layer = layer priority ID.
+	 *    patternRepeat = true if layer pattern needs to be repeated.
+	 */
 	this(int[6] params, MapDocument targetDoc, int layer, bool patternRepeat) {
 		mX = params[0];
 		mY = params[1];
@@ -323,6 +372,7 @@ public class ResizeTileMapEvent : UndoableEvent {
 		targetDoc.mainDoc.alterTileLayerInfo(layer, 5, mY);
 	}
 }
+///Defines an event, that adds a tilesheet to the selected layer.
 public class AddTileSheetEvent : UndoableEvent {
 	Image source;
 	MapDocument targetDoc;
