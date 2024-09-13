@@ -11,6 +11,12 @@ import document;
 import std.stdio;
 import std.conv : to;
 
+/**
+ * Converts a bitmap image to a tile layer's mapping layout.
+ * Params:
+ *   source = the image source for the bitmap.
+ *   dest = the target mapdocument.
+ */
 public void fromBitmap(Image source, MapDocument dest) @trusted {
 	MappingElement[] nativeMap;
 	const int width = source.width, height = source.height;
